@@ -1,1 +1,36 @@
 site_name: GYF
+repo_url: https://github.com/Qwiri/GYF
+repo_name: qwiri/GYF
+edit_uri: edit/main/docs/
+plugins:
+- git-revision-date
+
+markdown_extensions:
+- admonition
+- footnotes
+- tables
+- pymdownx.highlight:
+    anchor_linenums: true
+- pymdownx.inlinehilite
+- pymdownx.snippets
+- pymdownx.superfences
+
+theme:
+  name: material
+  palette:
+    scheme: slate
+    primary: black
+    accent: lime
+  features:
+  - navigation.tracking
+  - navigation.tabs
+  - navigation.tabs.sticky
+  - navigation.expand
+  - toc.integrate
+  - navigation.top
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+- search
+- git-revision-date
