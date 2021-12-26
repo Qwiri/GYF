@@ -22,14 +22,21 @@ theme:
     primary: black
     accent: lime
   features:
-  - navigation.tracking
-  - navigation.tabs
-  - navigation.tabs.sticky
-  - navigation.expand
-  - toc.integrate
-  - navigation.top
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.expand
+    - navigation.top
+    - navigation.indexes
   icon:
     repo: fontawesome/brands/github
+
+nav:
+  - General Concepts: "index.md"
+  - Frontend: 
+    - "frontend/index.md"
+  - Backend:
+    - "backend/index.md"
 
 plugins:
 - search
