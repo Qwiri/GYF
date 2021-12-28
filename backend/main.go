@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/Qwiri/GYF/backend/internal/server"
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/cli"
 	"github.com/gofiber/fiber/v2"
@@ -29,7 +30,7 @@ func init() {
 }
 
 func main() {
-	svr := NewServer()
+	svr := server.NewServer()
 	app := fiber.New(fiber.Config{
 		IdleTimeout: 5 * time.Second,
 	})
@@ -56,7 +57,7 @@ func main() {
 	svr.CreateRoutes(app)
 
 	// start janitor
-	go func(s *GYFServer) {
+	go func(s *server.GYFServer) {
 		for {
 			time.Sleep(JanitorTime)
 

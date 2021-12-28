@@ -1,19 +1,21 @@
-package main
+package server
 
 import (
+	"github.com/Qwiri/GYF/backend/pkg/model"
+	"github.com/Qwiri/GYF/backend/pkg/util"
 	"github.com/apex/log"
 	"sync"
 	"time"
 )
 
 type GYFServer struct {
-	games   map[string]*Game
+	games   map[string]*model.Game
 	gamesMu sync.RWMutex
 }
 
 func NewServer() *GYFServer {
 	return &GYFServer{
-		games: make(map[string]*Game),
+		games: make(map[string]*model.Game),
 	}
 }
 
@@ -45,13 +47,13 @@ func (gs *GYFServer) GameExists(gameID string) (o bool) {
 	return
 }
 
-func (gs *GYFServer) NewGame(idLen int) *Game {
+func (gs *GYFServer) NewGame(idLen int) *model.Game {
 	// find a free game ID
 	var id string
 	for id == "" || gs.GameExists(id) {
-		id = GenerateRandomString(idLen)
+		id = util.GenerateRandomString(idLen)
 	}
-	return NewGame(id)
+	return model.NewGame(id)
 }
 
 //////

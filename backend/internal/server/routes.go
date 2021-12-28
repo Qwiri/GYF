@@ -1,6 +1,8 @@
-package main
+package server
 
 import (
+	"github.com/Qwiri/GYF/backend/internal/handlers"
+	"github.com/Qwiri/GYF/backend/pkg/util"
 	"github.com/apex/log"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
@@ -29,7 +31,7 @@ func (gs *GYFServer) CreateRoutes(app *fiber.App) {
 			if err := c.WriteMessage(websocket.TextMessage, []byte("ERROR game not found")); err != nil {
 				log.WithError(err).Warn("[ws] cannot write error message")
 			}
-			closeConnection(c)
+			util.CloseConnection(c)
 			return
 		}
 
@@ -39,7 +41,7 @@ func (gs *GYFServer) CreateRoutes(app *fiber.App) {
 			if err := c.WriteMessage(websocket.TextMessage, []byte("ERROR game already started")); err != nil {
 				log.WithError(err).Warn("[ws] cannot write error message")
 			}
-			closeConnection(c)
+			util.CloseConnection(c)
 			return
 		}
 
@@ -49,8 +51,10 @@ func (gs *GYFServer) CreateRoutes(app *fiber.App) {
 			if _, msg, err := c.ReadMessage(); err != nil {
 				log.WithError(err).Warn("[ws] cannot read message from websocket")
 				break
-			} else {
-				onClientMessage(c, game, strings.TrimSpace(string(msg)))
+			} else if err = handlers.OnClientMessage(c, game, strings.TrimSpace(string(msg))); err != nil {
+				// send error to client
+				util.Write(c, "ERROR "+err.Error())
+				log.WithError(err).Warn("handling client message resulted in an error")
 			}
 		}
 	}))
