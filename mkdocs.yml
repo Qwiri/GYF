@@ -31,13 +31,6 @@ theme:
   icon:
     repo: fontawesome/brands/github
 
-nav:
-  - General Concepts: "index.md"
-  - Frontend: 
-    - "frontend/index.md"
-  - Backend:
-    - "backend/index.md"
-
 plugins:
 - search
 - git-revision-date
