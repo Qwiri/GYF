@@ -11,6 +11,7 @@ type Game struct {
 	Clients         map[string]*Client
 	Topics          []*Topic
 	Started         bool
+	CurrentTopic    *Topic
 	LastInteraction time.Time
 }
 
@@ -20,6 +21,7 @@ func NewGame(id string) *Game {
 		Clients:         make(map[string]*Client),
 		Topics:          nil,
 		Started:         false,
+		CurrentTopic:    nil,
 		LastInteraction: time.Now(),
 	}
 }
