@@ -20,7 +20,7 @@ type HandlerFunc func(conn *websocket.Conn, game *model.Game, client *model.Clie
 func OnClientMessage(conn *websocket.Conn, game *model.Game, msg string) error {
 	str := strings.Split(msg, " ")
 	if len(str) <= 1 {
-		log.WithField("message", str).Warnf("message of client %+v too short")
+		log.WithField("message", str).Warn("message of client %+v too short")
 		return ErrMessageTooShort
 	}
 	prefix := strings.ToUpper(str[0])
