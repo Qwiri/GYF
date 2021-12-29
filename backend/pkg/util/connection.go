@@ -12,6 +12,10 @@ func CloseConnection(c *websocket.Conn) {
 }
 
 func Write(c *websocket.Conn, msg string) {
+	if c == nil {
+		log.Warnf("tried to send '%s' to nil connection", msg)
+		return
+	}
 	if err := c.WriteMessage(websocket.TextMessage, []byte(msg)); err != nil {
 		log.WithError(err).Warnf("[ws] cannot send %s to client", msg)
 	}
