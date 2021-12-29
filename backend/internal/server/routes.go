@@ -57,6 +57,14 @@ func (gs *GYFServer) CreateRoutes(app *fiber.App) {
 				log.WithError(err).Warn("handling client message resulted in an error")
 			}
 		}
+
+		// invalidate connection (remove clients)
+		for _, client := range game.Clients {
+			if client.Connection == c {
+				game.LeaveClient(client, "disconnected")
+				log.Warnf("leaving client %s@%s (disconnected)", client.Name, game.ID)
+			}
+		}
 	}))
 }
 

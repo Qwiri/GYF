@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"github.com/Qwiri/GYF/backend/pkg/util"
 	"github.com/gofiber/websocket/v2"
 	"time"
@@ -47,4 +48,16 @@ func (g *Game) GetClient(conn *websocket.Conn) *Client {
 		}
 	}
 	return nil
+}
+
+func (g *Game) LeaveClient(client *Client, reason string) {
+	for k, v := range g.Clients {
+		if v == client {
+			delete(g.Clients, k)
+			// announce client leave
+			if client.Name != "" {
+				g.Broadcast(fmt.Sprintf("PLAYER_LEAVE %s %s", client.Name, reason))
+			}
+		}
+	}
 }
