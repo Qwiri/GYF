@@ -33,7 +33,7 @@ jobs:
           context: ./backend
           file: ./Dockerfile
           push: true
-          tags: ghcr.io/Qwiri/gyf:backend
+          tags: ghcr.io/qwiri/gyf:backend
 
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
