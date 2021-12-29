@@ -15,6 +15,8 @@ var (
 	ErrAlreadyJoined = errors.New("already joined")
 )
 
+// TODO: check join already exists then join
+// TODO: dead connection
 func handleJoin(conn *websocket.Conn, game *model.Game, client *model.Client, _ string, message []string) error {
 	username := strings.TrimSpace(message[0])
 	// check if username is allowed

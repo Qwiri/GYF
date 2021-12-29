@@ -19,14 +19,21 @@ type HandlerFunc func(conn *websocket.Conn, game *model.Game, client *model.Clie
 
 func OnClientMessage(conn *websocket.Conn, game *model.Game, msg string) error {
 	str := strings.Split(msg, " ")
-	if len(str) <= 1 {
-		log.WithField("message", str).Warn("message of client %+v too short")
-		return ErrMessageTooShort
-	}
 	prefix := strings.ToUpper(str[0])
 
 	// get client if the client already exists
 	client := game.GetClient(conn)
+
+	// Special Message: "WHOAMI"
+	if prefix == "WHOAMI" {
+		return handleWhoAmI(conn, game, client, prefix, str)
+	}
+
+	// commands below require extra args
+	if len(str) <= 1 {
+		log.WithField("message", str).Warn("message of client %+v too short")
+		return ErrMessageTooShort
+	}
 
 	// Special Message: "JOIN"
 	if prefix == "JOIN" {
