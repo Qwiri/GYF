@@ -7,7 +7,7 @@
 
     export let id;
     let username;
-    $: selfLeader = isLeader(username);
+    let selfLeader;
     let chatMsg;
     let inputTopic;
     let topics = [];
@@ -76,8 +76,22 @@
             case "TOPIC_LIST":
                 handleTopicList(args);
                 break;
+
+            case "CHANGE_ROLE":
+                handleChangeRole(args);
+                break;
         }
         
+    }
+
+    const handleChangeRole = (args) => {
+        // if self got upgraded to leader
+        if (args[0] === username && args[1] === "LEADER") {
+            selfLeader = true;
+
+            // get topic list
+            ws.send("TOPIC_LIST 1")
+        }
     }
 
     const handleTopicList = (args) => {
@@ -99,10 +113,6 @@
         args.forEach(player => {
             players[player.name] = player
         });
-
-        if (!connected) {
-            connected = true;
-        }
     }
 
     const handlePlayerLeft = (args) => {
@@ -111,6 +121,9 @@
 
     const handlePlayerJoined = (args) => {
         ws.send("LIST 1");
+        if (!connected) {
+            connected = true;
+        }
         console.log(`Player ${args[0]} joined!`);
     }
 
@@ -164,7 +177,7 @@
         {/each}
     </div>
     <!-- topics -->
-    {#if isLeader(username)}
+    {#if selfLeader}
         <ul>
             {#each topics as topic}
                 <li>
