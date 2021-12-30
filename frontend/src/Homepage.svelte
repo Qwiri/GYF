@@ -4,10 +4,8 @@
     // to set the focus when this route get's opened
     const registerFocus = useFocus();
 
-    let username: string;
-
     let connectToGame = (id) => {
-        navigate(`/game/${id}`, {replace: false});
+        navigate(`/game/${id}`, {replace: false, });
         
 
     }
@@ -35,6 +33,6 @@
     
 </style>
 
-<input use:registerFocus name="Username" placeholder="Username" bind:value="{username}" />
-<img alt="user avatar" width="100px" src="https://avatars.dicebear.com/api/miniavs/{username}.svg" />
-<input type="button" value="NEW GAME" on:click="{createGame}"/>
+<!-- <input use:registerFocus name="Username" placeholder="Username" bind:value="{username}" />
+<img alt="user avatar" width="100px" src="https://avatars.dicebear.com/api/miniavs/{username}.svg" /> -->
+<input use:registerFocus type="button" value="NEW GAME" on:click="{createGame}"/>
