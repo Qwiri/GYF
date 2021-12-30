@@ -44,7 +44,7 @@ func handleJoin(conn *websocket.Conn, game *model.Game, client *model.Client, _ 
 		game.SetLeader(client)
 	}
 	// broadcast player join
-	game.Broadcast("PLAYER_JOINED " + client.Name)
+	game.Broadcast(model.NewResponse("PLAYER_JOINED", client.Name))
 	log.Infof("Client %s joined game %s", client.Name, game.ID)
 	return nil
 }

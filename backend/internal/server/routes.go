@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/Qwiri/GYF/backend/pkg/model"
 	"strings"
 
 	"github.com/Qwiri/GYF/backend/internal/handlers"
@@ -58,7 +59,7 @@ func (gs *GYFServer) CreateRoutes(app *fiber.App) {
 				break
 			} else if err = handlers.OnClientMessage(c, game, strings.TrimSpace(string(msg))); err != nil {
 				// send error to client
-				util.Write(c, "ERROR "+err.Error())
+				util.Respond(c, model.NewResponseWithError("ERROR", err.Error()))
 				log.WithError(err).Warn("handling client message resulted in an error")
 			}
 		}

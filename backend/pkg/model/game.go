@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"github.com/Qwiri/GYF/backend/pkg/util"
 	"github.com/gofiber/websocket/v2"
 	"time"
@@ -27,16 +26,16 @@ func NewGame(id string) *Game {
 	}
 }
 
-func (g *Game) Broadcast(msg string) {
+func (g *Game) Broadcast(response *Response) {
 	for _, client := range g.Clients {
-		util.Write(client.Connection, msg)
+		util.Respond(client.Connection, response)
 	}
 }
 
-func (g *Game) BroadcastExcept(conn *websocket.Conn, msg string) {
+func (g *Game) BroadcastExcept(conn *websocket.Conn, response *Response) {
 	for _, client := range g.Clients {
 		if client.Connection != conn {
-			util.Write(client.Connection, msg)
+			util.Respond(client.Connection, response)
 		}
 	}
 }
@@ -55,11 +54,11 @@ func (g *Game) SetLeader(client *Client) {
 	for _, c := range g.Clients {
 		if c.Leader {
 			c.Leader = false
-			g.Broadcast("CHANGE_ROLE " + client.Name + " PLAYER")
+			g.Broadcast(NewResponse("CHANGE_ROLE", client.Name, "PLAYER"))
 		}
 	}
 	client.Leader = true
-	g.Broadcast("CHANGE_ROLE " + client.Name + " LEADER")
+	g.Broadcast(NewResponse("CHANGE_ROLE", client.Name, "LEADER"))
 }
 
 func (g *Game) LeaveClient(client *Client, reason string) {
@@ -68,23 +67,21 @@ func (g *Game) LeaveClient(client *Client, reason string) {
 			delete(g.Clients, k)
 			// announce client leave
 			if client.Name != "" {
-				g.Broadcast(fmt.Sprintf("PLAYER_LEAVE %s %s", client.Name, reason))
+				g.Broadcast(NewResponse("PLAYER_LEAVE", client.Name, reason))
 			}
 		}
 	}
 	// check if the game is now empty
 	if len(g.Clients) > 0 {
 		// check if there is a leader left
-		var target *Client
 		for _, v := range g.Clients {
 			if v.Leader {
 				return
 			}
-			if target != nil {
-				target = v
+			if v != nil {
+				g.SetLeader(v)
 				break
 			}
 		}
-		g.SetLeader(target)
 	}
 }
