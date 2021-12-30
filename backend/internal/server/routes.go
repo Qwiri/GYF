@@ -1,6 +1,7 @@
 package server
 
 import (
+	"errors"
 	"github.com/Qwiri/GYF/backend/pkg/model"
 	"strings"
 
@@ -11,12 +12,19 @@ import (
 	"github.com/gofiber/websocket/v2"
 )
 
-func (gs *GYFServer) CreateRoutes(app *fiber.App) {
+var (
+	ErrGameNotFound = errors.New("game not found")
+	ErrGameStarted  = errors.New("game already started")
+)
 
-	// ALlow cors for dev - TODO: delete for prod
-	app.Get("/game/list", gs.RouteListGames)
+func (gs *GYFServer) CreateRoutes(app *fiber.App) {
+	if gs.devMode {
+		app.Get("/game/list", gs.RouteListGames)
+	}
+
 	app.Get("/game/create", gs.RouteCreateGame)
 
+	// SOCKET
 	app.Use("/game/socket", func(c *fiber.Ctx) error {
 		if websocket.IsWebSocketUpgrade(c) {
 			c.Locals("allowed", true)
@@ -24,7 +32,6 @@ func (gs *GYFServer) CreateRoutes(app *fiber.App) {
 		}
 		return fiber.ErrUpgradeRequired
 	})
-
 	app.Get("/game/socket/:id", websocket.New(func(c *websocket.Conn) {
 		gameID := c.Params("id")
 		log.Infof("[ws] got connection to id %s", gameID)
@@ -32,7 +39,7 @@ func (gs *GYFServer) CreateRoutes(app *fiber.App) {
 		// make sure the game exists
 		game, ok := gs.games[gameID]
 		if !ok || c.Locals("allowed") != true {
-			if err := c.WriteMessage(websocket.TextMessage, []byte("ERROR game not found")); err != nil {
+			if err := model.NewResponseWithError("JOIN", ErrGameNotFound).Respond(c); err != nil {
 				log.WithError(err).Warn("[ws] cannot write error message")
 			}
 			util.CloseConnection(c)
@@ -42,7 +49,7 @@ func (gs *GYFServer) CreateRoutes(app *fiber.App) {
 		// check if game is in progress
 		if game.Started {
 			log.Warnf("client tried to connect to game %s but the game was running", gameID)
-			if err := c.WriteMessage(websocket.TextMessage, []byte("ERROR game already started")); err != nil {
+			if err := model.NewResponseWithError("JOIN", ErrGameStarted).Respond(c); err != nil {
 				log.WithError(err).Warn("[ws] cannot write error message")
 			}
 			util.CloseConnection(c)
@@ -55,7 +62,7 @@ func (gs *GYFServer) CreateRoutes(app *fiber.App) {
 			if _, msg, err := c.ReadMessage(); err != nil {
 				log.WithError(err).Warn("[ws] cannot read message from websocket")
 				break
-			} else if err = handlers.OnClientMessage(c, game, strings.TrimSpace(string(msg))); err != nil {
+			} else if err = handlers.OnClientMessage(c, game, strings.TrimSpace(string(msg)), gs.devMode); err != nil {
 				// send error to client
 				_ = model.NewResponseWithError("ERROR", err).Respond(c)
 				log.WithError(err).Warn("handling client message resulted in an error")

@@ -15,36 +15,39 @@ var (
 	ErrAlreadyJoined = errors.New("already joined")
 )
 
-func handleJoin(conn *websocket.Conn, game *model.Game, client *model.Client, _ string, message []string) error {
-	username := strings.TrimSpace(message[0])
-	// check if username is allowed
-	if !util.IsNameValid(username) {
-		return ErrNameInvalid
-	}
-	// check if there is already a client with the same name?
-	for _, c := range game.Clients {
-		if strings.EqualFold(c.Name, username) {
-			return ErrNameExists
+var JoinHandler = &Handler{
+	AccessLevel: AccessGuest,
+	Handler: MessagedHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client, message []string) error {
+		username := strings.TrimSpace(message[0])
+		// check if username is allowed
+		if !util.IsNameValid(username) {
+			return ErrNameInvalid
 		}
-	}
-	// client already joined?
-	if client != nil {
-		if client.Name != "" {
-			// client has already a name
-			return ErrAlreadyJoined
+		// check if there is already a client with the same name?
+		for _, c := range game.Clients {
+			if strings.EqualFold(c.Name, username) {
+				return ErrNameExists
+			}
 		}
-		client.Name = username
-	} else {
-		client = model.NewClient(conn, username)
-		// add client to game map
-		game.Clients[client.Name] = client
-	}
-	// is this the first player? (leader)
-	if len(game.Clients) == 1 {
-		game.SetLeader(client)
-	}
-	// broadcast player join
-	game.Broadcast(model.NewResponse("PLAYER_JOINED", client.Name))
-	log.Infof("Client %s joined game %s", client.Name, game.ID)
-	return nil
+		// client already joined?
+		if client != nil {
+			if client.Name != "" {
+				// client has already a name
+				return ErrAlreadyJoined
+			}
+			client.Name = username
+		} else {
+			client = model.NewClient(conn, username)
+			// add client to game map
+			game.Clients[client.Name] = client
+		}
+		// is this the first player? (leader)
+		if len(game.Clients) == 1 {
+			game.SetLeader(client)
+		}
+		// broadcast player join
+		game.Broadcast(model.NewResponse("PLAYER_JOINED", client.Name))
+		log.Infof("Client %s joined game %s", client.Name, game.ID)
+		return nil
+	}),
 }

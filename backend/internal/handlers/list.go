@@ -5,18 +5,20 @@ import (
 	"github.com/gofiber/websocket/v2"
 )
 
-func handleList(conn *websocket.Conn, game *model.Game, _ *model.Client, _ string, _ []string) error {
-	type listObj struct {
-		Name   string `json:"name"`
-		Leader bool   `json:"leader"`
-	}
-	// collect client names
-	clientNames := make([]interface{}, len(game.Clients))
-	var i = 0
-	for _, c := range game.Clients {
-		clientNames[i] = listObj{c.Name, c.Leader}
-		i += 1
-	}
-	model.NewResponse("LIST", clientNames...).Respond(conn)
-	return nil
+var ListHandler = &Handler{
+	AccessLevel: AccessJoined,
+	Handler: BasicHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client) error {
+		type listObj struct {
+			Name   string `json:"name"`
+			Leader bool   `json:"leader"`
+		}
+		// collect client names
+		clientNames := make([]interface{}, len(game.Clients))
+		var i = 0
+		for _, c := range game.Clients {
+			clientNames[i] = listObj{c.Name, c.Leader}
+			i += 1
+		}
+		return model.NewResponse("LIST", clientNames...).Respond(conn)
+	}),
 }

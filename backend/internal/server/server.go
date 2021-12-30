@@ -11,11 +11,13 @@ import (
 type GYFServer struct {
 	games   map[string]*model.Game
 	gamesMu sync.RWMutex
+	devMode bool
 }
 
-func NewServer() *GYFServer {
+func NewServer(devMode bool) *GYFServer {
 	return &GYFServer{
-		games: make(map[string]*model.Game),
+		games:   make(map[string]*model.Game),
+		devMode: devMode,
 	}
 }
 

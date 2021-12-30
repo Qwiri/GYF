@@ -5,7 +5,10 @@ import (
 	"github.com/gofiber/websocket/v2"
 )
 
-func handleWhoAmI(conn *websocket.Conn, game *model.Game, client *model.Client, _ string, message []string) error {
-	model.NewResponse("WHOAMI", "YOU", client, "GAME", game, "MSG", message).Respond(conn)
-	return nil
+var WhoAmIHandler = &Handler{
+	AccessLevel: AccessGuest | AccessJoined | AccessLeader,
+	DevOnly:     true,
+	Handler: BasicHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client) error {
+		return model.NewResponse("WHOAMI", "YOU", client, "GAME", game).Respond(conn)
+	}),
 }

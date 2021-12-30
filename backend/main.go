@@ -25,19 +25,24 @@ var (
 		"/game",
 		"/game/",
 	}
+	DevMode bool
 )
 
 func init() {
 	log.SetHandler(cli.Default)
+
+	if !strings.HasPrefix(os.Getenv("BUILD"), "prod") {
+		DevMode = true
+	}
 }
 
 func main() {
-	svr := server.NewServer()
+	svr := server.NewServer(DevMode)
 	app := fiber.New(fiber.Config{
 		IdleTimeout: 5 * time.Second,
 	})
 
-	if !strings.HasPrefix(os.Getenv("BUILD"), "prod") {
+	if DevMode {
 		app.Use(cors.New())
 	}
 
