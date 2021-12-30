@@ -8,7 +8,7 @@ import (
 )
 
 type Response struct {
-	Command   string        `json:"command"`
+	Command   string        `json:"cmd"`
 	Args      []interface{} `json:"args"`
 	Warn      string        `json:"warn"`
 	Success   bool          `json:"_s"`
@@ -24,6 +24,7 @@ func NewResponse(command string, args ...interface{}) *Response {
 	}
 }
 
+//goland:noinspection GoUnusedExportedFunction
 func NewResponseWithWarn(command, warn string, args ...interface{}) *Response {
 	return &Response{
 		Command:   command,

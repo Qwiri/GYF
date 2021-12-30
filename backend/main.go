@@ -5,10 +5,12 @@ import (
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/cli"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 )
@@ -34,6 +36,10 @@ func main() {
 	app := fiber.New(fiber.Config{
 		IdleTimeout: 5 * time.Second,
 	})
+
+	if !strings.HasPrefix(os.Getenv("BUILD"), "prod") {
+		app.Use(cors.New())
+	}
 
 	// log requests
 	app.Use(logger.New())

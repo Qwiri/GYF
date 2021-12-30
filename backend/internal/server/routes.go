@@ -8,14 +8,12 @@ import (
 	"github.com/Qwiri/GYF/backend/pkg/util"
 	"github.com/apex/log"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/websocket/v2"
 )
 
 func (gs *GYFServer) CreateRoutes(app *fiber.App) {
 
 	// ALlow cors for dev - TODO: delete for prod
-	app.Use(cors.New())
 	app.Get("/game/list", gs.RouteListGames)
 	app.Get("/game/create", gs.RouteCreateGame)
 
