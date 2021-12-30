@@ -44,7 +44,9 @@ export default {
 			"http://127.0.0.1:8080": process.env.BUILD == "development" ? "http://127.0.0.1:8080" : "https://backend.staging.gyf.d2a.io",
 			"127.0.0.1:8080": process.env.BUILD == "development" ? "127.0.0.1:8080" : "https://backend.staging.gyf.d2a.io",
 			"http://localhost:8080": process.env.BUILD == "development" ? "http://localhost:8080" : "https://backend.staging.gyf.d2a.io",
-			"localhost:8080": process.env.BUILD == "development" ? "localhost:8080" : "https://backend.staging.gyf.d2a.io"
+			"localhost:8080": process.env.BUILD == "development" ? "localhost:8080" : "https://backend.staging.gyf.d2a.io",
+			"ws://localhost:8080": process.env.BUILD == "development" ? "ws://localhost:8080" : "wss://backend.staging.gyf.d2a.io",
+			"ws://127.0.0.1:8080": process.env.BUILD == "development" ? "ws://127.0.0.1:8080" : "wss://backend.staging.gyf.d2a.io"
 		}),
 		svelte({
 			preprocess: sveltePreprocess({ sourceMap: !production }),
