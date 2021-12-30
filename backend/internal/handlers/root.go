@@ -52,6 +52,8 @@ func OnClientMessage(conn *websocket.Conn, game *model.Game, msg string) error {
 	switch prefix {
 	case "LIST":
 		return handleList(conn, game, client, prefix, str[1:])
+	case "CHAT":
+		return handleChat(conn, game, client, prefix, str[1:])
 	}
 
 	return ErrUnknownCommand
