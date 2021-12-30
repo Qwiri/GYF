@@ -97,8 +97,13 @@
 {:else}
     <div id="playerBar">
         {#each players as player}
-            <img width="100px" src="https://avatars.dicebear.com/api/miniavs/{player}.svg" alt="avatar of '{username}'"/>
-            <h2>{player}</h2>
+            <img width="100px" src="https://avatars.dicebear.com/api/miniavs/{player.name}.svg" alt="avatar of '{player.name}'"/>
+            <h2>
+                {#if player.leader}
+                    👑
+                {/if}
+                {player.name}
+            </h2>
         {/each}
     </div>
 {/if}
