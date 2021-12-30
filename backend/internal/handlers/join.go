@@ -36,12 +36,12 @@ func handleJoin(conn *websocket.Conn, game *model.Game, client *model.Client, _ 
 		client.Name = username
 	} else {
 		client = model.NewClient(conn, username)
-		// is this the first player? (leader)
-		if len(game.Clients) == 0 {
-			game.SetLeader(client)
-		}
 		// add client to game map
 		game.Clients[client.Name] = client
+	}
+	// is this the first player? (leader)
+	if len(game.Clients) == 1 {
+		game.SetLeader(client)
 	}
 	// broadcast player join
 	game.Broadcast("PLAYER_JOINED " + client.Name)
