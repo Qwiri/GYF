@@ -7,8 +7,14 @@
 
     export let id;
     let username;
+    let chatMsg;
 
-    let players = [];
+    let messages = [];
+
+    let players = {};
+
+    // TODO: purge. This is cursed
+    $:messages = [players[0], ...messages].slice(1);
 
     let ws;
 
@@ -58,15 +64,31 @@
 
             case "LIST":
                 handlePlayerList(args);
+                break;
+
+            case "CHAT":
+                handleChatMessage(args);
+                break;
 
         }
         
     }
 
+    const isLeader = (name) => {
+        return players[name]?.leader??false;
+    }
+
+    const handleChatMessage = (args) => {
+        messages = [...messages, {"author": args[0], "msg": args[1]}]
+    }
+
     const handlePlayerList = (args) => {
 
         //add all player
-        players = [...args]
+        players = {};
+        args.forEach(player => {
+            players[player.name] = player
+        });
     }
 
     const handlePlayerLeft = (args) => {
@@ -81,6 +103,13 @@
         console.log(`Player ${args[0]} joined!`);
     }
 
+    const sendMessage = (e) => {
+        console.log(e)
+        if (e.keyCode === 13) {
+            ws.send(`CHAT ${chatMsg}`);
+            chatMsg = "";
+        }
+    }
 
 </script>
 
@@ -96,7 +125,7 @@
     <input type="button" value="JOIN GAME" on:click="{connectWithUsername}"/>
 {:else}
     <div id="playerBar">
-        {#each players as player}
+        {#each Object.values(players) as player}
             <img width="100px" src="https://avatars.dicebear.com/api/miniavs/{player.name}.svg" alt="avatar of '{player.name}'"/>
             <h2>
                 {#if player.leader}
@@ -105,5 +134,25 @@
                 {player.name}
             </h2>
         {/each}
+    </div>
+    <!-- chat -->
+    <div>
+        <div id="chatContent">
+            <ul>
+            {#each messages as message}
+                <li>
+                    {#if isLeader(message.author)}
+                        👑
+                    {/if}
+                    <img width="32px" src="https://avatars.dicebear.com/api/miniavs/{message.author}.svg" alt=""/>
+                    <span>{message.author}</span>:
+                    <span>{message.msg}</span>
+                </li>
+            {/each}
+            </ul>
+
+        </div>
+        <input type=text on:keypress="{sendMessage}" bind:value="{chatMsg}">
+
     </div>
 {/if}
