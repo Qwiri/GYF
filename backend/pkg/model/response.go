@@ -2,6 +2,7 @@ package model
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/apex/log"
 	"github.com/gofiber/websocket/v2"
 	"time"
@@ -35,11 +36,11 @@ func NewResponseWithWarn(command, warn string, args ...interface{}) *Response {
 	}
 }
 
-func NewResponseWithError(command, error string, args ...interface{}) *Response {
+func NewResponseWithError(command string, error error, args ...interface{}) *Response {
 	return &Response{
 		Command:   command,
 		Args:      args,
-		Warn:      error,
+		Warn:      error.Error(),
 		Success:   false,
 		Timestamp: time.Now().UnixMilli(),
 	}
@@ -57,12 +58,14 @@ func (r *Response) String() string {
 	return string(r.Marshal())
 }
 
-func (r *Response) Respond(conn *websocket.Conn) {
+var ErrConnectionNil = errors.New("websocket connection was nil")
+
+func (r *Response) Respond(conn *websocket.Conn) (err error) {
 	if conn == nil {
-		log.Warnf("tried to send '%s' to nil connection", r)
-		return
+		return ErrConnectionNil
 	}
-	if err := conn.WriteMessage(websocket.TextMessage, r.Marshal()); err != nil {
+	if err = conn.WriteMessage(websocket.TextMessage, r.Marshal()); err != nil {
 		log.WithError(err).Warnf("[ws] cannot send %s to client", r.String())
 	}
+	return
 }

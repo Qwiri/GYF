@@ -8,7 +8,7 @@ import (
 type Game struct {
 	ID              string
 	Clients         map[string]*Client
-	Topics          []*Topic
+	Topics          map[string]*Topic
 	Started         bool
 	CurrentTopic    *Topic
 	LastInteraction time.Time
@@ -18,7 +18,7 @@ func NewGame(id string) *Game {
 	return &Game{
 		ID:              id,
 		Clients:         make(map[string]*Client),
-		Topics:          nil,
+		Topics:          make(map[string]*Topic),
 		Started:         false,
 		CurrentTopic:    nil,
 		LastInteraction: time.Now(),
@@ -27,14 +27,14 @@ func NewGame(id string) *Game {
 
 func (g *Game) Broadcast(response *Response) {
 	for _, client := range g.Clients {
-		response.Respond(client.Connection)
+		_ = response.Respond(client.Connection)
 	}
 }
 
 func (g *Game) BroadcastExcept(conn *websocket.Conn, response *Response) {
 	for _, client := range g.Clients {
 		if client.Connection != conn {
-			response.Respond(client.Connection)
+			_ = response.Respond(client.Connection)
 		}
 	}
 }

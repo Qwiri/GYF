@@ -54,6 +54,12 @@ func OnClientMessage(conn *websocket.Conn, game *model.Game, msg string) error {
 		return handleList(conn, game, client, prefix, str[1:])
 	case "CHAT":
 		return handleChat(conn, game, client, prefix, str[1:])
+	case "TOPIC_LIST":
+		return handleTopicList(conn, game, client, prefix, str[1:])
+	case "TOPIC_ADD":
+		return handleTopicAdd(conn, game, client, prefix, str[1:])
+	case "TOPIC_REMOVE":
+		return handleTopicRemove(conn, game, client, prefix, str[1:])
 	}
 
 	return ErrUnknownCommand
