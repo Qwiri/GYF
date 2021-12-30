@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "rollup -c",
-    "dev": "rollup -c -w",
-    "start": "sirv public --no-clear",
+    "build": "rollup -c --environment BUILD:production",
+    "dev": "rollup -c -w --environment BUILD:development",
+    "start": "sirv public --no-clear --single",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "devDependencies": {
@@ -25,6 +25,8 @@
     "@tsconfig/svelte": "^2.0.0"
   },
   "dependencies": {
-    "sirv-cli": "^1.0.0"
+    "@rollup/plugin-replace": "^3.0.1",
+    "sirv-cli": "^1.0.0",
+    "svelte-navigator": "^3.1.5"
   }
 }

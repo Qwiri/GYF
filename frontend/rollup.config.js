@@ -6,6 +6,7 @@ import { terser } from 'rollup-plugin-terser';
 import sveltePreprocess from 'svelte-preprocess';
 import typescript from '@rollup/plugin-typescript';
 import css from 'rollup-plugin-css-only';
+import replace from "@rollup/plugin-replace"
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -39,6 +40,12 @@ export default {
 		file: 'public/build/bundle.js'
 	},
 	plugins: [
+		replace({
+			"http://127.0.0.1:8080": process.env.BUILD == "development" ? "http://127.0.0.1:8080" : "https://backend.staging.gyf.d2a.io",
+			"127.0.0.1:8080": process.env.BUILD == "development" ? "127.0.0.1:8080" : "https://backend.staging.gyf.d2a.io",
+			"http://localhost:8080": process.env.BUILD == "development" ? "http://localhost:8080" : "https://backend.staging.gyf.d2a.io",
+			"localhost:8080": process.env.BUILD == "development" ? "localhost:8080" : "https://backend.staging.gyf.d2a.io"
+		}),
 		svelte({
 			preprocess: sveltePreprocess({ sourceMap: !production }),
 			compilerOptions: {

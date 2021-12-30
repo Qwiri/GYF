@@ -1,10 +1,24 @@
 <script lang="ts">
-	export let name: string;
+	import Homepage from "./Homepage.svelte";
+	import Lobby from "./Lobby.svelte";
+	import {Router, Route, Link} from "svelte-navigator";
+
+
+	export let name;
+	export let url = "";
 </script>
 
 <main>
-	<h1>Hello {name}!</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
+	<h1>{name}!</h1>
+	<!-- <Homepage /> -->
+	<Router url={url}>
+		<Route path="/">
+			<Homepage />
+		</Route>
+		<Route path="game/:id" let:params>
+			<Lobby id="{params.id}"/>
+		</Route>
+	</Router>
 </main>
 
 <style>
