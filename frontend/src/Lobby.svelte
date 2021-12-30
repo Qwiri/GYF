@@ -32,17 +32,17 @@
     }
 
     let handleMessage = (msg) => {
-        const cmd = msg.data.split(" ")[0];
-        const args = msg.data.split(" ").slice(1);
+        msg = JSON.parse(msg.data);
+        const cmd = msg.cmd
+        const args = msg.args
         console.log(msg)
-        console.log(cmd)
-        console.log(args)
+        console.log({cmd, args})
 
         switch (cmd) {
             case "ERROR":
-                if (msg.data == "ERROR game not found") {
+                if (!msg._s && msg.warn == "ERROR game not found") {
                     navigate("/", {replace: true})
-                } else if (msg.data == "ERROR game already started") {
+                } else if (!msg._s && msg.warn == "ERROR game already started") {
                     // TODO: error handling logic
                     console.log("Game already started");
                 }
