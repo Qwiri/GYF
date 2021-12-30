@@ -90,7 +90,7 @@
             selfLeader = true;
 
             // get topic list
-            ws.send("TOPIC_LIST 1")
+            ws.send("TOPIC_LIST")
         }
     }
 
@@ -116,11 +116,11 @@
     }
 
     const handlePlayerLeft = (args) => {
-        ws.send("LIST 1")
+        ws.send("LIST")
     }
 
     const handlePlayerJoined = (args) => {
-        ws.send("LIST 1");
+        ws.send("LIST");
         if (!connected) {
             connected = true;
         }
@@ -140,7 +140,7 @@
             inputTopic = "";
 
             // update topic list
-            ws.send(`TOPIC_LIST 1`);
+            ws.send(`TOPIC_LIST`);
         }
 
     }
@@ -148,7 +148,7 @@
     const removeTopic = (e) => {
         const topic = e.srcElement.innerText.slice(0,-1);
         ws.send(`TOPIC_REMOVE ${topic}`);
-        ws.send(`TOPIC_LIST 1`);
+        ws.send(`TOPIC_LIST`);
     }
 
     const startGame = () => {
