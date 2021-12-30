@@ -7,7 +7,10 @@
 
     export let id;
     let username;
+    let selfLeader;
     let chatMsg;
+    let inputTopic;
+    let topics = [];
 
     let messages = [];
 
@@ -70,8 +73,29 @@
                 handleChatMessage(args);
                 break;
 
+            case "TOPIC_LIST":
+                handleTopicList(args);
+                break;
+
+            case "CHANGE_ROLE":
+                handleChangeRole(args);
+                break;
         }
         
+    }
+
+    const handleChangeRole = (args) => {
+        // if self got upgraded to leader
+        if (args[0] === username && args[1] === "LEADER") {
+            selfLeader = true;
+
+            // get topic list
+            ws.send("TOPIC_LIST 1")
+        }
+    }
+
+    const handleTopicList = (args) => {
+        topics = [...args];
     }
 
     const isLeader = (name) => {
@@ -96,20 +120,37 @@
     }
 
     const handlePlayerJoined = (args) => {
-        if (args[0] === username) {
+        ws.send("LIST 1");
+        if (!connected) {
             connected = true;
         }
-        ws.send("LIST 1");
         console.log(`Player ${args[0]} joined!`);
     }
 
     const sendMessage = (e) => {
-        console.log(e)
         if (e.keyCode === 13) {
             ws.send(`CHAT ${chatMsg}`);
             chatMsg = "";
         }
     }
+    
+    const sendTopic = (e) => {
+        if (e.keyCode === 13) {
+            ws.send(`TOPIC_ADD ${inputTopic}`);
+            inputTopic = "";
+
+            // update topic list
+            ws.send(`TOPIC_LIST 1`);
+        }
+
+    }
+
+    const removeTopic = (e) => {
+        const topic = e.srcElement.innerText.slice(0,-1);
+        ws.send(`TOPIC_REMOVE ${topic}`);
+        ws.send(`TOPIC_LIST 1`);
+    }
+
 
 </script>
 
@@ -120,7 +161,7 @@
 <h1>Lobby!</h1>
 <h2>your id is {id}</h2>
 {#if !connected}
-    <input use:registerFocus name="Username" placeholder="Username" bind:value="{username}" />
+    <input use:registerFocus name="Username" placeholder="Username" bind:value="{username}" on:keypress="{e => {if (e.keyCode === 13) {connectWithUsername()}}}"/>
     <img alt="user avatar" width="100px" src="https://avatars.dicebear.com/api/miniavs/{username}.svg" />
     <input type="button" value="JOIN GAME" on:click="{connectWithUsername}"/>
 {:else}
@@ -135,6 +176,17 @@
             </h2>
         {/each}
     </div>
+    <!-- topics -->
+    {#if selfLeader}
+        <ul>
+            {#each topics as topic}
+                <li>
+                    <button on:click="{removeTopic}">{topic}❌</button>
+                </li>
+            {/each}
+        </ul>
+        <input placeholder="Add topic" type=text on:keypress="{sendTopic}" bind:value="{inputTopic}">
+    {/if}
     <!-- chat -->
     <div>
         <div id="chatContent">
@@ -152,7 +204,7 @@
             </ul>
 
         </div>
-        <input type=text on:keypress="{sendMessage}" bind:value="{chatMsg}">
+        <input placeholder="Write a chat message" type=text on:keypress="{sendMessage}" bind:value="{chatMsg}">
 
     </div>
 {/if}
