@@ -18,6 +18,8 @@ var (
 type HandlerFunc func(conn *websocket.Conn, game *model.Game, client *model.Client, prefix string, message []string) error
 
 func OnClientMessage(conn *websocket.Conn, game *model.Game, msg string) error {
+	game.LastInteraction = time.Now()
+
 	str := strings.Split(msg, " ")
 	prefix := strings.ToUpper(str[0])
 
@@ -48,7 +50,8 @@ func OnClientMessage(conn *websocket.Conn, game *model.Game, msg string) error {
 	client.LastInteraction = time.Now()
 
 	switch prefix {
-	// TODO: Add commands
+	case "LIST":
+		return handleList(conn, game, client, prefix, str[1:])
 	}
 
 	return ErrUnknownCommand

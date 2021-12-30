@@ -50,6 +50,18 @@ func (g *Game) GetClient(conn *websocket.Conn) *Client {
 	return nil
 }
 
+func (g *Game) SetLeader(client *Client) {
+	// reset current leader
+	for _, c := range g.Clients {
+		if c.Leader {
+			c.Leader = false
+			g.Broadcast("CHANGE_ROLE " + client.Name + " PLAYER")
+		}
+	}
+	client.Leader = true
+	g.Broadcast("CHANGE_ROLE " + client.Name + " LEADER")
+}
+
 func (g *Game) LeaveClient(client *Client, reason string) {
 	for k, v := range g.Clients {
 		if v == client {
@@ -59,5 +71,20 @@ func (g *Game) LeaveClient(client *Client, reason string) {
 				g.Broadcast(fmt.Sprintf("PLAYER_LEAVE %s %s", client.Name, reason))
 			}
 		}
+	}
+	// check if the game is now empty
+	if len(g.Clients) > 0 {
+		// check if there is a leader left
+		var target *Client
+		for _, v := range g.Clients {
+			if v.Leader {
+				return
+			}
+			if target != nil {
+				target = v
+				break
+			}
+		}
+		g.SetLeader(target)
 	}
 }
