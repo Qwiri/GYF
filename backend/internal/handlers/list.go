@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"github.com/Qwiri/GYF/backend/pkg/model"
-	"github.com/Qwiri/GYF/backend/pkg/util"
 	"github.com/gofiber/websocket/v2"
 )
 
@@ -14,6 +13,6 @@ func handleList(conn *websocket.Conn, game *model.Game, _ *model.Client, _ strin
 		clientNames[i] = c.Name
 		i += 1
 	}
-	util.Respond(conn, model.NewResponse("LIST", clientNames...))
+	model.NewResponse("LIST", clientNames...).Respond(conn)
 	return nil
 }

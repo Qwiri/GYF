@@ -3,6 +3,7 @@ package model
 import (
 	"encoding/json"
 	"github.com/apex/log"
+	"github.com/gofiber/websocket/v2"
 	"time"
 )
 
@@ -53,4 +54,14 @@ func (r *Response) Marshal() (res []byte) {
 
 func (r *Response) String() string {
 	return string(r.Marshal())
+}
+
+func (r *Response) Respond(conn *websocket.Conn) {
+	if conn == nil {
+		log.Warnf("tried to send '%s' to nil connection", r)
+		return
+	}
+	if err := conn.WriteMessage(websocket.TextMessage, r.Marshal()); err != nil {
+		log.WithError(err).Warnf("[ws] cannot send %s to client", r.String())
+	}
 }

@@ -59,7 +59,7 @@ func (gs *GYFServer) CreateRoutes(app *fiber.App) {
 				break
 			} else if err = handlers.OnClientMessage(c, game, strings.TrimSpace(string(msg))); err != nil {
 				// send error to client
-				util.Respond(c, model.NewResponseWithError("ERROR", err.Error()))
+				model.NewResponseWithError("ERROR", err.Error()).Respond(c)
 				log.WithError(err).Warn("handling client message resulted in an error")
 			}
 		}

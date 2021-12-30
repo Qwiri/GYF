@@ -1,7 +1,6 @@
 package model
 
 import (
-	"github.com/Qwiri/GYF/backend/pkg/util"
 	"github.com/gofiber/websocket/v2"
 	"time"
 )
@@ -28,14 +27,14 @@ func NewGame(id string) *Game {
 
 func (g *Game) Broadcast(response *Response) {
 	for _, client := range g.Clients {
-		util.Respond(client.Connection, response)
+		response.Respond(client.Connection)
 	}
 }
 
 func (g *Game) BroadcastExcept(conn *websocket.Conn, response *Response) {
 	for _, client := range g.Clients {
 		if client.Connection != conn {
-			util.Respond(client.Connection, response)
+			response.Respond(client.Connection)
 		}
 	}
 }
