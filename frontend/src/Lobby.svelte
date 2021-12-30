@@ -151,6 +151,9 @@
         ws.send(`TOPIC_LIST 1`);
     }
 
+    const startGame = () => {
+    }
+
 
 </script>
 
@@ -176,8 +179,8 @@
             </h2>
         {/each}
     </div>
-    <!-- topics -->
     {#if selfLeader}
+        <!-- topics -->
         <ul>
             {#each topics as topic}
                 <li>
@@ -186,6 +189,13 @@
             {/each}
         </ul>
         <input placeholder="Add topic" type=text on:keypress="{sendTopic}" bind:value="{inputTopic}">
+
+        <!-- start game button -->
+        {#if Object.keys(players).length >= 3}
+            <button on:click="{startGame}">Start game!</button>
+        {:else}
+            <button>Need {3-Object.keys(players).length} more players!</button>
+        {/if}
     {/if}
     <!-- chat -->
     <div>
