@@ -3,6 +3,7 @@ package handlers
 import (
 	"errors"
 	"github.com/Qwiri/GYF/backend/pkg/model"
+	"github.com/Qwiri/GYF/backend/pkg/util"
 	"github.com/apex/log"
 	"github.com/gofiber/websocket/v2"
 	"regexp"
@@ -16,6 +17,7 @@ var (
 	ErrNoAccess        = errors.New("no access to that command")
 	ErrInvalidHandler  = errors.New("invalid handler func")
 	ErrDevOnly         = errors.New("handler is dev only")
+	ErrArgLength       = errors.New("unexpected arg length")
 )
 
 var SpacesRegEx = regexp.MustCompile(`\s+`)
@@ -24,6 +26,7 @@ type Handler struct {
 	AccessLevel Access
 	Handler     interface{}
 	DevOnly     bool
+	Bounds      util.Boundaries
 }
 
 var Handlers = map[string]*Handler{
@@ -75,6 +78,13 @@ func OnClientMessage(conn *websocket.Conn, game *model.Game, msg string, devMode
 	// check access for handler
 	if !handler.AccessLevel.Allowed(client) {
 		return ErrNoAccess
+	}
+
+	// check arg length
+	if handler.Bounds != nil {
+		if !handler.Bounds.Applies(len(str[1:])) {
+			return ErrArgLength
+		}
 	}
 
 	// execute handler

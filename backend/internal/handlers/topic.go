@@ -3,6 +3,7 @@ package handlers
 import (
 	"errors"
 	"github.com/Qwiri/GYF/backend/pkg/model"
+	"github.com/Qwiri/GYF/backend/pkg/util"
 	"github.com/gofiber/websocket/v2"
 	"strings"
 )
@@ -18,6 +19,7 @@ const MaxTopics = 30
 
 var TopicListHandler = &Handler{
 	AccessLevel: AccessLeader,
+	Bounds:      util.Bounds(util.BoundExact(0)),
 	Handler: BasicHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client) error {
 		if !client.Leader {
 			return model.NewResponseWithError("TOPIC_LIST", ErrNotLeader).Respond(conn)
@@ -34,6 +36,7 @@ var TopicListHandler = &Handler{
 
 var TopicAddHandler = &Handler{
 	AccessLevel: AccessLeader,
+	Bounds:      util.Bounds(util.BoundMin(1)),
 	Handler: MessagedHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client, message []string) error {
 		if !client.Leader {
 			return model.NewResponseWithError("TOPIC_ADD", ErrNotLeader).Respond(conn)
@@ -52,6 +55,7 @@ var TopicAddHandler = &Handler{
 
 var TopicRemoveHandler = &Handler{
 	AccessLevel: AccessLeader,
+	Bounds:      util.Bounds(util.BoundMin(1)),
 	Handler: MessagedHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client, message []string) error {
 		if !client.Leader {
 			return model.NewResponseWithError("TOPIC_REMOVE", ErrNotLeader).Respond(conn)
