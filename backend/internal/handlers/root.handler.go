@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"errors"
+	"github.com/Qwiri/GYF/backend/pkg/gerrors"
 	"github.com/Qwiri/GYF/backend/pkg/model"
 	"github.com/Qwiri/GYF/backend/pkg/util"
 	"github.com/apex/log"
@@ -9,15 +9,6 @@ import (
 	"regexp"
 	"strings"
 	"time"
-)
-
-var (
-	ErrMessageTooShort = errors.New("message too short")
-	ErrUnknownCommand  = errors.New("unknown command")
-	ErrNoAccess        = errors.New("no access to that command")
-	ErrInvalidHandler  = errors.New("invalid handler func")
-	ErrDevOnly         = errors.New("handler is dev only")
-	ErrArgLength       = errors.New("unexpected arg length")
 )
 
 var SpacesRegEx = regexp.MustCompile(`\s+`)
@@ -37,6 +28,8 @@ var Handlers = map[string]*Handler{
 	"TOPIC_LIST":   TopicListHandler,
 	"TOPIC_ADD":    TopicAddHandler,
 	"TOPIC_REMOVE": TopicRemoveHandler,
+	"START":        StartHandler,
+	"SKIP":         SkipHandler,
 }
 
 type BasicHandler func(*websocket.Conn, *model.Game, *model.Client) error
@@ -49,7 +42,7 @@ func OnClientMessage(conn *websocket.Conn, game *model.Game, msg string, devMode
 
 	msg = strings.TrimSpace(msg)
 	if len(msg) == 0 {
-		return ErrMessageTooShort
+		return gerrors.ErrMessageTooShort
 	}
 
 	str := SpacesRegEx.Split(msg, -1)
@@ -67,38 +60,47 @@ func OnClientMessage(conn *websocket.Conn, game *model.Game, msg string, devMode
 	// find handler
 	handler, ok := Handlers[prefix]
 	if !ok {
-		return ErrUnknownCommand
+		return gerrors.ErrUnknownCommand
 	}
 
 	// check if handler is dev-only
 	if handler.DevOnly && !devMode {
-		return ErrDevOnly
+		return gerrors.ErrDevOnly
 	}
 
 	// check access for handler
 	if !handler.AccessLevel.Allowed(client) {
-		return ErrNoAccess
+		return gerrors.ErrNoAccess
 	}
 
 	// check arg length
 	if handler.Bounds != nil {
 		if !handler.Bounds.Applies(len(str[1:])) {
-			return ErrArgLength
+			return gerrors.ErrArgLength
 		}
 	}
+
+	var err error
 
 	// execute handler
 	switch hdl := handler.Handler.(type) {
 	case BasicHandler:
-		return hdl(conn, game, client)
+		err = hdl(conn, game, client)
 	case MessagedHandler:
-		return hdl(conn, game, client, str[1:])
+		err = hdl(conn, game, client, str[1:])
 	case PrefixedHandler:
-		return hdl(conn, game, client, prefix)
+		err = hdl(conn, game, client, prefix)
 	case PrefixedMessagedHandler:
-		return hdl(conn, game, client, prefix, str[1:])
+		err = hdl(conn, game, client, prefix, str[1:])
 	default:
 		log.Warnf("cannot find handler for %s", prefix)
-		return ErrInvalidHandler
+		err = gerrors.ErrInvalidHandler
 	}
+
+	if err != nil {
+		// send error
+		err = model.NewResponseWithError(prefix, err).Respond(conn)
+	}
+
+	return err
 }

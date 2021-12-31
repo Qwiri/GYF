@@ -1,7 +1,7 @@
 package server
 
 import (
-	"errors"
+	"github.com/Qwiri/GYF/backend/pkg/gerrors"
 	"github.com/Qwiri/GYF/backend/pkg/model"
 	"strings"
 
@@ -10,11 +10,6 @@ import (
 	"github.com/apex/log"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/websocket/v2"
-)
-
-var (
-	ErrGameNotFound = errors.New("game not found")
-	ErrGameStarted  = errors.New("game already started")
 )
 
 func (gs *GYFServer) CreateRoutes(app *fiber.App) {
@@ -39,7 +34,7 @@ func (gs *GYFServer) CreateRoutes(app *fiber.App) {
 		// make sure the game exists
 		game, ok := gs.games[gameID]
 		if !ok || c.Locals("allowed") != true {
-			if err := model.NewResponseWithError("JOIN", ErrGameNotFound).Respond(c); err != nil {
+			if err := model.NewResponseWithError("JOIN", gerrors.ErrGameNotFound).Respond(c); err != nil {
 				log.WithError(err).Warn("[ws] cannot write error message")
 			}
 			util.CloseConnection(c)
@@ -49,7 +44,7 @@ func (gs *GYFServer) CreateRoutes(app *fiber.App) {
 		// check if game is in progress
 		if game.Started {
 			log.Warnf("client tried to connect to game %s but the game was running", gameID)
-			if err := model.NewResponseWithError("JOIN", ErrGameStarted).Respond(c); err != nil {
+			if err := model.NewResponseWithError("JOIN", gerrors.ErrGameStarted).Respond(c); err != nil {
 				log.WithError(err).Warn("[ws] cannot write error message")
 			}
 			util.CloseConnection(c)
@@ -88,7 +83,10 @@ func (gs *GYFServer) RouteCreateGame(ctx *fiber.Ctx) error {
 	gs.gamesMu.Unlock()
 
 	// return game object to user
-	return ctx.JSON(game)
+	if ctx != nil {
+		return ctx.JSON(game)
+	}
+	return nil
 }
 
 func (gs *GYFServer) RouteListGames(ctx *fiber.Ctx) error {

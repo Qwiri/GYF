@@ -1,18 +1,11 @@
 package handlers
 
 import (
-	"errors"
+	"github.com/Qwiri/GYF/backend/pkg/gerrors"
 	"github.com/Qwiri/GYF/backend/pkg/model"
 	"github.com/Qwiri/GYF/backend/pkg/util"
 	"github.com/gofiber/websocket/v2"
 	"strings"
-)
-
-var (
-	ErrNotLeader          = errors.New("not leader")
-	ErrTooManyTopics      = errors.New("too many topics")
-	ErrTopicNotFound      = errors.New("topic not found")
-	ErrTopicAlreadyExists = errors.New("topic already exists")
 )
 
 const MaxTopics = 30
@@ -21,14 +14,9 @@ var TopicListHandler = &Handler{
 	AccessLevel: AccessLeader,
 	Bounds:      util.Bounds(util.BoundExact(0)),
 	Handler: BasicHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client) error {
-		if !client.Leader {
-			return model.NewResponseWithError("TOPIC_LIST", ErrNotLeader).Respond(conn)
-		}
 		topics := make([]interface{}, len(game.Topics))
-		i := 0
-		for _, topic := range game.Topics {
+		for i, topic := range game.Topics {
 			topics[i] = topic.Description
-			i += 1
 		}
 		return model.NewResponse("TOPIC_LIST", topics...).Respond(conn)
 	}),
@@ -38,17 +26,18 @@ var TopicAddHandler = &Handler{
 	AccessLevel: AccessLeader,
 	Bounds:      util.Bounds(util.BoundMin(1)),
 	Handler: MessagedHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client, message []string) error {
-		if !client.Leader {
-			return model.NewResponseWithError("TOPIC_ADD", ErrNotLeader).Respond(conn)
+		// check if game already started
+		if game.Started {
+			return gerrors.ErrGameStarted
 		}
 		if len(game.Topics) >= MaxTopics {
-			return model.NewResponseWithError("TOPIC_ADD", ErrTooManyTopics).Respond(conn)
+			return gerrors.ErrTooManyTopics
 		}
-		topic := strings.Join(message, " ")
-		if _, ok := game.Topics[topic]; ok {
-			return model.NewResponseWithError("TOPIC_ADD", ErrTopicAlreadyExists).Respond(conn)
+		topic := strings.TrimSpace(strings.Join(message, " "))
+		if game.Topics.Exists(topic) {
+			return gerrors.ErrTopicAlreadyExists
 		}
-		game.Topics[topic] = model.NewTopic(topic)
+		game.Topics.Add(topic)
 		return model.NewResponse("TOPIC_ADD").Respond(conn)
 	}),
 }
@@ -57,14 +46,15 @@ var TopicRemoveHandler = &Handler{
 	AccessLevel: AccessLeader,
 	Bounds:      util.Bounds(util.BoundMin(1)),
 	Handler: MessagedHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client, message []string) error {
-		if !client.Leader {
-			return model.NewResponseWithError("TOPIC_REMOVE", ErrNotLeader).Respond(conn)
+		// check if game already started
+		if game.Started {
+			return gerrors.ErrGameStarted
 		}
-		topic := strings.Join(message, " ")
-		if _, ok := game.Topics[topic]; !ok {
-			return model.NewResponseWithError("TOPIC_REMOVE", ErrTopicNotFound).Respond(conn)
+		topic := strings.TrimSpace(strings.Join(message, " "))
+		if !game.Topics.Exists(topic) {
+			return gerrors.ErrTopicNotFound
 		}
-		delete(game.Topics, topic)
+		game.Topics.Delete(topic)
 		return model.NewResponse("TOPIC_REMOVE").Respond(conn)
 	}),
 }

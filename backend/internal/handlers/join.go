@@ -1,18 +1,12 @@
 package handlers
 
 import (
-	"errors"
+	"github.com/Qwiri/GYF/backend/pkg/gerrors"
 	"github.com/Qwiri/GYF/backend/pkg/model"
 	"github.com/Qwiri/GYF/backend/pkg/util"
 	"github.com/apex/log"
 	"github.com/gofiber/websocket/v2"
 	"strings"
-)
-
-var (
-	ErrNameInvalid   = errors.New("name invalid")
-	ErrNameExists    = errors.New("name already exists")
-	ErrAlreadyJoined = errors.New("already joined")
 )
 
 var JoinHandler = &Handler{
@@ -22,19 +16,19 @@ var JoinHandler = &Handler{
 		username := strings.TrimSpace(message[0])
 		// check if username is allowed
 		if !util.IsNameValid(username) {
-			return ErrNameInvalid
+			return gerrors.ErrNameInvalid
 		}
 		// check if there is already a client with the same name?
 		for _, c := range game.Clients {
 			if strings.EqualFold(c.Name, username) {
-				return ErrNameExists
+				return gerrors.ErrNameExists
 			}
 		}
 		// client already joined?
 		if client != nil {
 			if client.Name != "" {
 				// client has already a name
-				return ErrAlreadyJoined
+				return gerrors.ErrAlreadyJoined
 			}
 			client.Name = username
 		} else {

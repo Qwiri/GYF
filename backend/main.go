@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	recov "github.com/gofiber/fiber/v2/middleware/recover"
 	"os"
 	"os/signal"
 	"strings"
@@ -38,6 +39,8 @@ func init() {
 
 func main() {
 	svr := server.NewServer(DevMode)
+	_ = svr.RouteCreateGame(nil) // TODO: remove dummy game
+
 	app := fiber.New(fiber.Config{
 		IdleTimeout: 5 * time.Second,
 	})
@@ -48,6 +51,8 @@ func main() {
 
 	// log requests
 	app.Use(logger.New())
+
+	app.Use(recov.New())
 
 	// limit requests
 	// only 10 per Minute
