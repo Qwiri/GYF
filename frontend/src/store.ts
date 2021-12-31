@@ -4,6 +4,7 @@ import type { ChatMessage, Player, Round } from "./types";
 export const username: Writable<string> = writable('');
 
 export const players: Writable<{[name: string]: Player}> = writable({});
+export const waitingFor: Writable<Array<string>> = writable([])
 
 export const chatMessages: Writable<Array<ChatMessage>> = writable([]);
 

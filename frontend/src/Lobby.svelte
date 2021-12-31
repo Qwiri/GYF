@@ -19,6 +19,7 @@
         topics,
         username,
         ws,
+        waitingFor,
     } from "./store";
 
     import { Response, Player, isLeader, pushWarn } from "./types";
@@ -99,12 +100,9 @@
 
                 CHANGE_ROLE: (res: Response) => handleChangeRole(res),
 
-                NEXT_ROUND: (res: Response) =>
-                    round.set({
-                        topic: res.args[0],
-                        currentRound: res.args[1],
-                        totalRounds: res.args[2],
-                    }),
+                NEXT_ROUND: (res: Response) => handleNextRound(res),
+
+                SUBMIT_GIF: (res: Response) => handleSubmitGif(res),
             };
 
             if (commands[response.cmd]) {
@@ -115,6 +113,24 @@
             }
         };
     });
+
+    const handleNextRound = (res: Response) => {
+        round.set({
+            topic: res.args[0],
+            currentRound: res.args[1],
+            totalRounds: res.args[2],
+        })
+        $waitingFor = Object.keys($players);
+    }
+
+    const handleSubmitGif = (res: Response) => {
+        if (!res._s) {
+            pushWarn(res.warn);
+            return;
+        }
+        toast.push(`${res.args[0]} submitted a gif`);
+        $waitingFor = res.args.slice(1);
+    }
 
     const handleChangeRole = (res: Response) => {
         if (res.args[0] === $username) {
