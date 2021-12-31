@@ -24,12 +24,22 @@
     import { Response, Player, isLeader } from "./types";
     import Lobby from "./screens/Lobby.svelte";
 
+
     export let id;
 
     onMount(async () => {
         // connect to the websocket
         ws.set(new WebSocket(`ws://127.0.0.1:8080/game/socket/${id}`));
         console.log(ws);
+
+        $ws.onopen = () => {
+            // TODO: refactor this
+            const query: URLSearchParams = new URLSearchParams(document.location.search);
+            if (query.has("name")) {
+                $username = query.get("name");
+                $ws.send(`JOIN ${$username}`); // auto join
+            }
+        };
 
         // brutally attack server message handler
         $ws.onmessage = (msg) => {
