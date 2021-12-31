@@ -34,6 +34,7 @@ var Handlers = map[string]*Handler{
 	"SUBMIT_GIF":   SubmitGIFHandler,
 	"VOTE":         VoteCastHandler,
 	"NEXT_ROUND":   NextRoundHandler,
+	"STATS":        StatsHandler,
 }
 
 type BasicHandler func(*websocket.Conn, *model.Game, *model.Client) error

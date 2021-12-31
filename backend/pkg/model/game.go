@@ -196,3 +196,14 @@ func (g *Game) ForceShowVoteResults() (err error) {
 	g.Broadcast(NewResponse("VOTE_RESULTS", results...))
 	return
 }
+
+func (g *Game) GetStats(user string) (res int) {
+	for _, topic := range g.Topics {
+		for _, sub := range topic.Submissions {
+			if sub.Creator.Name == user {
+				res += len(sub.Voters)
+			}
+		}
+	}
+	return
+}
