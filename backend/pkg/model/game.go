@@ -111,8 +111,8 @@ func (g *Game) NextRound() (err error) {
 		if err == gerrors.ErrNoTopicsLeft {
 			// TODO: End Game
 		} else {
-			return
 		}
+		return
 	}
 	topic.Played = true
 	g.Broadcast(NewResponse("NEXT_ROUND", topic.Description, g.Topics.PlayedCount(), len(g.Topics)))

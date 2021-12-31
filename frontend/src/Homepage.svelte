@@ -6,12 +6,9 @@
 
     let connectToGame = (id) => {
         navigate(`/game/${id}`, {replace: false, });
-        
-
     }
 
     let createGame = async () => {
-
         let url = "http://127.0.0.1:8080/game/create"
 
         // create a new game room
@@ -25,7 +22,6 @@
 
         // connect to the game room
         connectToGame(body.ID);
-
     }
 </script>
 
