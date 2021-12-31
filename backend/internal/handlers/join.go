@@ -12,6 +12,7 @@ import (
 var JoinHandler = &Handler{
 	AccessLevel: AccessGuest,
 	Bounds:      util.Bounds(util.BoundExact(1)),
+	StateLevel:  model.StateLobby,
 	Handler: MessagedHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client, message []string) error {
 		username := strings.TrimSpace(message[0])
 		// check if username is allowed

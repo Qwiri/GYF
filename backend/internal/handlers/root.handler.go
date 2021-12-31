@@ -15,10 +15,10 @@ var SpacesRegEx = regexp.MustCompile(`\s+`)
 
 type Handler struct {
 	AccessLevel Access
+	Bounds      util.Boundaries
+	StateLevel  model.GameState
 	Handler     interface{}
 	DevOnly     bool
-	Bounds      util.Boundaries
-	GameStarted *bool
 }
 
 var Handlers = map[string]*Handler{
@@ -32,6 +32,8 @@ var Handlers = map[string]*Handler{
 	"START":        StartHandler,
 	"SKIP":         SkipHandler,
 	"SUBMIT_GIF":   SubmitGIFHandler,
+	"VOTE":         VoteCastHandler,
+	"NEXT_ROUND":   NextRoundHandler,
 }
 
 type BasicHandler func(*websocket.Conn, *model.Game, *model.Client) error
@@ -83,13 +85,8 @@ func OnClientMessage(conn *websocket.Conn, game *model.Game, msg string, devMode
 	}
 
 	// check game start
-	if handler.GameStarted != nil {
-		if game.Started != *handler.GameStarted {
-			if *handler.GameStarted {
-				return gerrors.ErrGameNotStarted
-			}
-			return gerrors.ErrGameStarted
-		}
+	if !handler.StateLevel.Allowed(game) {
+		return gerrors.ErrGameStateAccess
 	}
 
 	var err error

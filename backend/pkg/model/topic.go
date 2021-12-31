@@ -9,7 +9,6 @@ type Topic struct {
 	Description string                 `json:"description,omitempty"`
 	Submissions map[string]*Submission `json:"submissions,omitempty"`
 	Played      bool                   `json:"played"`
-	CanSubmit   bool                   `json:"canSubmit"`
 }
 
 func NewTopic(description string) *Topic {
@@ -62,7 +61,7 @@ func (T Topics) PlayedCount() (count int) {
 	return
 }
 
-func (t *Topic) Waiting(game *Game) []interface{} {
+func (t *Topic) WaitingForSubmission(game *Game) []interface{} {
 	var waiting = make([]interface{}, 0)
 	for _, c := range game.Clients {
 		if _, ok := t.Submissions[c.Name]; !ok {
@@ -70,4 +69,60 @@ func (t *Topic) Waiting(game *Game) []interface{} {
 		}
 	}
 	return waiting
+}
+
+func (t *Topic) HasVoted(client *Client) bool {
+	for _, sub := range t.Submissions {
+		for _, vot := range sub.Voters {
+			if vot == client {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (t *Topic) WaitingForVote(game *Game) []interface{} {
+	var voted []*Client
+	for _, sub := range t.Submissions {
+		if len(sub.Voters) > 0 {
+			voted = append(voted, sub.Voters...)
+		}
+	}
+
+	var waiting []interface{}
+
+c:
+	for _, c := range game.Clients {
+		// check if the client can even vote
+		var urls []interface{}
+		for _, sub := range t.Submissions {
+			// skip created submission
+			if sub.Creator == c {
+				continue
+			}
+			urls = append(urls, sub.URL)
+		}
+		if len(urls) == 0 {
+			continue
+		}
+
+		for _, v := range voted {
+			if v == c {
+				continue c
+			}
+		}
+		waiting = append(waiting, c.Name)
+	}
+
+	return waiting
+}
+
+func (t *Topic) FindSubmission(url string) *Submission {
+	for _, sub := range t.Submissions {
+		if strings.EqualFold(url, sub.URL) {
+			return sub
+		}
+	}
+	return nil
 }

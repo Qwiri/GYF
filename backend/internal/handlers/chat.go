@@ -11,6 +11,7 @@ import (
 var ChatHandler = &Handler{
 	AccessLevel: AccessJoined,
 	Bounds:      util.Bounds(util.BoundMin(1)),
+	StateLevel:  model.StateAny,
 	Handler: MessagedHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client, message []string) error {
 		msg := strings.TrimSpace(strings.Join(message, " "))
 		if msg == "" {

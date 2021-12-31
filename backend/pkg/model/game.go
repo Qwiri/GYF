@@ -2,16 +2,35 @@ package model
 
 import (
 	"github.com/Qwiri/GYF/backend/pkg/gerrors"
+	"github.com/apex/log"
 	"github.com/gofiber/websocket/v2"
 	"time"
 )
+
+type GameState int
+
+const (
+	StateLobby GameState = 1 << iota
+	StateSubmitGIF
+	StateCastVotes
+	StateShowVotes
+)
+
+const (
+	StateAny    = StateLobby | StateSubmitGIF | StateCastVotes | StateShowVotes
+	StateInGame = StateSubmitGIF | StateCastVotes | StateShowVotes
+)
+
+func (g GameState) Allowed(game *Game) bool {
+	return game.State&g == game.State
+}
 
 type Game struct {
 	ID              string
 	Clients         map[string]*Client
 	Topics          Topics
-	Started         bool
 	CurrentTopic    *Topic
+	State           GameState
 	LastInteraction time.Time
 }
 
@@ -19,8 +38,8 @@ func NewGame(id string) (game *Game) {
 	game = &Game{
 		ID:              id,
 		Clients:         make(map[string]*Client),
-		Started:         false,
 		CurrentTopic:    nil,
+		State:           StateLobby,
 		LastInteraction: time.Now(),
 	}
 	// TODO: remove dummy topics
@@ -94,29 +113,86 @@ func (g *Game) LeaveClient(client *Client, reason string) {
 	}
 }
 
-func (g *Game) EndGame() {
+func (g *Game) ForceEndGame(reason string) (err error) {
 	// reset topic plays
 	for _, t := range g.Topics {
 		t.Played = false
 		t.Submissions = make(map[string]*Submission)
 	}
-	g.Started = false
-	g.Broadcast(NewResponse("GAME_END", "TOPIC_END"))
+	g.State = StateLobby
+	g.Broadcast(NewResponse("GAME_END", reason))
+	return
 }
 
-func (g *Game) NextRound() (err error) {
+func (g *Game) ForceNextRound() (err error) {
 	// get next topic
 	var topic *Topic
 	if topic, err = g.Topics.Next(); err != nil {
 		if err == gerrors.ErrNoTopicsLeft {
-			// TODO: End Game
+			err = g.ForceEndGame("NO_TOPIC_LEFT")
 		} else {
+			log.WithError(err).Warn("cannot get next round")
 		}
 		return
 	}
 	topic.Played = true
-	topic.CanSubmit = true
+
+	g.State = StateSubmitGIF
 	g.CurrentTopic = topic
 	g.Broadcast(NewResponse("NEXT_ROUND", topic.Description, g.Topics.PlayedCount(), len(g.Topics)))
 	return nil
+}
+
+func (g *Game) ForceStartVote() (err error) {
+	if g.CurrentTopic == nil {
+		return gerrors.ErrTopicNotFound
+	}
+
+	// do not allow more votes
+	g.State = StateCastVotes
+
+	for _, client := range g.Clients {
+		// build list of URLs for client
+		var urls []interface{}
+		for _, sub := range g.CurrentTopic.Submissions {
+			// skip created submission
+			if sub.Creator == client {
+				continue
+			}
+			urls = append(urls, sub.URL)
+		}
+		if err = NewResponse("VOTE_START", urls...).Respond(client.Connection); err != nil {
+			log.Warnf("cannot send vote to %s: %v", client.Name, err)
+		}
+	}
+
+	return nil
+}
+
+func (g *Game) ForceShowVoteResults() (err error) {
+	if g.CurrentTopic == nil {
+		return gerrors.ErrTopicNotFound
+	}
+
+	g.State = StateShowVotes
+
+	type voteResult struct {
+		URL     string   `json:"url"`
+		Creator string   `json:"creator"`
+		Voters  []string `json:"voters"`
+	}
+	var results []interface{}
+	for _, sub := range g.CurrentTopic.Submissions {
+		var voters = make([]string, len(sub.Voters))
+		for i, voter := range sub.Voters {
+			voters[i] = voter.Name
+		}
+		results = append(results, voteResult{
+			URL:     sub.URL,
+			Creator: sub.Creator.Name,
+			Voters:  voters,
+		})
+	}
+	g.Broadcast(NewResponse("VOTE_RESULTS", results...))
+	return
 }

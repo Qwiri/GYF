@@ -4,9 +4,10 @@ import "errors"
 
 var (
 	// Game Errors
-	ErrGameNotFound   = errors.New("game not found")
-	ErrGameStarted    = errors.New("game already started")
-	ErrGameNotStarted = errors.New("game not started")
+	ErrGameNotFound    = errors.New("game not found")
+	ErrGameStarted     = errors.New("game already started")
+	ErrGameStateAccess = errors.New("no access in that state")
+	ErrUnknownState    = errors.New("unknown state")
 
 	// Handler Errors
 	ErrMessageTooShort = errors.New("message too short")
@@ -28,7 +29,6 @@ var (
 	ErrTopicNotFound      = errors.New("topic not found")
 	ErrTopicAlreadyExists = errors.New("topic already exists")
 	ErrNoTopicsLeft       = errors.New("no topics left")
-	ErrCannotSubmit       = errors.New("cannot submit")
 
 	// Requirements
 	ErrTooFewPlayers = errors.New("too few players")
@@ -37,4 +37,9 @@ var (
 	// Submissions
 	ErrGIFTaken      = errors.New("another player took that gif already")
 	ErrGIFNotAllowed = errors.New("url not allowed")
+
+	// Voting
+	ErrSubmissionNotFound = errors.New("submission not found")
+	ErrAlreadyVoted       = errors.New("already voted")
+	ErrVoteSelf           = errors.New("cannot vote self")
 )

@@ -9,6 +9,7 @@ import (
 var ListHandler = &Handler{
 	AccessLevel: AccessJoined,
 	Bounds:      util.Bounds(util.BoundExact(0)),
+	StateLevel:  model.StateAny,
 	Handler: BasicHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client) error {
 		type listObj struct {
 			Name   string `json:"name"`

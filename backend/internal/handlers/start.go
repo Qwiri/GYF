@@ -15,7 +15,7 @@ const (
 var StartHandler = &Handler{
 	AccessLevel: AccessLeader,
 	Bounds:      util.Bounds(util.BoundExact(0)),
-	GameStarted: util.Bool(false),
+	StateLevel:  model.StateLobby,
 	Handler: BasicHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client) error {
 		// check if we have enough topics
 		if len(game.Topics) < MinTopic {
@@ -25,18 +25,34 @@ var StartHandler = &Handler{
 		if len(game.Clients) < MinPlayers {
 			return gerrors.ErrTooFewPlayers
 		}
-		game.Started = true
 		// start next round
-		return game.NextRound()
+		return game.ForceNextRound()
 	}),
 }
 
 var SkipHandler = &Handler{
 	AccessLevel: AccessLeader,
 	Bounds:      util.Bounds(util.BoundExact(0)),
-	GameStarted: util.Bool(true),
+	StateLevel:  model.StateInGame,
 	DevOnly:     true,
 	Handler: BasicHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client) error {
-		return game.NextRound()
+		switch game.State {
+		case model.StateSubmitGIF:
+			return game.ForceStartVote()
+		case model.StateCastVotes:
+			return game.ForceShowVoteResults()
+		case model.StateShowVotes:
+			return game.ForceNextRound()
+		}
+		return gerrors.ErrUnknownState
+	}),
+}
+
+var NextRoundHandler = &Handler{
+	AccessLevel: AccessLeader,
+	Bounds:      util.Bounds(util.BoundExact(0)),
+	StateLevel:  model.StateShowVotes,
+	Handler: BasicHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client) error {
+		return game.ForceNextRound()
 	}),
 }

@@ -11,18 +11,12 @@ import (
 var SubmitGIFHandler = &Handler{
 	AccessLevel: AccessJoined,
 	Bounds:      util.Bounds(util.BoundExact(1)),
-	GameStarted: util.Bool(true),
+	StateLevel:  model.StateSubmitGIF,
 	Handler: MessagedHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client, message []string) error {
-		// TODO: set CurrentTopic.CanSubmit to false on vote
 		if game.CurrentTopic == nil {
 			return gerrors.ErrTopicNotFound
 		}
 		topic := game.CurrentTopic
-
-		// check if we can submit new gifs
-		if !topic.CanSubmit {
-			return gerrors.ErrCannotSubmit
-		}
 
 		url := message[0]
 		urlHash, err := util.URLHash(url)
@@ -42,7 +36,7 @@ var SubmitGIFHandler = &Handler{
 			}
 		}
 
-		// check if GIF is allowed
+		// check if GIF provider is allowed
 		allowed, err := util.IsAllowed(url)
 		if err != nil {
 			return err
@@ -58,10 +52,9 @@ var SubmitGIFHandler = &Handler{
 		}
 
 		// return a list with players we're waiting for
-		waiting := append([]interface{}{client.Name}, topic.Waiting(game)...)
+		waiting := append([]interface{}{client.Name}, topic.WaitingForSubmission(game)...)
 		if len(waiting) <= 1 {
-			// TODO: if all voted, auto continue
-			topic.CanSubmit = false
+			return game.ForceStartVote()
 		}
 
 		game.Broadcast(model.NewResponse("SUBMIT_GIF", waiting...))
