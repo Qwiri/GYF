@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
 	import {navigate, useFocus} from "svelte-navigator";
+    import { toast } from '@zerodevx/svelte-toast';
 
     // to set the focus when this route get's opened
     const registerFocus = useFocus();
@@ -46,6 +47,9 @@
         const args = msg.args
         console.log(msg)
         console.log({cmd, args})
+
+        // if errors occurred
+        if (evalMessage(msg)) { return;}
 
         switch (cmd) {
             case "ERROR":
@@ -152,6 +156,39 @@
     }
 
     const startGame = () => {
+    }
+
+    // middleware that evaluates websocket messages for errors
+    const evalMessage = (msg) => {
+
+        if (!msg._s) {
+
+            if (msg.warn != "") {
+                toast.push(msg.warn, {
+                    theme: {
+                        '--toastBackground': '#F56565',
+                        '--toastBarBackground': '#C53030'
+                    }
+                })
+                console.log("AN ERROR OCCURRED");
+                console.log(msg.warn);
+                console.log("Full log:", msg)
+
+            } else {
+                toast.push(`An error occurred but there was no warning message given\n Full log: '${msg.data}`, {
+                    theme: {
+                        '--toastBackground': '#F56565',
+                        '--toastBarBackground': '#C53030'
+                    }
+                })
+                console.log("AN ERROR OCCURRED");
+                console.log("Full log:", msg)
+
+            }
+            return true;
+
+        }
+        return false;
     }
 
 

@@ -2,6 +2,7 @@
 	import Homepage from "./Homepage.svelte";
 	import Lobby from "./Lobby.svelte";
 	import {Router, Route, Link} from "svelte-navigator";
+	import { SvelteToast } from "@zerodevx/svelte-toast";
 
 
 	export let name;
@@ -9,6 +10,7 @@
 </script>
 
 <main>
+	<SvelteToast />
 	<h1>{name}!</h1>
 	<!-- <Homepage /> -->
 	<Router url={url}>
