@@ -67,6 +67,8 @@
                     // update connected
                     if (res.args[0] === $username) {
                         $connected = true;
+                    } else {
+                        toast.push(`Player '${res.args[0]}' joined`);
                     }
                 },
 
