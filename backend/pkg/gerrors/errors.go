@@ -33,4 +33,8 @@ var (
 	// Requirements
 	ErrTooFewPlayers = errors.New("too few players")
 	ErrTooFewTopics  = errors.New("too few topics")
+
+	// Submissions
+	ErrGIFTaken      = errors.New("another player took that gif already")
+	ErrGIFNotAllowed = errors.New("url not allowed")
 )

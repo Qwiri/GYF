@@ -4,6 +4,7 @@ import (
 	"github.com/Qwiri/GYF/backend/pkg/gerrors"
 	"github.com/Qwiri/GYF/backend/pkg/model"
 	"github.com/Qwiri/GYF/backend/pkg/util"
+	"github.com/apex/log"
 	"github.com/gofiber/websocket/v2"
 )
 
@@ -24,22 +25,40 @@ var SubmitGIFHandler = &Handler{
 		}
 
 		url := message[0]
+		urlHash, err := util.URLHash(url)
+		log.Infof("URL: %s, Hash: %s", url, urlHash)
+		if err != nil {
+			return err
+		}
 
-		// TODO: validate URL
+		// check if GIF was already submitted
+		for _, s := range topic.Submissions {
+			subHash, err := util.URLHash(s.URL)
+			if err != nil {
+				return err
+			}
+			if subHash == urlHash {
+				return gerrors.ErrGIFTaken
+			}
+		}
+
+		// check if GIF is allowed
+		allowed, err := util.IsAllowed(url)
+		if err != nil {
+			return err
+		}
+		if !allowed {
+			return gerrors.ErrGIFNotAllowed
+		}
+
+		// save submission
 		topic.Submissions[client.Name] = &model.Submission{
 			Creator: client,
 			URL:     url,
 		}
 
 		// return a list with players we're waiting for
-		var waiting = make([]interface{}, 1)
-		waiting[0] = client.Name // first player is player that voted
-		for _, c := range game.Clients {
-			if _, ok := topic.Submissions[c.Name]; !ok {
-				waiting = append(waiting, c.Name)
-			}
-		}
-
+		waiting := append([]interface{}{client.Name}, topic.Waiting(game)...)
 		if len(waiting) <= 1 {
 			// TODO: if all voted, auto continue
 			topic.CanSubmit = false
