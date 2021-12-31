@@ -18,6 +18,7 @@ type Handler struct {
 	Handler     interface{}
 	DevOnly     bool
 	Bounds      util.Boundaries
+	GameStarted *bool
 }
 
 var Handlers = map[string]*Handler{
@@ -30,6 +31,7 @@ var Handlers = map[string]*Handler{
 	"TOPIC_REMOVE": TopicRemoveHandler,
 	"START":        StartHandler,
 	"SKIP":         SkipHandler,
+	"SUBMIT_GIF":   SubmitGIFHandler,
 }
 
 type BasicHandler func(*websocket.Conn, *model.Game, *model.Client) error
@@ -77,6 +79,16 @@ func OnClientMessage(conn *websocket.Conn, game *model.Game, msg string, devMode
 	if handler.Bounds != nil {
 		if !handler.Bounds.Applies(len(str[1:])) {
 			return gerrors.ErrArgLength
+		}
+	}
+
+	// check game start
+	if handler.GameStarted != nil {
+		if game.Started != *handler.GameStarted {
+			if *handler.GameStarted {
+				return gerrors.ErrGameNotStarted
+			}
+			return gerrors.ErrGameStarted
 		}
 	}
 

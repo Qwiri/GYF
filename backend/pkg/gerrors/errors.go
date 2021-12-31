@@ -28,6 +28,7 @@ var (
 	ErrTopicNotFound      = errors.New("topic not found")
 	ErrTopicAlreadyExists = errors.New("topic already exists")
 	ErrNoTopicsLeft       = errors.New("no topics left")
+	ErrCannotSubmit       = errors.New("cannot submit")
 
 	// Requirements
 	ErrTooFewPlayers = errors.New("too few players")

@@ -15,10 +15,8 @@ const (
 var StartHandler = &Handler{
 	AccessLevel: AccessLeader,
 	Bounds:      util.Bounds(util.BoundExact(0)),
+	GameStarted: util.Bool(false),
 	Handler: BasicHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client) error {
-		if game.Started {
-			return gerrors.ErrGameStarted
-		}
 		// check if we have enough topics
 		if len(game.Topics) < MinTopic {
 			return gerrors.ErrTooFewTopics
@@ -36,11 +34,9 @@ var StartHandler = &Handler{
 var SkipHandler = &Handler{
 	AccessLevel: AccessLeader,
 	Bounds:      util.Bounds(util.BoundExact(0)),
+	GameStarted: util.Bool(true),
 	DevOnly:     true,
 	Handler: BasicHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client) error {
-		if !game.Started {
-			return gerrors.ErrGameNotStarted
-		}
 		return game.NextRound()
 	}),
 }

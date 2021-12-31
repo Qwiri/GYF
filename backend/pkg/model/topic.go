@@ -9,6 +9,7 @@ type Topic struct {
 	Description string                 `json:"description,omitempty"`
 	Submissions map[string]*Submission `json:"submissions,omitempty"`
 	Played      bool                   `json:"played"`
+	CanSubmit   bool                   `json:"canSubmit"`
 }
 
 func NewTopic(description string) *Topic {

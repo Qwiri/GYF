@@ -115,6 +115,8 @@ func (g *Game) NextRound() (err error) {
 		return
 	}
 	topic.Played = true
+	topic.CanSubmit = true
+	g.CurrentTopic = topic
 	g.Broadcast(NewResponse("NEXT_ROUND", topic.Description, g.Topics.PlayedCount(), len(g.Topics)))
 	return nil
 }
