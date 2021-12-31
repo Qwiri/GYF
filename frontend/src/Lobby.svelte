@@ -8,6 +8,7 @@
     import DisplayTopic from "./screens/DisplayTopic.svelte";
     import EnterUsername from "./screens/EnterUsername.svelte";
     import Chat from "./assets/Chat.svelte";
+    import TopicEditor from "./assets/setup/TopicEditor.svelte";
 
     import {
         chatMessages,
@@ -149,6 +150,10 @@
     <Lobby />
     {#if $round.topic}
         <DisplayTopic />
+    {:else}
+        {#if $leader}
+            <TopicEditor />
+        {/if}
     {/if}
     <Chat />
 {/if}

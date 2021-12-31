@@ -1,6 +1,5 @@
 <script lang="ts">
     import Avatar from "../assets/Avatar.svelte";
-    import TopicEditor from "../assets/setup/TopicEditor.svelte";
     import { players, leader } from "../store";
     import type { Player } from "../types";
 
@@ -25,6 +24,3 @@
     {/each}
 </div>
 
-{#if $leader}
-    <TopicEditor />
-{/if}
