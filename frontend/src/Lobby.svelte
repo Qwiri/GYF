@@ -20,10 +20,14 @@
         username,
         ws,
         waitingFor,
+submissions,
     } from "./store";
+
+    let votingBuffer: boolean;
 
     import { Response, Player, isLeader, pushWarn } from "./types";
     import Lobby from "./screens/Lobby.svelte";
+    import Voting from "./screens/Voting.svelte";
 
     export let id;
 
@@ -103,6 +107,8 @@
                 NEXT_ROUND: (res: Response) => handleNextRound(res),
 
                 SUBMIT_GIF: (res: Response) => handleSubmitGif(res),
+
+                VOTE_START: (res: Response) => handleVote(res),
             };
 
             if (commands[response.cmd]) {
@@ -114,7 +120,14 @@
         };
     });
 
+    const handleVote = (res: Response) => {
+        votingBuffer=true;
+        $submissions = res.args;
+        console.log("switch to voting");
+    }
+
     const handleNextRound = (res: Response) => {
+        votingBuffer = false;
         round.set({
             topic: res.args[0],
             currentRound: res.args[1],
@@ -172,7 +185,10 @@
     <EnterUsername />
 {:else}
     <Lobby />
-    {#if $round.topic}
+    {#if votingBuffer}
+        <Voting />
+        
+    {:else if $round.topic}
         <DisplayTopic />
     {:else if $leader}
         <TopicEditor />
