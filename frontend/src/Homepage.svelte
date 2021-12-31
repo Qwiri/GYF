@@ -1,34 +1,35 @@
 <script lang="ts">
-	import {navigate, useFocus} from "svelte-navigator";
+    import { navigate, useFocus } from "svelte-navigator";
+    import { pushWarn } from "./types";
+
+    const query: URLSearchParams = new URLSearchParams(window.location.search);
+    if (query.has("warn")) {
+        pushWarn(query.get("warn"));
+        window.history.pushState({}, "", `${window.location.pathname}`); // remove warn from URL
+    }
 
     // to set the focus when this route get's opened
     const registerFocus = useFocus();
 
-    let connectToGame = (id) => {
-        navigate(`/game/${id}`, {replace: false, });
-    }
+    const connectToGame = (id: string) => {
+        navigate(`/game/${id}`, { replace: false });
+    };
 
-    let createGame = async () => {
-        let url = "http://127.0.0.1:8080/game/create"
+    const createGame = async () => {
+        const url: string = "http://127.0.0.1:8080/game/create";
 
         // create a new game room
-        const res = await fetch(url, { method: "GET" })
+        const res: Response = await fetch(url, { method: "GET" });
 
         // check if backend responded as expected
         if (!res.ok) {
-            throw new Error(`Request failed with status ${res.status}`)
+            throw new Error(`Request failed with status ${res.status}`);
         }
-        const body = await res.json()
+        const body = await res.json();
 
         // connect to the game room
         connectToGame(body.ID);
-    }
+    };
 </script>
 
-<style>
-    
-</style>
-
-<!-- <input use:registerFocus name="Username" placeholder="Username" bind:value="{username}" />
-<img alt="user avatar" width="100px" src="https://avatars.dicebear.com/api/miniavs/{username}.svg" /> -->
-<input use:registerFocus type="button" value="NEW GAME" on:click="{createGame}"/>
+<input use:registerFocus type="button" value="NEW GAME" on:click={createGame} />

@@ -28,13 +28,23 @@ export interface ChatMessage {
     message: string;
 }
 
+import { toast } from "@zerodevx/svelte-toast";
 import { players } from "./store";
 
-let localPlayers: {[name: string]: Player} = {};
+let localPlayers: { [name: string]: Player } = {};
 players.subscribe(n => {
     localPlayers = n;
 });
 
 export const isLeader = (name: string) => {
     return localPlayers[name]?.leader || false;
+};
+
+export const pushWarn = (message: string) => {
+    toast.push(message, {
+        theme: {
+            "--toastBackground": "#F56565",
+            "--toastBarBackground": "#C53030",
+        },
+    });
 };

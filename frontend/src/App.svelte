@@ -1,9 +1,9 @@
 <script lang="ts">
 	import Homepage from "./Homepage.svelte";
 	import Lobby from "./Lobby.svelte";
-	import {Router, Route, Link} from "svelte-navigator";
+	import { Router, Route } from "svelte-navigator";
 	import { SvelteToast } from "@zerodevx/svelte-toast";
-
+	import { username } from "./store";
 
 	export let name;
 	export let url = "";
@@ -11,19 +11,29 @@
 
 <main>
 	<SvelteToast />
-	<h1>{name}!</h1>
+
+	<div class="header">
+		<h1>
+			{name}!
+			<img src="https://i.gifer.com/2iFd.gif" height="64px" />
+		</h1>
+		{#if $username}
+			<h2>Welcome back <span>{$username}</span>!</h2>
+		{/if}
+	</div>
+
 	<!-- <Homepage /> -->
-	<Router url={url}>
+	<Router {url}>
 		<Route path="/">
 			<Homepage />
 		</Route>
 		<Route path="game/:id" let:params>
-			<Lobby id="{params.id}"/>
+			<Lobby id={params.id} />
 		</Route>
 	</Router>
 </main>
 
-<style>
+<style lang="scss">
 	main {
 		text-align: center;
 		padding: 1em;
@@ -31,16 +41,26 @@
 		margin: 0 auto;
 	}
 
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
-	}
-
 	@media (min-width: 640px) {
 		main {
 			max-width: none;
+		}
+	}
+
+	.header {
+		h1 {
+			color: greenyellow;
+			text-transform: uppercase;
+			font-size: 4em;
+			font-weight: 1000;
+		}
+
+		h2 {
+			color: grey;
+
+			span {
+				color: greenyellow;
+			}
 		}
 	}
 </style>

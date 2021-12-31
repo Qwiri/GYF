@@ -21,9 +21,8 @@
         ws,
     } from "./store";
 
-    import { Response, Player, isLeader } from "./types";
+    import { Response, Player, isLeader, pushWarn } from "./types";
     import Lobby from "./screens/Lobby.svelte";
-
 
     export let id;
 
@@ -34,7 +33,9 @@
 
         $ws.onopen = () => {
             // TODO: refactor this
-            const query: URLSearchParams = new URLSearchParams(document.location.search);
+            const query: URLSearchParams = new URLSearchParams(
+                document.location.search
+            );
             if (query.has("name")) {
                 $username = query.get("name");
                 $ws.send(`JOIN ${$username}`); // auto join
@@ -45,18 +46,19 @@
         $ws.onmessage = (msg) => {
             const response: Response = JSON.parse(msg.data);
 
-            // if errors occurred
-            if (handleErrors(response)) {
-                return;
-            }
-
             const commands: { [name: string]: (res: Response) => void } = {
-                ERROR: (res: Response) => {
-                    if (res.warn === "game not found") {
-                        navigate("/", { replace: true });
+                JOIN: (res: Response) => {
+                    if (res._s) {
                         return;
                     }
-                    // TODO: error handling logic
+                    switch (res.warn) {
+                        case "game already started":
+                        case "game not found":
+                            navigate("/?warn=" + res.warn, { replace: true });
+                            return;
+                        default:
+                            pushWarn(res.warn);
+                    }
                 },
 
                 PLAYER_JOINED: (res: Response) => {
@@ -74,7 +76,7 @@
                 },
 
                 LIST: (res: Response) => {
-                    let temp: {[name: string]: Player} = {};
+                    let temp: { [name: string]: Player } = {};
                     res.args.forEach((player: Player) => {
                         temp[player.name] = player;
                     });
@@ -105,6 +107,9 @@
 
             if (commands[response.cmd]) {
                 commands[response.cmd](response);
+            } else {
+                console.log("Unknown command", response);
+                handleErrors(response);
             }
         };
     });
@@ -126,29 +131,19 @@
     const handleErrors = (resp: Response) => {
         if (!resp._s) {
             if (resp.warn != "") {
-                toast.push(resp.warn, {
-                    theme: {
-                        "--toastBackground": "#F56565",
-                        "--toastBarBackground": "#C53030",
-                    },
-                });
                 console.log("AN ERROR OCCURRED");
                 console.log(resp.warn);
                 console.log("Full log:", resp);
+
+                pushWarn(resp.warn);
             } else {
-                toast.push(
-                    "An error occurred but there was no warning message given",
-                    {
-                        theme: {
-                            "--toastBackground": "#F56565",
-                            "--toastBarBackground": "#C53030",
-                        },
-                    }
-                );
                 console.log("AN ERROR OCCURRED");
                 console.log("Full log:", resp);
+
+                pushWarn(
+                    "An error occurred but there was no warning message given"
+                );
             }
-            return true;
         }
         return !resp._s;
     };
@@ -161,10 +156,8 @@
     <Lobby />
     {#if $round.topic}
         <DisplayTopic />
-    {:else}
-        {#if $leader}
-            <TopicEditor />
-        {/if}
+    {:else if $leader}
+        <TopicEditor />
     {/if}
     <Chat />
 {/if}
