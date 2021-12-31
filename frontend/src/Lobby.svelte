@@ -23,6 +23,8 @@
     let ws;
 
     let connected = false;
+    let displayTopic = "";
+    let currRounds, maxRounds;
     
     onMount(async () => {
 
@@ -84,8 +86,17 @@
             case "CHANGE_ROLE":
                 handleChangeRole(args);
                 break;
+
+            case "NEXT_ROUND":
+                handleNextRound(args);
+                break;
         }
         
+    }
+
+    const handleNextRound = (args) => {
+        [displayTopic, currRounds, maxRounds] = args;
+
     }
 
     const handleChangeRole = (args) => {
@@ -155,9 +166,6 @@
         ws.send(`TOPIC_LIST`);
     }
 
-    const startGame = () => {
-    }
-
     // middleware that evaluates websocket messages for errors
     const evalMessage = (msg) => {
 
@@ -198,12 +206,17 @@
     
 </style>
 
-<h1>Lobby!</h1>
-<h2>your id is {id}</h2>
 {#if !connected}
     <input use:registerFocus name="Username" placeholder="Username" bind:value="{username}" on:keypress="{e => {if (e.keyCode === 13) {connectWithUsername()}}}"/>
     <img alt="user avatar" width="100px" src="https://avatars.dicebear.com/api/miniavs/{username}.svg" />
     <input type="button" value="JOIN GAME" on:click="{connectWithUsername}"/>
+{:else if displayTopic}
+    <h2>{displayTopic}</h2>
+    <p style="color:greenyellow">{currRounds}/{maxRounds}</p>
+    {#if selfLeader}
+        <button on:click="{ws.send("SKIP")}">Skip round</button>
+    {/if}
+        
 {:else}
     <div id="playerBar">
         {#each Object.values(players) as player}
@@ -229,7 +242,7 @@
 
         <!-- start game button -->
         {#if Object.keys(players).length >= 3}
-            <button on:click="{startGame}">Start game!</button>
+            <button on:click="{ws.send(`START`)}">Start game!</button>
         {:else}
             <button>Need {3-Object.keys(players).length} more players!</button>
         {/if}
