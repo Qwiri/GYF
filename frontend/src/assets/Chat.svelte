@@ -2,7 +2,6 @@
 import { toast } from "@zerodevx/svelte-toast";
 
     import { chatMessages, ws } from "../store";
-    import { isLeader } from "../types";
     import Avatar from "./Avatar.svelte";
 
     let buffer: string = "";
@@ -25,7 +24,7 @@ import { toast } from "@zerodevx/svelte-toast";
     <ul>
         {#each $chatMessages as message}
             <li>
-                {#if isLeader(message.author)}
+                {#if message.leader}
                     <span class="role">👑</span>
                 {/if}
                 <Avatar user={message.author} width="32px" />

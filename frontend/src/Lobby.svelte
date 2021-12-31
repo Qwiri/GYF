@@ -21,7 +21,7 @@
         ws,
     } from "./store";
 
-    import type { Response, Player } from "./types";
+    import { Response, Player, isLeader } from "./types";
     import Lobby from "./screens/Lobby.svelte";
 
     export let id;
@@ -75,6 +75,7 @@
                     ($chatMessages = [
                         ...$chatMessages,
                         {
+                            leader: isLeader(res.args[0]),
                             author: res.args[0],
                             message: res.args[1],
                         },

@@ -8,7 +8,7 @@ export interface Response {
 
 export interface Player {
     name: string;
-    leader: Boolean;
+    leader: boolean;
 }
 
 export interface Command {
@@ -23,6 +23,7 @@ export interface Round {
 }
 
 export interface ChatMessage {
+    leader: boolean;
     author: string;
     message: string;
 }
