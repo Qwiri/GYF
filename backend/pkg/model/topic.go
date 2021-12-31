@@ -61,3 +61,13 @@ func (T Topics) PlayedCount() (count int) {
 	}
 	return
 }
+
+func (t *Topic) Waiting(game *Game) []interface{} {
+	var waiting = make([]interface{}, 0)
+	for _, c := range game.Clients {
+		if _, ok := t.Submissions[c.Name]; !ok {
+			waiting = append(waiting, c.Name)
+		}
+	}
+	return waiting
+}
