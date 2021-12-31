@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/Qwiri/GYF/backend/pkg/gerrors"
 	"github.com/gofiber/websocket/v2"
 	"time"
 )
@@ -8,21 +9,29 @@ import (
 type Game struct {
 	ID              string
 	Clients         map[string]*Client
-	Topics          map[string]*Topic
+	Topics          Topics
 	Started         bool
 	CurrentTopic    *Topic
 	LastInteraction time.Time
 }
 
-func NewGame(id string) *Game {
-	return &Game{
+func NewGame(id string) (game *Game) {
+	game = &Game{
 		ID:              id,
 		Clients:         make(map[string]*Client),
-		Topics:          make(map[string]*Topic),
 		Started:         false,
 		CurrentTopic:    nil,
 		LastInteraction: time.Now(),
 	}
+	// TODO: remove dummy topics
+	game.Topics = append(game.Topics,
+		NewTopic("I'm Driving Home For Christmas"),
+		NewTopic("This Christmas gift... Is not what I expected"),
+		NewTopic("Excuse my look, I just fed the reindeer"),
+		NewTopic("My reaction to a White Christmas"),
+		NewTopic("Seeing family on Christmas Eve"),
+		NewTopic("Hearing Last Christmas on the Radio"))
+	return
 }
 
 func (g *Game) Broadcast(response *Response) {
@@ -83,4 +92,29 @@ func (g *Game) LeaveClient(client *Client, reason string) {
 			}
 		}
 	}
+}
+
+func (g *Game) EndGame() {
+	// reset topic plays
+	for _, t := range g.Topics {
+		t.Played = false
+		t.Submissions = make(map[string]*Submission)
+	}
+	g.Started = false
+	g.Broadcast(NewResponse("GAME_END", "TOPIC_END"))
+}
+
+func (g *Game) NextRound() (err error) {
+	// get next topic
+	var topic *Topic
+	if topic, err = g.Topics.Next(); err != nil {
+		if err == gerrors.ErrNoTopicsLeft {
+			// TODO: End Game
+		} else {
+			return
+		}
+	}
+	topic.Played = true
+	g.Broadcast(NewResponse("NEXT_ROUND", topic.Description, g.Topics.PlayedCount(), len(g.Topics)))
+	return nil
 }
