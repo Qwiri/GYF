@@ -37,13 +37,17 @@ var JoinHandler = &Handler{
 			// add client to game map
 			game.Clients[client.Name] = client
 		}
+
+		log.Infof("[%s] %s joined", game.ID, client.Name)
+
 		// is this the first player? (leader)
 		if len(game.Clients) == 1 {
 			game.SetLeader(client)
 		}
 		// broadcast player join
-		game.Broadcast(model.NewResponse("PLAYER_JOINED", client.Name))
-		log.Infof("Client %s joined game %s", client.Name, game.ID)
-		return nil
+		game.Broadcast(model.PJoin(client, game))
+
+		// send preferences to player
+		return model.PPreferences(game.Preferences).Respond(conn)
 	}),
 }

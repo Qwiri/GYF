@@ -14,5 +14,5 @@ const (
 )
 
 func (g GameState) Allowed(game *Game) bool {
-	return game.State&g == game.State
+	return game.GetState()&g == game.GetState()
 }

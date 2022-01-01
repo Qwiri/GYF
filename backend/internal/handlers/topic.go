@@ -8,18 +8,12 @@ import (
 	"strings"
 )
 
-const MaxTopics = 30
-
 var TopicListHandler = &Handler{
 	AccessLevel: AccessLeader,
 	Bounds:      util.Bounds(util.BoundExact(0)),
 	StateLevel:  model.StateAny,
 	Handler: BasicHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client) error {
-		topics := make([]interface{}, len(game.Topics))
-		for i, topic := range game.Topics {
-			topics[i] = topic.Description
-		}
-		return model.NewResponse("TOPIC_LIST", topics...).Respond(conn)
+		return model.PTopicList(game).Respond(conn)
 	}),
 }
 
@@ -28,7 +22,7 @@ var TopicAddHandler = &Handler{
 	Bounds:      util.Bounds(util.BoundMin(1)),
 	StateLevel:  model.StateLobby,
 	Handler: MessagedHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client, message []string) error {
-		if len(game.Topics) >= MaxTopics {
+		if len(game.Topics) >= game.Preferences.MaxTopics {
 			return gerrors.ErrTooManyTopics
 		}
 		topic := strings.TrimSpace(strings.Join(message, " "))
@@ -36,7 +30,7 @@ var TopicAddHandler = &Handler{
 			return gerrors.ErrTopicAlreadyExists
 		}
 		game.Topics.Add(topic)
-		return model.NewResponse("TOPIC_ADD").Respond(conn)
+		return model.PTopicAdd(topic).Respond(conn)
 	}),
 }
 
@@ -50,6 +44,6 @@ var TopicRemoveHandler = &Handler{
 			return gerrors.ErrTopicNotFound
 		}
 		game.Topics.Delete(topic)
-		return model.NewResponse("TOPIC_REMOVE").Respond(conn)
+		return model.PTopicRemove(topic).Respond(conn)
 	}),
 }

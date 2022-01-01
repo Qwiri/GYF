@@ -11,7 +11,7 @@ type Game struct {
 	CurrentTopic    *Topic
 	state           GameState
 	LastInteraction time.Time
-	AutoSkip        bool
+	Preferences     *GamePreferences
 }
 
 func (g *Game) SetState(state GameState) {
@@ -24,13 +24,14 @@ func (g *Game) GetState() GameState {
 }
 
 func NewGame(id string) (game *Game) {
+	pref := DefaultPreferences
 	game = &Game{
 		ID:              id,
 		Clients:         make(ClientMap),
 		CurrentTopic:    nil,
 		state:           StateLobby,
 		LastInteraction: time.Now(),
-		AutoSkip:        true,
+		Preferences:     &pref,
 	}
 	// TODO: remove dummy topics
 	game.Topics = append(game.Topics,

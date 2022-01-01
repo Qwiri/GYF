@@ -17,7 +17,7 @@ var ChatHandler = &Handler{
 		if msg == "" {
 			return gerrors.ErrMessageEmpty
 		}
-		game.Broadcast(model.NewResponse("CHAT", client.Name, msg))
+		game.Broadcast(model.PChat(client, msg))
 		return nil
 	}),
 }

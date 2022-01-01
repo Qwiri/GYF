@@ -1,6 +1,9 @@
 package model
 
-import "strings"
+import (
+	"github.com/Qwiri/GYF/backend/pkg/util"
+	"strings"
+)
 
 type (
 	SubmissionArray []*Submission
@@ -38,6 +41,23 @@ func (M SubmissionMap) ByURL(url string) (*Submission, bool) {
 		}
 	}
 	return nil, false
+}
+
+func (M SubmissionMap) ByURLLoose(url string) (*Submission, bool, error) {
+	urlHash, err := util.URLHash(url)
+	if err != nil {
+		return nil, false, err
+	}
+	for _, s := range M {
+		subHash, err := util.URLHash(s.URL)
+		if err != nil {
+			return nil, false, err
+		}
+		if subHash == urlHash {
+			return s, true, nil
+		}
+	}
+	return nil, false, nil
 }
 
 func (M SubmissionMap) HasSubmittedGIF(client *Client) (ok bool) {

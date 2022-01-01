@@ -16,30 +16,20 @@ var SubmitGIFHandler = &Handler{
 			return gerrors.ErrTopicNotFound
 		}
 		topic := game.CurrentTopic
-
 		url := message[0]
-		urlHash, err := util.URLHash(url)
-		if err != nil {
-			return err
-		}
 
 		// check if GIF was already submitted
-		for _, s := range topic.Submissions {
-			subHash, err := util.URLHash(s.URL)
+		if _, found, err := topic.Submissions.ByURLLoose(url); found || err != nil {
 			if err != nil {
 				return err
 			}
-			if subHash == urlHash {
-				return gerrors.ErrGIFTaken
-			}
+			return gerrors.ErrGIFTaken
 		}
 
 		// check if GIF provider is allowed
-		allowed, err := util.IsAllowed(url)
-		if err != nil {
+		if allowed, err := util.IsAllowed(url); err != nil {
 			return err
-		}
-		if !allowed {
+		} else if !allowed {
 			return gerrors.ErrGIFNotAllowed
 		}
 
@@ -47,12 +37,10 @@ var SubmitGIFHandler = &Handler{
 		topic.Submissions[client.Name] = model.NewSubmission(client, url)
 
 		// return a list with players we're waiting for
-		waiting := append([]interface{}{client.Name}, util.WrapClientArray(game.WaitingForGIFSubmission(topic))...)
-		if len(waiting) <= 1 {
-			return game.ForceStartVote()
-		}
+		waiting := game.WaitingForGIFSubmission(topic).Names()
+		game.Broadcast(model.PSubmitGIF(client, waiting))
 
-		game.Broadcast(model.NewResponse("SUBMIT_GIF", waiting...))
-		return nil
+		// check game cycle
+		return game.CheckCycle(true, false)
 	}),
 }
