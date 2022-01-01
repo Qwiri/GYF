@@ -8,6 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/monitor"
 	recov "github.com/gofiber/fiber/v2/middleware/recover"
 	"os"
 	"os/signal"
@@ -31,6 +32,7 @@ var (
 
 func init() {
 	log.SetHandler(cli.Default)
+	log.SetLevel(log.DebugLevel)
 
 	if !strings.HasPrefix(os.Getenv("BUILD"), "prod") {
 		DevMode = true
@@ -45,29 +47,37 @@ func main() {
 		IdleTimeout: 5 * time.Second,
 	})
 
+	var corsConfig = cors.ConfigDefault
 	if DevMode {
-		app.Use(cors.New())
+		log.Info("Enabling monitor")
+		app.Use(monitor.New())
+	} else {
+		// limit requests to only 10 per Minute
+		app.Use(limiter.New(limiter.Config{
+			Max:        10,
+			Expiration: time.Minute,
+			Next: func(c *fiber.Ctx) bool {
+				for _, a := range LimiterWhitelist {
+					if a == c.Path() {
+						return true
+					}
+				}
+				return false
+			},
+		}))
+
+		// allow specific origins only
+		corsConfig = cors.Config{
+			AllowOrigins: "https://prod.gyf.d2a.io, https://staging.gyf.d2a.io",
+		}
 	}
+
+	app.Use(cors.New(corsConfig))
 
 	// log requests
 	app.Use(logger.New())
 
 	app.Use(recov.New())
-
-	// limit requests
-	// only 10 per Minute
-	app.Use(limiter.New(limiter.Config{
-		Max:        10,
-		Expiration: time.Minute,
-		Next: func(c *fiber.Ctx) bool {
-			for _, a := range LimiterWhitelist {
-				if a == c.Path() {
-					return true
-				}
-			}
-			return false
-		},
-	}))
 
 	// create API routes
 	svr.CreateRoutes(app)

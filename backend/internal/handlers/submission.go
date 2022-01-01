@@ -4,7 +4,6 @@ import (
 	"github.com/Qwiri/GYF/backend/pkg/gerrors"
 	"github.com/Qwiri/GYF/backend/pkg/model"
 	"github.com/Qwiri/GYF/backend/pkg/util"
-	"github.com/apex/log"
 	"github.com/gofiber/websocket/v2"
 )
 
@@ -20,7 +19,6 @@ var SubmitGIFHandler = &Handler{
 
 		url := message[0]
 		urlHash, err := util.URLHash(url)
-		log.Infof("URL: %s, Hash: %s", url, urlHash)
 		if err != nil {
 			return err
 		}
@@ -46,13 +44,10 @@ var SubmitGIFHandler = &Handler{
 		}
 
 		// save submission
-		topic.Submissions[client.Name] = &model.Submission{
-			Creator: client,
-			URL:     url,
-		}
+		topic.Submissions[client.Name] = model.NewSubmission(client, url)
 
 		// return a list with players we're waiting for
-		waiting := append([]interface{}{client.Name}, topic.WaitingForSubmission(game)...)
+		waiting := append([]interface{}{client.Name}, util.WrapClientArray(game.WaitingForGIFSubmission(topic))...)
 		if len(waiting) <= 1 {
 			return game.ForceStartVote()
 		}

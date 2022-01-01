@@ -13,7 +13,7 @@ var StatsHandler = &Handler{
 	Handler: BasicHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client) error {
 		stats := make(map[string]int)
 		for _, c := range game.Clients {
-			stats[c.Name] = game.GetStats(c.Name)
+			stats[c.Name] = game.StatsForUser(c.Name)
 		}
 		return model.NewResponse("STATS", stats).Respond(conn)
 	}),
