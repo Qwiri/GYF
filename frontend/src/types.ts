@@ -1,3 +1,11 @@
+export enum GameState {
+    ChooseUsername,
+    Lobby,
+    SubmitGIF,
+    Vote,
+    VoteResults
+}
+
 export interface Response {
     cmd: string;
     args: Array<any>;

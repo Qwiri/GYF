@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Homepage from "./Homepage.svelte";
-	import Lobby from "./Lobby.svelte";
+	import Game from "./Game.svelte";
 	import { Router, Route } from "svelte-navigator";
 	import { SvelteToast } from "@zerodevx/svelte-toast";
 	import { username } from "./store";
@@ -15,7 +15,7 @@
 	<div class="header">
 		<h1>
 			{name}!
-			<img src="https://i.gifer.com/2iFd.gif" height="64px" />
+			<img src="https://i.gifer.com/2iFd.gif" height="64px" alt="cat" />
 		</h1>
 		{#if $username}
 			<h2>Welcome back <span>{$username}</span>!</h2>
@@ -28,7 +28,7 @@
 			<Homepage />
 		</Route>
 		<Route path="game/:id" let:params>
-			<Lobby id={params.id} />
+			<Game id={params.id} />
 		</Route>
 	</Router>
 </main>

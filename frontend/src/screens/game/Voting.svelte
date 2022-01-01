@@ -1,13 +1,9 @@
 <script>
-
-    import { ws, submissions } from "../store.ts";
-
-    console.log($submissions)
+    import { ws, submissions } from "../../store.ts";
 
     const submitVote = (e) => {
         $ws.send(`VOTE ${e.srcElement.dataset.url}`)
     }
-    
 </script>
 
 <div id="submissionsWrapper">
@@ -43,6 +39,4 @@
             width: min-content;
         }
     }
-    
 </style>
-

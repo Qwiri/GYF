@@ -2,7 +2,14 @@
     import { stats, username } from "../store";
     import Avatar from "./Avatar.svelte";
 
-    let ranks = {};
+    // the icon is displayed before the user's rank
+    const icons = {
+        1: "👑",
+    };
+
+    const ranks = {};
+
+    // make sure the same stat values result in the same rank instead of counting 1 up for every player
     $: if ($stats) {
         let prev = -1;
         let rank = 0;
@@ -17,58 +24,77 @@
     }
 </script>
 
-<div class="floating">
-    <div>
-        <ul>
-            {#each Object.entries($stats) as [user, count]}
-                <li>
-                    <span class="rank">{ranks[user] ?? "?"}.</span>
+<div>
+    <table>
+        {#each Object.entries($stats) as [user, count]}
+            <tr>
+                <!-- Icon -->
+                <td class="icon">
+                    {#if icons[ranks[user]]}
+                        {icons[ranks[user]]}
+                    {/if}
+                </td>
 
+                <!-- Rank -->
+                <td class="rank">
+                    {#if ranks[user]}
+                        {ranks[user]}.
+                    {/if}
+                </td>
+
+                <!-- Avatar + Name -->
+                <td class="user">
                     <!-- Disply Avatar -->
                     <Avatar {user} width="32px" />
-
                     <!-- Display Username -->
-                    {#if user === $username}
-                        <span class="self">{user}</span>:
-                    {:else}
-                        <span class="username">{user}</span>:
-                    {/if}
+                    <span class:self="{user === $username}">{user}</span>:
+                </td>
 
-                    <span class="count">{count}</span>
-                </li>
-            {/each}
-        </ul>
-    </div>
+                <!-- Vote Count -->
+                <td class="count">
+                    {count}
+                </td>
+            </tr>
+        {/each}
+    </table>
 </div>
 
 <style lang="scss">
-    .floating {
-        display: table;
-        float: left;
+    div {
+        display: table-cell;
+        vertical-align: middle;
+        width: 12%;
+        background-color: #131313;
+        border-radius: 10px;
+        text-align: left;
+        padding: 10px;
 
-        div {
-            display: table-cell;
-            vertical-align: middle;
-            width: 12%;
-            background-color: #131313;
-            border-radius: 10px;
-            text-align: left;
+        .self {
+            color: greenyellow;
+        }
+        .rank {
+            color: lightcoral;
+        }
 
-            ul {
-                list-style: none;
-                padding: 0;
-                margin: 0;
-            }
+        table {
+            border: none;
+        }
 
-            .username {
-                color: greenyellow;
-            }
-            .self {
-                color: coral;
-            }
+        td {
             .rank {
-                color: lightcoral;
+                text-align: right;
+            }
+            .icon {
+                text-align: right;
+            }
+            .user {
+                text-align: left;
+            }
+            .count {
+                text-align: left;
+                vertical-align: bottom;
             }
         }
+        
     }
 </style>

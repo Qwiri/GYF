@@ -1,5 +1,5 @@
 import { writable, Writable } from "svelte/store";
-import type { ChatMessage, Player, Round } from "./types";
+import type { ChatMessage, GameState, Player, Round } from "./types";
 
 export const username: Writable<string> = writable('');
 
@@ -12,7 +12,6 @@ export const chatMessages: Writable<Array<ChatMessage>> = writable([]);
 
 export const leader: Writable<Boolean> = writable(false);
 export const topics: Writable<Array<string>> = writable([]);
-export const connected: Writable<Boolean> = writable(false);
 
 export const round: Writable<Round> = writable({
     topic: '',
@@ -21,3 +20,5 @@ export const round: Writable<Round> = writable({
 });
 
 export const ws: Writable<WebSocket> = writable();
+
+export const state: Writable<GameState> = writable(0);

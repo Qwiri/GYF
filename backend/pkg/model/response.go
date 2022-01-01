@@ -64,6 +64,11 @@ func (r *Response) Respond(conn *websocket.Conn) (err error) {
 	if conn == nil {
 		return ErrConnectionNil
 	}
+	defer func() {
+		if err := recover(); err != nil {
+			log.Warnf("rcovered in Respond: %v", err)
+		}
+	}()
 	if err = conn.WriteMessage(websocket.TextMessage, r.Marshal()); err != nil {
 		log.WithError(err).Warnf("[ws] cannot send %s to client", r.String())
 	}

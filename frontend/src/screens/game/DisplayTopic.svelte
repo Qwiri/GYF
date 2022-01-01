@@ -1,6 +1,6 @@
 <script lang="ts">
     import { toast } from "@zerodevx/svelte-toast";
-    import { leader, round, ws } from "../store";
+    import { leader, round, ws } from "../../store";
 
     const sendSkip = (_) => {
         $ws.send("SKIP");
