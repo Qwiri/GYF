@@ -8,22 +8,24 @@ import (
 // SetLeader sets the client as the sole leader and sends a
 // CHANGE_ROLE message to all players with the old and the new leader.
 func (g *Game) SetLeader(client *Client) {
-	// reset current leader
+	// remove old leader(s)
 	for _, c := range g.Clients {
 		if c.Leader {
 			c.Leader = false
-			g.Broadcast(NewResponse("CHANGE_ROLE", client.Name, "PLAYER"))
+			g.Broadcast(PChangeRole(c, "PLAYER"))
+			log.Infof("[%s] %s is no longer a leader", g.ID, client.Name)
 		}
 	}
 	client.Leader = true
-	g.Broadcast(NewResponse("CHANGE_ROLE", client.Name, "LEADER"))
+	g.Broadcast(PChangeRole(client, "LEADER"))
+	log.Infof("[%s] %s is now a leader", g.ID, client.Name)
 }
 
 // LeaveClient removes a client from the game and sends a PLAYER_LEAVE message to all other players
 func (g *Game) LeaveClient(client *Client, reason string) {
 	// remove client from game
 	g.Clients.Delete(client)
-	g.Broadcast(NewResponse("PLAYER_LEAVE", client.Name, reason))
+	g.Broadcast(PPlayerLeave(client, reason))
 
 	// if game is now empty, reset game
 	if g.IsEmpty() {
@@ -46,12 +48,12 @@ func (g *Game) LeaveClient(client *Client, reason string) {
 	}
 
 	// check game cycle
-	_ = g.CheckCycle(true)
+	_ = g.CheckCycle(true, false)
 }
 
 // CheckCycle checks if we're waiting for clients and if not, continue the game
-func (g *Game) CheckCycle(checkAutoSkip bool) (err error) {
-	if checkAutoSkip && !g.AutoSkip {
+func (g *Game) CheckCycle(checkAutoSkip, force bool) (err error) {
+	if checkAutoSkip && !g.Preferences.AutoSkip {
 		return
 	}
 
@@ -61,6 +63,9 @@ func (g *Game) CheckCycle(checkAutoSkip bool) (err error) {
 	case StateShowVotes:
 		// no need to do anything in the show vote state
 		// since the leader should skip to the next round
+		if force {
+			err = g.ForceNextRound()
+		}
 
 	case StateSubmitGIF:
 		// check if we're currently waiting for another submission
@@ -68,7 +73,7 @@ func (g *Game) CheckCycle(checkAutoSkip bool) (err error) {
 			log.Warnf("[%s] Tried to check submission count, but current topic was nil", g.ID)
 			return
 		}
-		if len(g.WaitingForGIFSubmission(g.CurrentTopic)) == 0 {
+		if force || len(g.WaitingForGIFSubmission(g.CurrentTopic)) == 0 {
 			err = g.ForceShowVoteResults()
 		}
 
@@ -78,9 +83,10 @@ func (g *Game) CheckCycle(checkAutoSkip bool) (err error) {
 			log.Warnf("[%s] Tried to check voters count, but current topic was nil", g.ID)
 			return
 		}
-		if len(g.WaitingForVote(g.CurrentTopic)) == 0 {
+		if force || len(g.WaitingForVote(g.CurrentTopic)) == 0 {
 			err = g.ForceShowVoteResults()
 		}
+
 	}
 
 	return

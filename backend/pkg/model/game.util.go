@@ -26,8 +26,16 @@ func (A ClientArray) Contains(client *Client) bool {
 	return false
 }
 
+func (A ClientArray) Names() (res []string) {
+	res = make([]string, len(A))
+	for i, v := range A {
+		res[i] = v.Name
+	}
+	return
+}
+
 // WaitingForGIFSubmission returns all players we're currently waiting for
-func (g *Game) WaitingForGIFSubmission(topic *Topic) (res []*Client) {
+func (g *Game) WaitingForGIFSubmission(topic *Topic) (res ClientArray) {
 	for _, c := range g.Clients {
 		if _, ok := topic.Submissions[c.Name]; !ok {
 			res = append(res, c)

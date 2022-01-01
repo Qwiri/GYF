@@ -15,6 +15,6 @@ var StatsHandler = &Handler{
 		for _, c := range game.Clients {
 			stats[c.Name] = game.StatsForUser(c.Name)
 		}
-		return model.NewResponse("STATS", stats).Respond(conn)
+		return model.PStats(stats).Respond(conn)
 	}),
 }

@@ -19,13 +19,16 @@ var VoteCastHandler = &Handler{
 		u := message[0]
 
 		// check if already voted
-		if topic.HasVoted(client) {
+		if topic.Submissions.HasVoted(client) {
 			return gerrors.ErrAlreadyVoted
 		}
 
 		// get submission for URL
-		var submission *model.Submission
-		if submission = topic.FindSubmission(u); submission == nil {
+		var (
+			submission *model.Submission
+			found      bool
+		)
+		if submission, found = topic.Submissions.ByURL(u); !found {
 			return gerrors.ErrSubmissionNotFound
 		}
 
@@ -37,15 +40,10 @@ var VoteCastHandler = &Handler{
 		// add client as voter
 		submission.Voters = append(submission.Voters, client)
 
-		waiting := topic.WaitingForVote(game)
-		resp := append([]interface{}{client.Name}, waiting...)
-		game.Broadcast(model.NewResponse("VOTE", resp...))
+		// send response with waiting-for players
+		waiting := game.WaitingForVote(topic)
+		game.Broadcast(model.PVote(client, waiting.Names()))
 
-		// no vote left -> show results
-		if len(waiting) == 0 {
-			return game.ForceShowVoteResults()
-		}
-
-		return nil
+		return game.CheckCycle(true, false)
 	}),
 }

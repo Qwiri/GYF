@@ -36,15 +36,7 @@ var SkipHandler = &Handler{
 	StateLevel:  model.StateInGame,
 	DevOnly:     true,
 	Handler: BasicHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client) error {
-		switch game.State {
-		case model.StateSubmitGIF:
-			return game.ForceStartVote()
-		case model.StateCastVotes:
-			return game.ForceShowVoteResults()
-		case model.StateShowVotes:
-			return game.ForceNextRound()
-		}
-		return gerrors.ErrUnknownState
+		return game.CheckCycle(false, true)
 	}),
 }
 
