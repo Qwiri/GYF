@@ -1,8 +1,6 @@
 <script lang="ts">
-import { toast } from "@zerodevx/svelte-toast";
-import Avatar from "../assets/Avatar.svelte";
-
-    import { leader, round, ws, players, waitingFor } from "../store";
+    import { toast } from "@zerodevx/svelte-toast";
+    import { leader, round, ws } from "../store";
 
     const sendSkip = (_) => {
         $ws.send("SKIP");
@@ -26,16 +24,11 @@ import Avatar from "../assets/Avatar.svelte";
 
 <!-- Display Topic -->
 <h2>{$round.topic}</h2>
-<input type="text" placeholder="Enter a gif url" bind:value="{gifBuffer}"/>
-<button on:click="{sendGif}">Submit!</button>
+<input type="text" placeholder="Enter a gif url" bind:value={gifBuffer} />
+<button on:click={sendGif}>Submit!</button>
 {#if gifBuffer}
-    <img width="200px" src="{gifBuffer}" alt="submitted gif" />
+    <img width="200px" src={gifBuffer} alt="submitted gif" />
 {/if}
-<!-- Show waiting for -->
-<h3>Waiting for {$waitingFor.length} more people</h3>
-{#each $waitingFor as player}
-    <Avatar user="{player}" width="32px" />
-{/each}
 
 <!-- Skip Button for Leader -->
 {#if $leader}

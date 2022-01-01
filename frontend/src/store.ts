@@ -6,6 +6,7 @@ export const username: Writable<string> = writable('');
 export const players: Writable<{[name: string]: Player}> = writable({});
 export const waitingFor: Writable<Array<string>> = writable([]);
 export const submissions: Writable<Array<string>> = writable([]);
+export const stats: Writable<{[name: string]: number}> = writable({});
 
 export const chatMessages: Writable<Array<ChatMessage>> = writable([]);
 

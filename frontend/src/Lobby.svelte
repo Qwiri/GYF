@@ -20,7 +20,8 @@
         username,
         ws,
         waitingFor,
-submissions,
+        submissions,
+        stats,
     } from "./store";
 
     let votingBuffer: boolean;
@@ -28,6 +29,8 @@ submissions,
     import { Response, Player, isLeader, pushWarn } from "./types";
     import Lobby from "./screens/Lobby.svelte";
     import Voting from "./screens/Voting.svelte";
+    import Stats from "./assets/Stats.svelte";
+    import Avatar from "./assets/Avatar.svelte";
 
     export let id;
 
@@ -108,7 +111,31 @@ submissions,
 
                 SUBMIT_GIF: (res: Response) => handleSubmitGif(res),
 
-                VOTE_START: (res: Response) => handleVote(res),
+                VOTE_START: (res: Response) => handleVoteStart(res),
+
+                VOTE_RESULTS: (res: Response) => {
+                    $ws.send("STATS");
+                },
+
+                VOTE: (res: Response) => {
+                    const voter: string = res.args.shift();
+                    toast.push(`${voter} voted!`);
+                    $waitingFor = res.args;
+                },
+
+                STATS: (res: Response) => {
+                    if (!res._s) {
+                        return;
+                    }
+                    const sortable = [];
+                    for (const name in res.args[0]) {
+                        sortable.push([name, res.args[0][name]]);
+                    }
+                    sortable.sort((a, b) => b[1] - a[1]);
+                    const objSorted: { [name: string]: number } = {};
+                    sortable.forEach((item) => (objSorted[item[0]] = item[1]));
+                    $stats = objSorted;
+                },
             };
 
             if (commands[response.cmd]) {
@@ -120,21 +147,26 @@ submissions,
         };
     });
 
-    const handleVote = (res: Response) => {
-        votingBuffer=true;
+    const handleVoteStart = (res: Response) => {
+        votingBuffer = true;
         $submissions = res.args;
+
+        // waiting for all players
+        $waitingFor = Object.keys($players);
         console.log("switch to voting");
-    }
+    };
 
     const handleNextRound = (res: Response) => {
+        $ws.send("STATS");
+
         votingBuffer = false;
         round.set({
             topic: res.args[0],
             currentRound: res.args[1],
             totalRounds: res.args[2],
-        })
+        });
         $waitingFor = Object.keys($players);
-    }
+    };
 
     const handleSubmitGif = (res: Response) => {
         if (!res._s) {
@@ -143,7 +175,7 @@ submissions,
         }
         toast.push(`${res.args[0]} submitted a gif`);
         $waitingFor = res.args.slice(1);
-    }
+    };
 
     const handleChangeRole = (res: Response) => {
         if (res.args[0] === $username) {
@@ -187,11 +219,33 @@ submissions,
     <Lobby />
     {#if votingBuffer}
         <Voting />
-        
     {:else if $round.topic}
         <DisplayTopic />
     {:else if $leader}
         <TopicEditor />
     {/if}
+
+    {#if $waitingFor && $waitingFor.length > 0}
+        <hr />
+        <!-- Show waiting for -->
+        <h3>
+            Waiting for <span class="waiting">{$waitingFor.length}</span> more people
+        </h3>
+        {#each $waitingFor as player}
+            <Avatar user={player} width="32px" />
+        {/each}
+        <hr />
+    {/if}
+
     <Chat />
+
+    {#if $stats && Object.keys($stats).length > 0}
+        <Stats />
+    {/if}
 {/if}
+
+<style lang="scss">
+    .waiting {
+        color: greenyellow;
+    }
+</style>
