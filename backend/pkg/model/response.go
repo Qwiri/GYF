@@ -74,3 +74,8 @@ func (r *Response) Respond(conn *websocket.Conn) (err error) {
 	}
 	return
 }
+
+func (r *Response) RespondTo(client *Client) (err error) {
+	err = r.Respond(client.Connection)
+	return
+}

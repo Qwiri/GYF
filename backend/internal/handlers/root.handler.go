@@ -55,7 +55,7 @@ func OnClientMessage(conn *websocket.Conn, game *model.Game, msg string, devMode
 
 	// get client if the client already exists
 	// NOTICE: client CAN BE nil AT THIS MOMENT!
-	client := game.GetClient(conn)
+	client := game.ClientByConnection(conn)
 
 	// update client's last interaction for janitor grace
 	if client != nil {
