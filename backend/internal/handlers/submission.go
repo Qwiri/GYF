@@ -19,9 +19,12 @@ var SubmitGIFHandler = &Handler{
 		url := message[0]
 
 		// check if GIF was already submitted
-		if _, found, err := topic.Submissions.ByURLLoose(url); found || err != nil {
+		if sub, found, err := topic.Submissions.ByURLLoose(url); found || err != nil {
 			if err != nil {
 				return err
+			}
+			if sub.Creator == client {
+				return gerrors.ErrAlreadySubmitted
 			}
 			return gerrors.ErrGIFTaken
 		}

@@ -7,7 +7,6 @@ var (
 	ErrGameNotFound    = errors.New("game not found")
 	ErrGameStarted     = errors.New("game already started")
 	ErrGameStateAccess = errors.New("no access in that state")
-	ErrUnknownState    = errors.New("unknown state")
 
 	// Handler Errors
 	ErrMessageTooShort = errors.New("message too short")
@@ -35,8 +34,9 @@ var (
 	ErrTooFewTopics  = errors.New("too few topics")
 
 	// Submissions
-	ErrGIFTaken      = errors.New("another player took that gif already")
-	ErrGIFNotAllowed = errors.New("url not allowed")
+	ErrGIFTaken         = errors.New("another player took that gif already")
+	ErrGIFNotAllowed    = errors.New("url not allowed")
+	ErrAlreadySubmitted = errors.New("already submitted that GIF")
 
 	// Voting
 	ErrSubmissionNotFound = errors.New("submission not found")

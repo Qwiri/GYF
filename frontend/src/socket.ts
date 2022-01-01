@@ -10,30 +10,29 @@ let localPlayers: { [name: string]: Player };
 players.subscribe(n => localPlayers = n);
 
 const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any } = {
-    JOIN: (_, res: Response) => {
-        if (res._s) {
-            return;
+    JOIN: (ws: WebSocket, res: Response) => {
+        // errored responses only occurr as responses to the JOIN command
+        if (!res._s) {
+            switch (res.warn) {
+                case "game already started":
+                case "game not found":
+                    navigate("/?warn=" + res.warn, { replace: true });
+                    return;
+                default:
+                    pushWarn(res.warn);
+            }
         }
-        switch (res.warn) {
-            case "game already started":
-            case "game not found":
-                navigate("/?warn=" + res.warn, { replace: true });
-                return;
-            default:
-                pushWarn(res.warn);
-        }
-    },
 
-    PLAYER_JOINED: (ws: WebSocket, res: Response) => {
-        ws.send("LIST");
-        console.log("Player", res.args[0], "joined");
-        // update connected
+        // self joined?
         if (res.args[0] === localUsername) {
             state.set(GameState.Lobby);
             toast.push("Have fun playing GYF! :)", { theme: { "--toastBackground": "#64F4A0", "--toastBarBackground": "#3BDD7F" } });
         } else {
-            toast.push(`Welcome ${res.args[0]}!`);
+            toast.push(`Say hi to ${res.args[0]} 👋!`);
         }
+
+        ws.send("LIST");
+        return;
     },
 
     PLAYER_LEAVE: (ws: WebSocket, res: Response) => {
@@ -135,6 +134,14 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
         sortable.forEach((item) => (objSorted[item[0]] = item[1]));
         stats.set(objSorted);
     },
+
+    STATE: (_, res: Response) => {
+        const _state = res.args[0];
+        if (GameState[_state]) {
+            state.set(_state);
+            console.log("changed state to", _state);
+        }
+    },
 };
 
 
@@ -164,6 +171,8 @@ export function hijack(ws: WebSocket) {
 
     // brutally hijack server message handler
     ws.onmessage = (msg: MessageEvent<any>) => {
+        console.log("[ws] 📦 ->", msg.data);
+
         // try to parse message
         const response: Response = JSON.parse(msg.data);
 
@@ -177,6 +186,14 @@ export function hijack(ws: WebSocket) {
             handleErrors(response);
         }
     };
+
+    // intercept sending messages
+    // FOR EDUCATIONAL PURPOSES ONLY
+    const s = ws.send;
+    ws.send = (data: string) => {
+        console.log("[ws] 👋 <-", data);
+        return s.call(ws, data);
+    }
 }
 
 function handleErrors(resp: Response): boolean {

@@ -19,7 +19,7 @@ func PState(state GameState) *Response {
 }
 
 func PVoteResults(results ...*SubmissionResult) *Response {
-	return NewResponse("VOTE_RESULTS", util.WrapVoteResults(results...)...)
+	return NewResponse("VOTE_RESULTS", WrapVoteResults(results...)...)
 }
 
 func PJoin(client *Client, game *Game) *Response {
@@ -31,7 +31,11 @@ func PJoin(client *Client, game *Game) *Response {
 	)
 }
 
-func PStats(stats map[string]int) *Response {
+func PStats(game *Game) *Response {
+	stats := make(map[string]int)
+	for _, c := range game.Clients {
+		stats[c.Name] = game.StatsForUser(c.Name)
+	}
 	return NewResponse("STATS", stats)
 }
 
