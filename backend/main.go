@@ -8,7 +8,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/gofiber/fiber/v2/middleware/monitor"
 	recov "github.com/gofiber/fiber/v2/middleware/recover"
 	"os"
 	"os/signal"
@@ -48,10 +47,7 @@ func main() {
 	})
 
 	var corsConfig = cors.ConfigDefault
-	if DevMode {
-		log.Info("Enabling monitor")
-		app.Use(monitor.New())
-	} else {
+	if !DevMode {
 		// limit requests to only 10 per Minute
 		app.Use(limiter.New(limiter.Config{
 			Max:        10,
@@ -71,7 +67,6 @@ func main() {
 			AllowOrigins: "https://prod.gyf.d2a.io, https://staging.gyf.d2a.io",
 		}
 	}
-
 	app.Use(cors.New(corsConfig))
 
 	// log requests

@@ -74,7 +74,7 @@ func (g *Game) CheckCycle(checkAutoSkip, force bool) (err error) {
 			return
 		}
 		if force || len(g.WaitingForGIFSubmission(g.CurrentTopic)) == 0 {
-			err = g.ForceShowVoteResults()
+			err = g.ForceStartVote()
 		}
 
 	case StateCastVotes:
@@ -93,8 +93,9 @@ func (g *Game) CheckCycle(checkAutoSkip, force bool) (err error) {
 }
 
 func (g *Game) ForceEndGame(reason string) (err error) {
+	g.Broadcast(PStats(g))        // send stats for winning screen
+	g.Broadcast(PGameEnd(reason)) // send game end
 	g.Reset(false)
-	g.Broadcast(PGameEnd(reason))
 	return
 }
 

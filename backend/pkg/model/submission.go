@@ -113,3 +113,11 @@ func (A SubmissionArray) Results() (res []*SubmissionResult) {
 	}
 	return
 }
+
+func WrapVoteResults(result ...*SubmissionResult) (res []interface{}) {
+	res = make([]interface{}, len(result))
+	for i, v := range result {
+		res[i] = v
+	}
+	return
+}
