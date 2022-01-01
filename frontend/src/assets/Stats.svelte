@@ -42,10 +42,13 @@
                     {/if}
                 </td>
 
-                <!-- Avatar + Name -->
-                <td class="user">
+                <td>
                     <!-- Disply Avatar -->
                     <Avatar {user} width="32px" />
+                </td>
+
+                <!-- Name -->
+                <td class="user">
                     <!-- Display Username -->
                     <span class:self="{user === $username}">{user}</span>:
                 </td>
@@ -61,13 +64,14 @@
 
 <style lang="scss">
     div {
-        display: table-cell;
+        // display: table-cell;
         vertical-align: middle;
-        width: 12%;
         background-color: #131313;
-        border-radius: 10px;
+        border-radius: 1rem;
         text-align: left;
-        padding: 10px;
+        padding: 1rem;
+        min-width: 60%;
+        max-width: min-content;
 
         .self {
             color: greenyellow;
