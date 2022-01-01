@@ -1,5 +1,6 @@
 <script>
 import Avatar from "../../assets/Avatar.svelte";
+import Chat from "../../assets/Chat.svelte";
 import Stats from "../../assets/Stats.svelte";
 
 import { state, stats, waitingFor } from "../../store";
@@ -41,8 +42,8 @@ import VotingResults from "../game/VotingResults.svelte";
             <hr />
         {/if}
     </div>
-    <div class="screenSub">
-
+    <div id="chatContainer" class="screenSub">
+        <Chat />
     </div>
 </div>
 
@@ -53,6 +54,8 @@ import VotingResults from "../game/VotingResults.svelte";
     #wholeScreen {
         display: flex;
         flex-direction: row;
+        height: 100vh;
+        align-items: center;
     }
 
     .screenSub {
@@ -60,6 +63,10 @@ import VotingResults from "../game/VotingResults.svelte";
     }
     #screenMain {
         width: 50vw;
+    }
+
+    #chatContainer {
+        align-self: flex-end;
     }
 .waiting {
     color: greenyellow;
