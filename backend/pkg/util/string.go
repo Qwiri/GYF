@@ -21,7 +21,7 @@ func GenerateRandomString(length int) string {
 
 ///
 
-var usernameExpr = regexp.MustCompile("^[A-Za-z0-9_\\-]{1,16}$")
+var usernameExpr = regexp.MustCompile(`^[A-Za-z0-9_\-]{1,16}$`)
 
 func IsNameValid(username string) bool {
 	return usernameExpr.MatchString(username)

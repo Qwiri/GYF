@@ -21,7 +21,7 @@ func NewResponse(command string, args ...interface{}) *Response {
 		Command:   command,
 		Args:      args,
 		Success:   true,
-		Timestamp: time.Now().UnixMilli(),
+		Timestamp: time.Now().Unix(),
 	}
 }
 
@@ -32,7 +32,7 @@ func NewResponseWithWarn(command, warn string, args ...interface{}) *Response {
 		Args:      args,
 		Warn:      warn,
 		Success:   true,
-		Timestamp: time.Now().UnixMilli(),
+		Timestamp: time.Now().Unix(),
 	}
 }
 
@@ -42,7 +42,7 @@ func NewResponseWithError(command string, error error, args ...interface{}) *Res
 		Args:      args,
 		Warn:      error.Error(),
 		Success:   false,
-		Timestamp: time.Now().UnixMilli(),
+		Timestamp: time.Now().Unix(),
 	}
 }
 
