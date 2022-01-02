@@ -93,6 +93,22 @@
             transform: translateY(-100px);
         }
     }
+    @keyframes background-effects {
+        from {
+        }
+        0% {
+            backdrop-filter: none;
+            background-color: none;
+        }
+        50% {
+            backdrop-filter: blur(3px) grayscale(.8);
+            background-color: var(--custom-bg);
+        }
+        100% {
+            backdrop-filter: none;
+            background-color: none;
+        }
+    }
 
     .avatar {
         filter: drop-shadow(0px 0px 3px black);
@@ -149,10 +165,22 @@
     }
 
     .first {
-        background-color: #ffda004f;
+        --custom-bg: #ffda004f;
     }
     .second {
-        background-color: #2d9cdb82;
+        --custom-bg: #2d9cdb82;
+    }
+
+    .overlayWrapper {
+        // backdrop-filter: blur(3px) grayscale(.8);
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        --custom-delay: 4s;
+        animation: background-effects calc(var(--custom-delay)) cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+
     }
 
     .overlay {
