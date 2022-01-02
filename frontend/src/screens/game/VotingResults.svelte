@@ -1,5 +1,6 @@
 <script lang="ts">
     import Avatar from "../../assets/Avatar.svelte";
+    import TopicDisplay from "../../assets/TopicDisplay.svelte";
     import { leader, votingResults, ws } from "../../store";
 
     const nextRound = (event: MouseEvent) => {
@@ -7,18 +8,14 @@
     };
 </script>
 
+<TopicDisplay />
+
 <h1>Voting results</h1>
 <div class="resultWrapper">
     {#each $votingResults as result, i}
         <div class="votingResult">
             <img src={result.url} alt="Image of {result.creator}" />
-            <div
-                class="overlayWrapper {i === 0
-                    ? 'first'
-                    : result.voters.length > 0
-                    ? 'second'
-                    : ''}"
-            >
+            <div class:first={i === 0} class:second={result.voters.length > 0}>
                 {#if i === 0}
                     <svg
                         viewBox="0 0 44 46"
@@ -156,20 +153,6 @@
     }
     .second {
         background-color: #2d9cdb82;
-    }
-
-    .overlayWrapper {
-        backdrop-filter: blur(3px) grayscale(0.8);
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        right: 0;
-        left: 0;
-
-        &:hover {
-            opacity: 0;
-            filter: none;
-        }
     }
 
     .overlay {

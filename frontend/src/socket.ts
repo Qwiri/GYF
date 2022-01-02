@@ -1,7 +1,7 @@
 import { toast } from "@zerodevx/svelte-toast";
 import { navigate } from "svelte-navigator";
 import { chatMessages, leader, players, round, state, stats, submissions, topics, username, waitingFor, votingResults } from "./store";
-import { ChatMessage, GameState, isLeader, Player, pushWarn, Response, VotingResult } from "./types";
+import { ChatMessage, GameState, isLeader, Player, pushWarn, Response } from "./types";
 
 let localUsername: string;
 username.subscribe(n => localUsername = n);
@@ -10,7 +10,7 @@ let localPlayers: { [name: string]: Player };
 players.subscribe(n => localPlayers = n);
 
 const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any } = {
-    JOIN: (ws: WebSocket, res: Response) => {
+    JOIN: (_: WebSocket, res: Response) => {
         // errored responses only occurr as responses to the JOIN command
         if (!res._s) {
             switch (res.warn) {
@@ -30,13 +30,10 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
         } else {
             toast.push(`Say hi to ${res.args[0]} 👋!`);
         }
-
-        ws.send("LIST");
         return;
     },
 
-    PLAYER_LEAVE: (ws: WebSocket, res: Response) => {
-        ws.send("LIST");
+    PLAYER_LEAVE: (_: WebSocket, res: Response) => {
         console.log("Player", res.args[0], "left");
     },
 
@@ -64,7 +61,7 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
         topics.set([...res.args])
     },
 
-    CHANGE_ROLE: (ws: WebSocket, res: Response) => {
+    CHANGE_ROLE: (_: WebSocket, res: Response) => {
         if (res.args[0] !== localUsername) {
             return;
         }
@@ -73,83 +70,69 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
 
         if (_leader) {
             toast.push("You are now the leader!");
-            ws.send("TOPIC_LIST"); // request topic list
         } else {
             toast.push("You are no longer the leader!");
+            topics.set([]); // clear topics
         }
     },
 
-    NEXT_ROUND: (ws: WebSocket, res: Response) => {
-        ws.send("STATS"); // request player stats for each round
-
+    NEXT_ROUND: (_: WebSocket, res: Response) => {
         round.set({
             topic: res.args[0],
             currentRound: res.args[1],
             totalRounds: res.args[2],
         });
-
-        waitingFor.set(Object.keys(localPlayers));
-    },
-
-    SUBMIT_GIF: (_, res: Response) => {
-        if (!res._s) {
-            pushWarn(res.warn);
-            return;
-        }
-        waitingFor.set(res.args.slice(1));
-        toast.push(`${res.args[0]} submitted a gif`);
     },
 
     VOTE_START: (_, res: Response) => {
         submissions.set(res.args);
-        // waiting for all players
-        waitingFor.set(Object.keys(localPlayers));
     },
 
-    VOTE_RESULTS: (ws: WebSocket, res: Response) => {
+    VOTE_RESULTS: (_: WebSocket, res: Response) => {
         if (!res._s) {
             return;
         }
-        ws.send("STATS");
-
         // sort voting results
-        res.args.sort((a,b) => (a.voters.length > b.voters.length) ? -1 : (a.voters.length < b.voters.length) ? 1 : 0);
+        res.args.sort((a,b) => {
+            if (a.voters.length > b.voters.length) {
+                return -1;
+            } 
+            if (a.voters.length < b.voters.length) {
+                return 1;
+            }
+            return 0;
+        });
         votingResults.set(res.args);
-    },
-
-    VOTE: (_, res: Response) => {
-        const voter: string = res.args.shift();
-        toast.push(`${voter} voted!`);
-        waitingFor.set(res.args);
     },
 
     STATS: (_, res: Response) => {
         if (!res._s) {
             return;
         }
+        // sort stats by value
         const sortable = [];
         for (const name in res.args[0]) {
             sortable.push([name, res.args[0][name]]);
         }
         sortable.sort((a, b) => b[1] - a[1]);
+        // rebuild object
         const objSorted: { [name: string]: number } = {};
         sortable.forEach((item) => (objSorted[item[0]] = item[1]));
+        // update stats
         stats.set(objSorted);
     },
 
     STATE: (_, res: Response) => {
         const _state = res.args[0];
-
-        // ignore lobby state
-        if (_state == GameState.Lobby) {
-            return;
-        }
-
         if (GameState[_state]) {
             state.set(_state);
             console.log("changed state to", _state);
         }
     },
+
+    WAITING_FOR: (_, res: Response) => {
+        waitingFor.set(res.args);
+    }
 };
 
 

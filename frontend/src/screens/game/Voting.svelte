@@ -1,19 +1,21 @@
 <script>
+    import TopicDisplay from "../../assets/TopicDisplay.svelte";
     import { ws, submissions } from "../../store.ts";
 
     const submitVote = (e) => {
-        $ws.send(`VOTE ${e.srcElement.dataset.url}`)
-    }
+        $ws.send(`VOTE ${e.srcElement.dataset.url}`);
+    };
 </script>
+
+<TopicDisplay />
 
 <div id="submissionsWrapper">
     {#each $submissions as submission}
         <div class="image">
-            <img class="img" src="{submission}" alt="">
-            <div class="background"></div>
-            <div data-url="{submission}" on:click="{submitVote}" class="overlay"></div>
+            <img class="img" src={submission} alt="" />
+            <div class="background" />
+            <div data-url={submission} on:click={submitVote} class="overlay" />
         </div>
-
     {/each}
 </div>
 
@@ -29,8 +31,8 @@
             bottom: 0;
             left: 0;
             position: absolute;
-            right:0;
-            top:0;
+            right: 0;
+            top: 0;
             z-index: 2;
 
             &:hover {
@@ -53,7 +55,7 @@
             border-radius: 0.5rem;
             z-index: -1;
         }
-        .image{
+        .image {
             position: relative;
             display: flex;
             flex-direction: column;

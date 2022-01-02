@@ -1,5 +1,6 @@
 <script lang="ts">
     import { toast } from "@zerodevx/svelte-toast";
+    import TopicDisplay from "../../assets/TopicDisplay.svelte";
     import { leader, players, round, waitingFor, ws } from "../../store";
 
     const sendSkip = (_) => {
@@ -18,12 +19,8 @@
 </script>
 
 <!-- Display Round Number -->
-<p style="color:greenyellow">
-    {$round.currentRound}/{$round.totalRounds}
-</p>
+<TopicDisplay />
 
-<!-- Display Topic -->
-<h2>{$round.topic}</h2>
 {#if gifBuffer}
     <p>
         <img width="200px" src={gifBuffer} alt="submitted gif" />
@@ -35,7 +32,7 @@
 
 <!-- Skip Button for Leader -->
 {#if $leader}
-    {#if $waitingFor && $waitingFor.length < Object.values($players).length}
-        <button on:click={sendSkip}>Force Vote</button>
-    {/if}
+    <button on:click={sendSkip}>SKIP</button>
+    <!-- {#if $waitingFor && $waitingFor.length < Object.values($players).length}
+    {/if} -->
 {/if}

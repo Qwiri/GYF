@@ -4,7 +4,12 @@
 
     const query: URLSearchParams = new URLSearchParams(window.location.search);
     if (query.has("warn")) {
-        pushWarn(query.get("warn"));
+        const warn = query.get("warn");
+
+        if (["game already started", "game not found"].includes(warn)) {
+            pushWarn(warn);
+        }
+
         window.history.pushState({}, "", `${window.location.pathname}`); // remove warn from URL
     }
 
