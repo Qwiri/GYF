@@ -2,12 +2,13 @@ package handlers
 
 import (
 	"encoding/json"
+	"strings"
+
 	"github.com/Qwiri/GYF/backend/pkg/gerrors"
 	"github.com/Qwiri/GYF/backend/pkg/handler"
 	"github.com/Qwiri/GYF/backend/pkg/model"
 	"github.com/Qwiri/GYF/backend/pkg/util"
 	"github.com/gofiber/websocket/v2"
-	"strings"
 )
 
 var TopicListHandler = &handler.Handler{
@@ -56,7 +57,7 @@ var TopicAddAllHandler = &handler.Handler{
 		// add all topics to list
 		for _, t := range topics {
 			t = strings.TrimSpace(t)
-			if len(t) == 0 {
+			if t == "" {
 				continue
 			}
 			if game.Topics.Exists(t) {
