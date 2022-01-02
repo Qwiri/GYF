@@ -36,6 +36,12 @@ export interface ChatMessage {
     message: string;
 }
 
+export interface VotingResult {
+    creator: string;
+    url: string;
+    voters: Array<string>;
+}
+
 import { toast } from "@zerodevx/svelte-toast";
 import { players } from "./store";
 

@@ -1,7 +1,7 @@
 import { toast } from "@zerodevx/svelte-toast";
 import { navigate } from "svelte-navigator";
-import { chatMessages, leader, players, round, state, stats, submissions, topics, username, waitingFor } from "./store";
-import { ChatMessage, GameState, isLeader, Player, pushWarn, Response } from "./types";
+import { chatMessages, leader, players, round, state, stats, submissions, topics, username, waitingFor, votingResults } from "./store";
+import { ChatMessage, GameState, isLeader, Player, pushWarn, Response, VotingResult } from "./types";
 
 let localUsername: string;
 username.subscribe(n => localUsername = n);
@@ -107,9 +107,14 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
     },
 
     VOTE_RESULTS: (ws: WebSocket, res: Response) => {
+        if (!res._s) {
+            return;
+        }
         ws.send("STATS");
 
-        // TODO: Display results
+        // sort voting results
+        res.args.sort((a,b) => (a.voters.length > b.voters.length) ? -1 : (a.voters.length < b.voters.length) ? 1 : 0);
+        votingResults.set(res.args);
     },
 
     VOTE: (_, res: Response) => {

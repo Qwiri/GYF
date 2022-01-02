@@ -1,11 +1,12 @@
 import { writable, Writable } from "svelte/store";
-import type { ChatMessage, GameState, Player, Round } from "./types";
+import type { ChatMessage, GameState, Player, Round, VotingResult } from "./types";
 
 export const username: Writable<string> = writable('');
 
 export const players: Writable<{[name: string]: Player}> = writable({});
 export const waitingFor: Writable<Array<string>> = writable([]);
 export const submissions: Writable<Array<string>> = writable([]);
+export const votingResults: Writable<Array<VotingResult>> = writable([]);
 export const stats: Writable<{[name: string]: number}> = writable({});
 
 export const chatMessages: Writable<Array<ChatMessage>> = writable([]);
