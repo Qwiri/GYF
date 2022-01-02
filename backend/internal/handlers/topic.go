@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"github.com/Qwiri/GYF/backend/pkg/gerrors"
 	"github.com/Qwiri/GYF/backend/pkg/handler"
 	"github.com/Qwiri/GYF/backend/pkg/model"
@@ -26,12 +27,48 @@ var TopicAddHandler = &handler.Handler{
 		if len(game.Topics) >= game.Preferences.MaxTopics {
 			return gerrors.ErrTooManyTopics
 		}
+		// send updated list to all leaders
+		defer game.BroadcastTopicListToLeaders()
+
 		topic := strings.TrimSpace(strings.Join(message, " "))
 		if game.Topics.Exists(topic) {
 			return gerrors.ErrTopicAlreadyExists
 		}
 		game.Topics.Add(topic)
 		return model.PTopicAdd(topic).Respond(conn)
+	}),
+}
+
+var TopicAddAllHandler = &handler.Handler{
+	AccessLevel: handler.AccessLeader,
+	Bounds:      util.Bounds(util.BoundMin(1)),
+	StateLevel:  util.StateLobby,
+	Handler: handler.MessagedHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client, message []string) (err error) {
+		data := strings.Join(message, " ")
+		var topics []string
+		if err = json.Unmarshal([]byte(data), &topics); err != nil {
+			return
+		}
+
+		// send updated list to all leaders
+		defer game.BroadcastTopicListToLeaders()
+
+		// add all topics to list
+		for _, t := range topics {
+			t = strings.TrimSpace(t)
+			if len(t) == 0 {
+				continue
+			}
+			if game.Topics.Exists(t) {
+				continue
+			}
+			// check if there are too many topics
+			if len(game.Topics) >= game.Preferences.MaxTopics {
+				return gerrors.ErrTooManyTopics
+			}
+			game.Topics.Add(t)
+		}
+		return nil
 	}),
 }
 
@@ -44,7 +81,23 @@ var TopicRemoveHandler = &handler.Handler{
 		if !game.Topics.Exists(topic) {
 			return gerrors.ErrTopicNotFound
 		}
+		// send updated list to all leaders
+		defer game.BroadcastTopicListToLeaders()
+
 		game.Topics.Delete(topic)
 		return model.PTopicRemove(topic).Respond(conn)
+	}),
+}
+
+var TopicClearHandler = &handler.Handler{
+	AccessLevel: handler.AccessLeader,
+	Bounds:      util.Bounds(util.BoundExact(0)),
+	StateLevel:  util.StateLobby,
+	Handler: handler.BasicHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client) error {
+		// send updated list to all leaders
+		defer game.BroadcastTopicListToLeaders()
+
+		game.Topics = model.TopicArray{}
+		return nil
 	}),
 }

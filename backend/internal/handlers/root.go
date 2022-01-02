@@ -14,19 +14,21 @@ import (
 var SpacesRegEx = regexp.MustCompile(`\s+`)
 
 var Handlers = map[string]*handler.Handler{
-	"WHOAMI":       WhoAmIHandler,
-	"JOIN":         JoinHandler,
-	"LIST":         ListHandler,
-	"CHAT":         ChatHandler,
-	"TOPIC_LIST":   TopicListHandler,
-	"TOPIC_ADD":    TopicAddHandler,
-	"TOPIC_REMOVE": TopicRemoveHandler,
-	"START":        StartHandler,
-	"SKIP":         SkipHandler,
-	"SUBMIT_GIF":   SubmitGIFHandler,
-	"VOTE":         VoteCastHandler,
-	"NEXT_ROUND":   NextRoundHandler,
-	"STATS":        StatsHandler,
+	"WHOAMI":        WhoAmIHandler,
+	"JOIN":          JoinHandler,
+	"LIST":          ListHandler,
+	"CHAT":          ChatHandler,
+	"TOPIC_LIST":    TopicListHandler,
+	"TOPIC_ADD":     TopicAddHandler,
+	"TOPIC_ADD_ALL": TopicAddAllHandler,
+	"TOPIC_REMOVE":  TopicRemoveHandler,
+	"TOPIC_CLEAR":   TopicClearHandler,
+	"START":         StartHandler,
+	"SKIP":          SkipHandler,
+	"SUBMIT_GIF":    SubmitGIFHandler,
+	"VOTE":          VoteCastHandler,
+	"NEXT_ROUND":    NextRoundHandler,
+	"STATS":         StatsHandler,
 }
 
 func OnClientMessage(conn *websocket.Conn, game *model.Game, msg string, devMode bool) error {

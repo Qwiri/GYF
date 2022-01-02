@@ -100,6 +100,15 @@ func (g *Game) BroadcastExcept(conn *websocket.Conn, response *Response) {
 	}
 }
 
+func (g *Game) BroadcastTopicListToLeaders() {
+	p := PTopicList(g)
+	for _, c := range g.Clients {
+		if c.Leader {
+			_ = p.RespondTo(c)
+		}
+	}
+}
+
 func (g *Game) BroadcastWaitingForAll() {
 	g.Broadcast(PWaitingFor(g.Clients.Array()))
 }

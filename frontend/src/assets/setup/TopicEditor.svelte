@@ -1,4 +1,6 @@
 <script lang="ts">
+import { toast } from "@zerodevx/svelte-toast";
+
     import { ws, topics, players } from "../../store";
 
     let topicBuffer: string;
@@ -21,6 +23,25 @@
 
     const startGame = (event: MouseEvent) => {
         $ws.send("START");
+    };
+
+    function loadFromFile() {
+        const file = this.files[0];
+        const reader = new FileReader();
+
+        reader.onload = (e: any) => {
+            const data = e.target.result;
+            const lines = data.split("\n");
+
+            toast.push(`Sending <strong>${lines.length} lines</strong> to backend`);
+            $ws.send(`TOPIC_ADD_ALL ${JSON.stringify(lines)}`);
+        };
+
+        reader.readAsText(file);
+    };
+
+    const clearTopics = () => {
+        $ws.send("TOPIC_CLEAR");
     };
 </script>
 
@@ -45,6 +66,8 @@
     on:keypress={sendTopic}
     bind:value={topicBuffer}
 />
+<input type="file" on:change="{loadFromFile}" />
+<input type="button" value="Clear Topics" on:click="{clearTopics}" />
 
 <!-- start game button -->
 {#if Object.keys($players).length >= 3}
