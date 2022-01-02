@@ -1,6 +1,6 @@
 import { toast } from "@zerodevx/svelte-toast";
 import { navigate } from "svelte-navigator";
-import { chatMessages, leader, players, round, state, stats, submissions, topics, username, waitingFor, votingResults } from "./store";
+import { chatMessages, leader, players, round, state, stats, submissions, topics, username, waitingFor, votingResults, preferences } from "./store";
 import { ChatMessage, GameState, isLeader, Player, pushWarn, Response } from "./types";
 
 let localUsername: string;
@@ -132,6 +132,10 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
 
     WAITING_FOR: (_, res: Response) => {
         waitingFor.set(res.args);
+    },
+
+    PREFERENCES: (_, res: Response) => {
+        preferences.set(res.args[0]);
     }
 };
 

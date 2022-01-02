@@ -42,6 +42,14 @@ export interface VotingResult {
     voters: Array<string>;
 }
 
+export interface Preferences {
+    AutoSkip: boolean;
+    MinPlayers: number;
+    MaxPlayers: number;
+    MinTopics: number;
+    MaxTopics: number;
+}
+
 import { toast } from "@zerodevx/svelte-toast";
 import { players } from "./store";
 
