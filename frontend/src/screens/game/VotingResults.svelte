@@ -15,7 +15,7 @@
     {#each $votingResults as result, i}
         <div class="votingResult">
             <img src={result.url} alt="Image of {result.creator}" />
-            <div class:first={i === 0} class:second={result.voters.length > 0}>
+            <div class="overlayWrapper {i === 0 ? 'first' : result.voters.length > 0 ? 'second' : ''}">
                 {#if i === 0}
                     <svg
                         viewBox="0 0 44 46"
@@ -49,9 +49,7 @@
                         />
                     </svg>
                 {/if}
-                <div class="creatorAvatar overlay avatar">
-                    <Avatar user={result.creator} width="32px" />
-                </div>
+                <span>{result.creator}</span>
                 <div class="votedBy overlay">
                     {#each result.voters as voter}
                         <div class="avatar">
@@ -110,9 +108,6 @@
         }
     }
 
-    .avatar {
-        filter: drop-shadow(0px 0px 3px black);
-    }
 
     .single-coolicon {
         --custom-delay: 4s;
@@ -129,6 +124,20 @@
         --custom-delay: 3s;
         animation: cooliconSlideIn calc(var(--custom-delay))
             cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+    }
+
+    span {
+        position: absolute;
+        background-color: #131313;
+        text-align: left;
+        display: inline-flex;
+        align-items: center;
+        bottom: 0;
+        left: 0;
+        padding: .2rem;
+        padding-left: .5rem;
+        height: 1rem;
+        width: 100%;
     }
 
     .resultWrapper {
@@ -153,14 +162,14 @@
         width: clamp(200px, 20vw, 400px);
         height: clamp(200px, 20vw, 400px);
         overflow: hidden;
+        background-color: #131313;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        border-radius: .5rem;
 
         img {
             width: 100%;
-            position: absolute;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
         }
     }
 
