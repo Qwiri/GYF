@@ -36,11 +36,11 @@ func NewResponseWithWarn(command, warn string, args ...interface{}) *Response {
 	}
 }
 
-func NewResponseWithError(command string, error error, args ...interface{}) *Response {
+func NewResponseWithError(command string, err error, args ...interface{}) *Response {
 	return &Response{
 		Command:   command,
 		Args:      args,
-		Warn:      error.Error(),
+		Warn:      err.Error(),
 		Success:   false,
 		Timestamp: time.Now().Unix(),
 	}
