@@ -8,12 +8,12 @@
     {#each $votingResults as result, i}
         <div class="votingResult">
             <img src="{result.url}" alt="Image of {result.creator}">
-            <div class="overlayWrapper {i === 0 ? 'first' : ''}">
+            <div class="overlayWrapper {i === 0 ? 'first' : result.voters.length > 0 ? 'second' : ''}">
                 {#if i === 0}
                     <svg
                     viewBox="0 0 44 46"
                     fill="none"
-                    id="coolicon"
+                    class="coolicon"
                     xmlns="http://www.w3.org/2000/svg">
                     <path
                         style="fill:none;stroke:#f29e51;stroke-width:6.4252;stroke-miterlimit:4;stroke-dasharray:none"
@@ -24,6 +24,19 @@
                         d="M 4.0025544,23.703704 22.35249,5.4551441 40.759897,23.703704"
                         class="coolicon-2" />
                     </svg>   
+                {:else if result.voters.length > 0}
+                    <svg
+                    viewBox="0 0 44 46"
+                    class="coolicon"
+                    fill="none"
+                    version="1.1"
+                    xmlns="http://www.w3.org/2000/svg" >
+                    <path
+                        class="single-coolicon"
+                        style="fill:none;stroke:#2d9cdb;stroke-width:6.4252;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+                        d="M 3.7523315,33.475853 22.219764,15.457178 40.570978,33.710846" />
+                    </svg>
+                    
                 {/if}
                 <div class="creatorAvatar overlay avatar">
                     <Avatar user="{result.creator}" width="32px" />
@@ -44,10 +57,15 @@
 
     @keyframes cooliconSlideIn {
         from {
+        }
+        0% {
             transform: translateY(100px) ;
         }
-        to {
+        50% {
             transform: translateY(0);
+        }
+        100% {
+            transform: translateY(-100px);
         }
     }
 
@@ -55,12 +73,17 @@
         filter: drop-shadow(0px 0px 3px black);
     }
 
+    .single-coolicon {
+        --custom-delay: 4s;
+        animation: cooliconSlideIn calc(var(--custom-delay)) cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+    }
+
     .coolicon-1 {
-        --custom-delay: 2s;
+        --custom-delay: 4s;
         animation: cooliconSlideIn calc(var(--custom-delay)) cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
     }
     .coolicon-2 {
-        --custom-delay: 1s;
+        --custom-delay: 3s;
         animation: cooliconSlideIn calc(var(--custom-delay)) cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
     }
 
@@ -71,7 +94,7 @@
         gap: 2rem;
     }
 
-    #coolicon {
+    .coolicon {
         width: 20%;
         position: absolute;
         top: 0;
@@ -101,6 +124,9 @@
 
     .first {
         background-color: #ffda004f;
+    }
+    .second {
+        background-color: #2d9cdb82;
     }
 
     .overlayWrapper {
