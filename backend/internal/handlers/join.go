@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/Qwiri/GYF/backend/pkg/gerrors"
+	"github.com/Qwiri/GYF/backend/pkg/handler"
 	"github.com/Qwiri/GYF/backend/pkg/model"
 	"github.com/Qwiri/GYF/backend/pkg/util"
 	"github.com/apex/log"
@@ -9,11 +10,11 @@ import (
 	"strings"
 )
 
-var JoinHandler = &Handler{
-	AccessLevel: AccessGuest,
+var JoinHandler = &handler.Handler{
+	AccessLevel: handler.AccessGuest,
 	Bounds:      util.Bounds(util.BoundExact(1)),
-	StateLevel:  model.StateLobby,
-	Handler: MessagedHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client, message []string) error {
+	StateLevel:  util.StateLobby,
+	Handler: handler.MessagedHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client, message []string) error {
 		username := strings.TrimSpace(message[0])
 		// check if username is allowed
 		if !util.IsNameValid(username) {

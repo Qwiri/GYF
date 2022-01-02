@@ -1,9 +1,9 @@
 export enum GameState {
     ChooseUsername,
-    Lobby,
-    SubmitGIF,
-    Vote,
-    VoteResults
+    Lobby = 1 << 0,
+    SubmitGIF = 1 << 1,
+    Vote = 1 << 2,
+    VoteResults = 1 << 3
 }
 
 export interface Response {

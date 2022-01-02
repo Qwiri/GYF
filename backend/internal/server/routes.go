@@ -42,7 +42,7 @@ func (gs *GYFServer) CreateRoutes(app *fiber.App) {
 		}
 
 		// check if game is in progress
-		if game.GetState() != model.StateLobby {
+		if game.State() != util.StateLobby {
 			log.Warnf("a client tried to connect to game %s but the game was not in lobby state", gameID)
 			if err := model.NewResponseWithError("JOIN", gerrors.ErrGameStarted).Respond(c); err != nil {
 				log.WithError(err).Warn("[ws] cannot write error message")

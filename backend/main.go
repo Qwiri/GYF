@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/Qwiri/GYF/backend/internal/server"
 	"github.com/apex/log"
-	"github.com/apex/log/handlers/cli"
+	"github.com/apex/log/handlers/text"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/limiter"
@@ -30,9 +30,7 @@ var (
 )
 
 func init() {
-	log.SetHandler(cli.Default)
-	log.SetLevel(log.DebugLevel)
-
+	log.SetHandler(text.Default)
 	if !strings.HasPrefix(os.Getenv("BUILD"), "prod") {
 		DevMode = true
 	}
@@ -82,9 +80,9 @@ func main() {
 		for {
 			time.Sleep(JanitorTime)
 
-			log.Info("[Janitor] Checking ...")
+			log.Debug("[Janitor] Checking ...")
 			svr.JanitorCheck(JanitorCleanTime)
-			log.Info("[Janitor] Done!")
+			log.Debug("[Janitor] Done!")
 		}
 	}(svr)
 

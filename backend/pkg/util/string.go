@@ -8,6 +8,7 @@ import (
 
 ///
 
+//goland:noinspection ALL
 const CharSet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz123456789"
 
 func GenerateRandomString(length int) string {

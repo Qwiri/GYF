@@ -80,7 +80,6 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
     },
 
     NEXT_ROUND: (ws: WebSocket, res: Response) => {
-        state.set(GameState.SubmitGIF);
         ws.send("STATS"); // request player stats for each round
 
         round.set({
@@ -102,14 +101,12 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
     },
 
     VOTE_START: (_, res: Response) => {
-        state.set(GameState.Vote);
         submissions.set(res.args);
         // waiting for all players
         waitingFor.set(Object.keys(localPlayers));
     },
 
     VOTE_RESULTS: (ws: WebSocket, res: Response) => {
-        state.set(GameState.VoteResults);
         ws.send("STATS");
 
         // TODO: Display results
@@ -137,6 +134,12 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
 
     STATE: (_, res: Response) => {
         const _state = res.args[0];
+
+        // ignore lobby state
+        if (_state == GameState.Lobby) {
+            return;
+        }
+
         if (GameState[_state]) {
             state.set(_state);
             console.log("changed state to", _state);

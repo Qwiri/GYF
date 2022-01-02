@@ -1,4 +1,4 @@
-package model
+package util
 
 type GameState int
 
@@ -13,6 +13,10 @@ const (
 	StateInGame = StateSubmitGIF | StateCastVotes | StateShowVotes
 )
 
-func (g GameState) Allowed(game *Game) bool {
-	return game.GetState()&g == game.GetState()
+func (g GameState) Contains(state GameState) bool {
+	return g&state == state
+}
+
+func (g GameState) In(other GameState) bool {
+	return g&other == g
 }

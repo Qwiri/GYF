@@ -2,49 +2,53 @@ package handlers
 
 import (
 	"github.com/Qwiri/GYF/backend/pkg/gerrors"
+	"github.com/Qwiri/GYF/backend/pkg/handler"
 	"github.com/Qwiri/GYF/backend/pkg/model"
 	"github.com/Qwiri/GYF/backend/pkg/util"
 	"github.com/gofiber/websocket/v2"
 )
 
-const (
-	MinTopic   = 1
-	MinPlayers = 3
-)
-
-var StartHandler = &Handler{
-	AccessLevel: AccessLeader,
+var StartHandler = &handler.Handler{
+	AccessLevel: handler.AccessLeader,
 	Bounds:      util.Bounds(util.BoundExact(0)),
-	StateLevel:  model.StateLobby,
-	Handler: BasicHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client) error {
+	StateLevel:  util.StateLobby,
+	Handler: handler.BasicHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client) error {
 		// check if we have enough topics
-		if len(game.Topics) < MinTopic {
+		if len(game.Topics) < game.Preferences.MinTopics {
 			return gerrors.ErrTooFewTopics
 		}
+		// check if we have too many topics
+		if len(game.Topics) > game.Preferences.MaxTopics {
+			return gerrors.ErrTooManyTopics
+		}
 		// check if we have enough players
-		if len(game.Clients) < MinPlayers {
+		if len(game.Clients) < game.Preferences.MinPlayers {
 			return gerrors.ErrTooFewPlayers
+		}
+		// check if we have too many players
+		if len(game.Clients) > game.Preferences.MaxPlayers {
+			return gerrors.ErrTooManyPlayers
 		}
 		// start next round
 		return game.ForceNextRound()
 	}),
 }
 
-var SkipHandler = &Handler{
-	AccessLevel: AccessLeader,
+var SkipHandler = &handler.Handler{
+	AccessLevel: handler.AccessLeader,
 	Bounds:      util.Bounds(util.BoundExact(0)),
-	StateLevel:  model.StateInGame,
+	StateLevel:  util.StateInGame,
 	DevOnly:     true,
-	Handler: BasicHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client) error {
+	Handler: handler.BasicHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client) error {
 		return game.CheckCycle(false, true)
 	}),
 }
 
-var NextRoundHandler = &Handler{
-	AccessLevel: AccessLeader,
+var NextRoundHandler = &handler.Handler{
+	AccessLevel: handler.AccessLeader,
 	Bounds:      util.Bounds(util.BoundExact(0)),
-	StateLevel:  model.StateShowVotes,
-	Handler: BasicHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client) error {
+	StateLevel:  util.StateShowVotes,
+	Handler: handler.BasicHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client) error {
 		return game.ForceNextRound()
 	}),
 }

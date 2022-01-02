@@ -2,16 +2,17 @@ package handlers
 
 import (
 	"github.com/Qwiri/GYF/backend/pkg/gerrors"
+	"github.com/Qwiri/GYF/backend/pkg/handler"
 	"github.com/Qwiri/GYF/backend/pkg/model"
 	"github.com/Qwiri/GYF/backend/pkg/util"
 	"github.com/gofiber/websocket/v2"
 )
 
-var SubmitGIFHandler = &Handler{
-	AccessLevel: AccessJoined,
+var SubmitGIFHandler = &handler.Handler{
+	AccessLevel: handler.AccessJoined,
 	Bounds:      util.Bounds(util.BoundExact(1)),
-	StateLevel:  model.StateSubmitGIF,
-	Handler: MessagedHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client, message []string) error {
+	StateLevel:  util.StateSubmitGIF,
+	Handler: handler.MessagedHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client, message []string) error {
 		if game.CurrentTopic == nil {
 			return gerrors.ErrTopicNotFound
 		}

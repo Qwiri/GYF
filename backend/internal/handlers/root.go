@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"github.com/Qwiri/GYF/backend/pkg/gerrors"
+	"github.com/Qwiri/GYF/backend/pkg/handler"
 	"github.com/Qwiri/GYF/backend/pkg/model"
-	"github.com/Qwiri/GYF/backend/pkg/util"
 	"github.com/apex/log"
 	"github.com/gofiber/websocket/v2"
 	"regexp"
@@ -13,15 +13,7 @@ import (
 
 var SpacesRegEx = regexp.MustCompile(`\s+`)
 
-type Handler struct {
-	AccessLevel Access
-	Bounds      util.Boundaries
-	StateLevel  model.GameState
-	Handler     interface{}
-	DevOnly     bool
-}
-
-var Handlers = map[string]*Handler{
+var Handlers = map[string]*handler.Handler{
 	"WHOAMI":       WhoAmIHandler,
 	"JOIN":         JoinHandler,
 	"LIST":         ListHandler,
@@ -36,11 +28,6 @@ var Handlers = map[string]*Handler{
 	"NEXT_ROUND":   NextRoundHandler,
 	"STATS":        StatsHandler,
 }
-
-type BasicHandler func(*websocket.Conn, *model.Game, *model.Client) error
-type MessagedHandler func(*websocket.Conn, *model.Game, *model.Client, []string) error
-type PrefixedHandler func(*websocket.Conn, *model.Game, *model.Client, string) error
-type PrefixedMessagedHandler func(*websocket.Conn, *model.Game, *model.Client, string, []string) error
 
 func OnClientMessage(conn *websocket.Conn, game *model.Game, msg string, devMode bool) error {
 	game.LastInteraction = time.Now() // update game's last interaction for janitor grace
@@ -57,53 +44,48 @@ func OnClientMessage(conn *websocket.Conn, game *model.Game, msg string, devMode
 	// NOTICE: client CAN BE nil AT THIS MOMENT!
 	client := game.ClientByConnection(conn)
 
-	// update client's last interaction for janitor grace
-	if client != nil {
-		client.LastInteraction = time.Now()
-	}
-
-	// find handler
-	handler, ok := Handlers[prefix]
+	// find h
+	h, ok := Handlers[prefix]
 	if !ok {
 		return gerrors.ErrUnknownCommand
 	}
 
-	// check if handler is dev-only
-	if handler.DevOnly && !devMode {
+	// check if h is dev-only
+	if h.DevOnly && !devMode {
 		return gerrors.ErrDevOnly
 	}
 
-	// check access for handler
-	if !handler.AccessLevel.Allowed(client) {
+	// check access for h
+	if !h.AccessLevel.Allowed(client) {
 		return gerrors.ErrNoAccess
 	}
 
 	// check arg length
-	if handler.Bounds != nil {
-		if !handler.Bounds.Applies(len(str[1:])) {
+	if h.Bounds != nil {
+		if !h.Bounds.Applies(len(str[1:])) {
 			return gerrors.ErrArgLength
 		}
 	}
 
-	// check game start
-	if !handler.StateLevel.Allowed(game) {
+	// check game state
+	if !game.State().In(h.StateLevel) {
 		return gerrors.ErrGameStateAccess
 	}
 
 	var err error
 
-	// execute handler
-	switch hdl := handler.Handler.(type) {
-	case BasicHandler:
+	// execute h
+	switch hdl := h.Handler.(type) {
+	case handler.BasicHandler:
 		err = hdl(conn, game, client)
-	case MessagedHandler:
+	case handler.MessagedHandler:
 		err = hdl(conn, game, client, str[1:])
-	case PrefixedHandler:
+	case handler.PrefixedHandler:
 		err = hdl(conn, game, client, prefix)
-	case PrefixedMessagedHandler:
+	case handler.PrefixedMessagedHandler:
 		err = hdl(conn, game, client, prefix, str[1:])
 	default:
-		log.Warnf("cannot find handler for %s", prefix)
+		log.Warnf("cannot find h for %s", prefix)
 		err = gerrors.ErrInvalidHandler
 	}
 

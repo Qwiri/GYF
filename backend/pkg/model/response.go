@@ -66,7 +66,7 @@ func (r *Response) Respond(conn *websocket.Conn) (err error) {
 	}
 	defer func() {
 		if err := recover(); err != nil {
-			log.Warnf("rcovered in Respond: %v", err)
+			log.Warnf("recover in respond: %v", err)
 		}
 	}()
 	if err = conn.WriteMessage(websocket.TextMessage, r.Marshal()); err != nil {

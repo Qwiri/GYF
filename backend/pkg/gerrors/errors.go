@@ -3,43 +3,66 @@ package gerrors
 import "errors"
 
 var (
-	// Game Errors
-	ErrGameNotFound    = errors.New("game not found")
-	ErrGameStarted     = errors.New("game already started")
+	// ErrGameNotFound is returned when a game id was specified but the according game was not found
+	ErrGameNotFound = errors.New("game not found")
+	// ErrGameStarted is returned when a client tries to join a game that already started
+	ErrGameStarted = errors.New("game already started")
+	// ErrGameStateAccess is returned when a client tries to execute a command that is disabled in the current state
+	// e.g. vote is disabled in the lobby
 	ErrGameStateAccess = errors.New("no access in that state")
 
-	// Handler Errors
+	// ErrMessageTooShort is returned when a client sends an empty websocket message
 	ErrMessageTooShort = errors.New("message too short")
-	ErrUnknownCommand  = errors.New("unknown command")
-	ErrNoAccess        = errors.New("no access to that command")
-	ErrInvalidHandler  = errors.New("invalid handler func")
-	ErrDevOnly         = errors.New("handler is dev only")
-	ErrArgLength       = errors.New("unexpected arg length")
+	// ErrUnknownCommand is returned when a client requests an unknown command
+	ErrUnknownCommand = errors.New("unknown command")
+	// ErrNoAccess is returned when a client tries to execute a command which he has no access to
+	// e.g. if a player requests a leader-only command
+	ErrNoAccess = errors.New("no access to that command")
+	// ErrInvalidHandler is returned when a handler has an invalid handler-function
+	// valid: handler.BasicHandler, handler.MessagedHandler, handler.PrefixedHandler, handler.PrefixedMessagedHandler
+	ErrInvalidHandler = errors.New("invalid handler func")
+	// ErrDevOnly is returned if a handler was marked dev-only and the server runs in a production environment
+	ErrDevOnly = errors.New("handler is dev only")
+	// ErrArgLength is returned when a handler's bounds requirements were not met
+	ErrArgLength = errors.New("unexpected arg length")
 
-	// Handler Specific Errors
-	// chat
+	// ErrMessageEmpty is used by the chat handler and is returned when an empty chat message was sent
 	ErrMessageEmpty = errors.New("message empty")
-	// join
-	ErrNameInvalid   = errors.New("name invalid")
-	ErrNameExists    = errors.New("name already exists")
+
+	// ErrNameInvalid is used by the join handler and is returned when the requested username doesn't meet the requirements
+	ErrNameInvalid = errors.New("name invalid")
+	// ErrNameExists is used by the join handler and is returned when the requested username was already occupied by another player
+	ErrNameExists = errors.New("name already exists")
+	// ErrAlreadyJoined is used by the join handler and is returned when a client tries to join a game which the client already joined
 	ErrAlreadyJoined = errors.New("already joined")
-	// topics
-	ErrTooManyTopics      = errors.New("too many topics")
-	ErrTopicNotFound      = errors.New("topic not found")
+
+	// ErrTopicNotFound is returned when a client tries to remove a topic that doesn't exist
+	ErrTopicNotFound = errors.New("topic not found")
+	// ErrTopicAlreadyExists is returned when a client tries to add a topic that already exists
 	ErrTopicAlreadyExists = errors.New("topic already exists")
-	ErrNoTopicsLeft       = errors.New("no topics left")
+	// ErrNoTopicsLeft is returned when a next round should be started but no more topics are left and thus the game should be stopped
+	ErrNoTopicsLeft = errors.New("no topics left")
 
-	// Requirements
+	// ErrTooFewPlayers is returned when a client tries to start the game and too few players are in the lobby
 	ErrTooFewPlayers = errors.New("too few players")
-	ErrTooFewTopics  = errors.New("too few topics")
+	// ErrTooManyPlayers is returned when a client tries to start the game and too many players are in the lobby
+	ErrTooManyPlayers = errors.New("too few players")
+	// ErrTooFewTopics is returned when a client tries to start the game and too few topics were added
+	ErrTooFewTopics = errors.New("too few topics")
+	// ErrTooManyTopics is returned when a client tries to start the game and too many topics were added
+	ErrTooManyTopics = errors.New("too many topics")
 
-	// Submissions
-	ErrGIFTaken         = errors.New("another player took that gif already")
-	ErrGIFNotAllowed    = errors.New("url not allowed")
+	// ErrGIFTaken is returned when a client tries to submit a GIF, but the GIF was already submitted by another player
+	ErrGIFTaken = errors.New("another player took that gif already")
+	// ErrGIFNotAllowed is returned when a client tries to submit a GIF from an unauthorized URL
+	ErrGIFNotAllowed = errors.New("url not allowed")
+	// ErrAlreadySubmitted is returned when a client tries to submit a GIF which the client already submitted
 	ErrAlreadySubmitted = errors.New("already submitted that GIF")
 
-	// Voting
+	// ErrSubmissionNotFound is used by the vote handler and is returned when clients try to vote on an unknown GIF
 	ErrSubmissionNotFound = errors.New("submission not found")
-	ErrAlreadyVoted       = errors.New("already voted")
-	ErrVoteSelf           = errors.New("cannot vote self")
+	// ErrAlreadyVoted is used by the vote handler and is returned when clients try to vote again
+	ErrAlreadyVoted = errors.New("already voted")
+	// ErrVoteSelf is used by the vote handler and is returned when clients try to vote on their own GIFs
+	ErrVoteSelf = errors.New("cannot vote self")
 )

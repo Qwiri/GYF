@@ -14,7 +14,7 @@ func PVoteStart(urls ...string) *Response {
 	return NewResponse("VOTE_START", util.WrapStringArray(urls...)...)
 }
 
-func PState(state GameState) *Response {
+func PState(state util.GameState) *Response {
 	return NewResponse("STATE", state)
 }
 
