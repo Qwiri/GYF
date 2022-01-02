@@ -1,14 +1,15 @@
 package handlers
 
 import (
+	"regexp"
+	"strings"
+	"time"
+
 	"github.com/Qwiri/GYF/backend/pkg/gerrors"
 	"github.com/Qwiri/GYF/backend/pkg/handler"
 	"github.com/Qwiri/GYF/backend/pkg/model"
 	"github.com/apex/log"
 	"github.com/gofiber/websocket/v2"
-	"regexp"
-	"strings"
-	"time"
 )
 
 var SpacesRegEx = regexp.MustCompile(`\s+`)
@@ -35,7 +36,7 @@ func OnClientMessage(conn *websocket.Conn, game *model.Game, msg string, devMode
 	game.LastInteraction = time.Now() // update game's last interaction for janitor grace
 
 	msg = strings.TrimSpace(msg)
-	if len(msg) == 0 {
+	if msg == "" {
 		return gerrors.ErrMessageTooShort
 	}
 
