@@ -3,9 +3,6 @@
 	import Game from "./Game.svelte";
 	import { Router, Route } from "svelte-navigator";
 	import { SvelteToast } from "@zerodevx/svelte-toast";
-	import { username } from "./store";
-
-	export let name;
 	export let url = "";
 </script>
 

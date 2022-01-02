@@ -1,6 +1,6 @@
 <script lang="ts">
     import { toast } from "@zerodevx/svelte-toast";
-    import { leader, round, ws } from "../../store";
+    import { leader, players, round, waitingFor, ws } from "../../store";
 
     const sendSkip = (_) => {
         $ws.send("SKIP");
@@ -24,13 +24,18 @@
 
 <!-- Display Topic -->
 <h2>{$round.topic}</h2>
+{#if gifBuffer}
+    <p>
+        <img width="200px" src={gifBuffer} alt="submitted gif" />
+    </p>
+{/if}
+
 <input type="text" placeholder="Enter a gif url" bind:value={gifBuffer} />
 <button on:click={sendGif}>Submit!</button>
-{#if gifBuffer}
-    <img width="200px" src={gifBuffer} alt="submitted gif" />
-{/if}
 
 <!-- Skip Button for Leader -->
 {#if $leader}
-    <button on:click={sendSkip}>Skip round</button>
+    {#if $waitingFor && $waitingFor.length < Object.values($players).length}
+        <button on:click={sendSkip}>Force Vote</button>
+    {/if}
 {/if}
