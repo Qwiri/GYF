@@ -12,16 +12,6 @@
 <main>
 	<SvelteToast />
 
-	<div class="header">
-		<h1>
-			{name}!
-			<img src="https://i.gifer.com/2iFd.gif" height="64px" alt="cat" />
-		</h1>
-		{#if $username}
-			<h2>Welcome back <span>{$username}</span>!</h2>
-		{/if}
-	</div>
-
 	<!-- <Homepage /> -->
 	<Router {url}>
 		<Route path="/">
@@ -44,23 +34,6 @@
 	@media (min-width: 640px) {
 		main {
 			max-width: none;
-		}
-	}
-
-	.header {
-		h1 {
-			color: greenyellow;
-			text-transform: uppercase;
-			font-size: 4em;
-			font-weight: 1000;
-		}
-
-		h2 {
-			color: grey;
-
-			span {
-				color: greenyellow;
-			}
 		}
 	}
 </style>

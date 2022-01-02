@@ -27,15 +27,13 @@
 
 <!-- Display Choose Username if not connected to a lobby -->
 {#if $state == GameState.ChooseUsername}
-    <EnterUsername />
-
-    <!-- Always show the chat when connected -->
-    <Chat />
+    <EnterUsername {id} />
 {:else}
     {#if $state == GameState.Lobby}
         <Lobby />
     {:else}
         <GroupGame />
     {/if}
-
+    <!-- Always show the chat when connected -->
+    <Chat />
 {/if}
