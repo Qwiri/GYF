@@ -30,10 +30,33 @@
     <EnterUsername {id} />
 {:else}
     {#if $state == GameState.Lobby}
-        <Lobby />
+        <div id="wholeScreen">
+            <div id="lobby">
+                <Lobby />
+            </div>
+            <div id="chat">
+                <Chat />
+            </div>
+        </div>
     {:else}
         <GroupGame />
     {/if}
-    <!-- Always show the chat when connected -->
-    <Chat />
 {/if}
+
+<style>
+    #wholeScreen {
+        display: flex;
+        flex-direction: row;
+        height: 100vh;
+        align-items: center;
+        justify-content: flex-end;
+    }
+
+    #lobby {
+        width: 50vw;
+    }
+    #chat {
+        width: 25vw;
+        align-self: flex-end;
+    }
+</style>
