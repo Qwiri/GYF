@@ -33,6 +33,16 @@ func (M ClientMap) Delete(client *Client) {
 	}
 }
 
+func (M ClientMap) Array() (res ClientArray) {
+	res = make(ClientArray, len(M))
+	i := 0
+	for _, v := range M {
+		res[i] = v
+		i += 1
+	}
+	return
+}
+
 func (A ClientArray) Contains(client *Client) bool {
 	for _, c := range A {
 		if c == client {

@@ -38,13 +38,9 @@ var SubmitGIFHandler = &handler.Handler{
 		}
 
 		// save submission
-		topic.Submissions[client.Name] = model.NewSubmission(client, url)
+		sub := model.NewSubmission(client, url)
+		topic.Submissions[client.Name] = sub
 
-		// return a list with players we're waiting for
-		waiting := game.WaitingForGIFSubmission(topic).Names()
-		game.Broadcast(model.PSubmitGIF(client, waiting))
-
-		// check game cycle
 		return game.CheckCycle(true, false)
 	}),
 }

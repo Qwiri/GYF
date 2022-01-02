@@ -80,6 +80,8 @@ func (g *Game) Reset(purgeClients bool) {
 	// reset meta
 	g.SetState(util.StateLobby)
 	g.LastInteraction = time.Now()
+
+	g.BroadcastWaitingForNone()
 }
 
 // Broadcast sends a response to all clients
@@ -98,6 +100,29 @@ func (g *Game) BroadcastExcept(conn *websocket.Conn, response *Response) {
 	}
 }
 
+func (g *Game) BroadcastWaitingForAll() {
+	g.Broadcast(PWaitingFor(g.Clients.Array()))
+}
+func (g *Game) BroadcastWaitingForNone() {
+	g.Broadcast(PWaitingFor(ClientArray{}))
+}
+func (g *Game) BroadcastWaitingFor() {
+	if g.CurrentTopic == nil {
+		g.BroadcastWaitingForNone()
+		return
+	}
+	var (
+		topic   = g.CurrentTopic
+		waiting ClientArray
+	)
+	if util.StateSubmitGIF.In(g.State()) {
+		waiting = g.WaitingForGIFSubmission(topic)
+	} else if util.StateCastVotes.In(g.State()) {
+		waiting = g.WaitingForVote(topic)
+	}
+	g.Broadcast(PWaitingFor(waiting))
+}
+
 /// Play
 
 // SetLeader sets the client as the sole leader and sends a
@@ -113,6 +138,10 @@ func (g *Game) SetLeader(client *Client) {
 	}
 	client.Leader = true
 	g.Broadcast(PChangeRole(client, "LEADER"))
+
+	// send topic list to leader
+	_ = PTopicList(g).RespondTo(client)
+
 	log.Infof("[%s] %s is now a leader", g.ID, client.Name)
 }
 
@@ -120,13 +149,16 @@ func (g *Game) SetLeader(client *Client) {
 func (g *Game) LeaveClient(client *Client, reason string) {
 	// remove client from game
 	g.Clients.Delete(client)
-	g.Broadcast(PPlayerLeave(client, reason))
 
 	// if game is now empty, reset game
 	if g.IsEmpty() {
 		g.Reset(true)
 		return
 	}
+
+	// broadcast player list and leave
+	g.Broadcast(PPlayerLeave(client, reason))
+	g.Broadcast(PList(g.Clients))
 
 	// check if client was a leader
 	if client.Leader {
@@ -142,15 +174,21 @@ func (g *Game) LeaveClient(client *Client, reason string) {
 		return
 	}
 
+	g.Broadcast(PStats(g))
+
 	// check game cycle
 	_ = g.CheckCycle(true, false)
 }
 
 // CheckCycle checks if we're waiting for clients and if not, continue the game
 func (g *Game) CheckCycle(checkAutoSkip, force bool) (err error) {
+	g.BroadcastWaitingFor()
+
 	if checkAutoSkip && !g.Preferences.AutoSkip {
 		return
 	}
+
+	var change bool
 
 	switch g.State() {
 	case util.StateLobby:
@@ -160,6 +198,7 @@ func (g *Game) CheckCycle(checkAutoSkip, force bool) (err error) {
 		// since the leader should skip to the next round
 		if force {
 			err = g.ForceNextRound()
+			change = true
 		}
 
 	case util.StateSubmitGIF:
@@ -170,6 +209,7 @@ func (g *Game) CheckCycle(checkAutoSkip, force bool) (err error) {
 		}
 		if force || len(g.WaitingForGIFSubmission(g.CurrentTopic)) == 0 {
 			err = g.ForceStartVote()
+			change = true
 		}
 
 	case util.StateCastVotes:
@@ -180,7 +220,13 @@ func (g *Game) CheckCycle(checkAutoSkip, force bool) (err error) {
 		}
 		if force || len(g.WaitingForVote(g.CurrentTopic)) == 0 {
 			err = g.ForceShowVoteResults()
+			change = true
 		}
+	}
+
+	if change {
+		// recheck cycle
+		err = g.CheckCycle(checkAutoSkip, false)
 	}
 
 	return
@@ -215,6 +261,8 @@ func (g *Game) ForceNextRound() (err error) {
 	g.CurrentTopic = topic
 
 	g.Broadcast(PNextRound(topic.Description, g.Topics.PlayedTopicsCount(), len(g.Topics)))
+	g.Broadcast(PStats(g))
+	g.BroadcastWaitingForAll()
 	return nil
 }
 
@@ -242,6 +290,7 @@ func (g *Game) ForceStartVote() (err error) {
 		}
 	}
 
+	g.BroadcastWaitingForAll()
 	return nil
 }
 
@@ -259,6 +308,11 @@ func (g *Game) ForceShowVoteResults() (err error) {
 	results := topic.Submissions.AsArray().Results()
 	g.Broadcast(PVoteResults(results...))
 
+	// broadcast stats
+	g.Broadcast(PStats(g))
+
+	// clear waiting for
+	g.BroadcastWaitingForNone()
 	return
 }
 

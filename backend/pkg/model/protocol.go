@@ -58,11 +58,6 @@ func PList(clients ClientMap) *Response {
 	return NewResponse("LIST", clientArray...)
 }
 
-func PSubmitGIF(client *Client, waiting []string) *Response {
-	args := append([]string{client.Name}, waiting...)
-	return NewResponse("SUBMIT_GIF", util.WrapStringArray(args...)...)
-}
-
 func PTopicList(game *Game) *Response {
 	topics := make([]interface{}, len(game.Topics))
 	for i, topic := range game.Topics {
@@ -79,15 +74,6 @@ func PTopicRemove(topic string) *Response {
 	return NewResponse("TOPIC_REMOVE", topic)
 }
 
-func PVote(client *Client, waiting []string) *Response {
-	var data []interface{}
-	// add voter's name
-	data = append(data, client.Name)
-	// add waiting
-	data = append(data, util.WrapStringArray(waiting...)...)
-	return NewResponse("VOTE", data...)
-}
-
 func PPreferences(pref *GamePreferences) *Response {
 	return NewResponse("PREFERENCES", pref)
 }
@@ -98,4 +84,8 @@ func PChangeRole(client *Client, role string) *Response {
 
 func PPlayerLeave(client *Client, reason string) *Response {
 	return NewResponse("PLAYER_LEAVE", client.Name, reason)
+}
+
+func PWaitingFor(waitingFor ClientArray) *Response {
+	return NewResponse("WAITING_FOR", util.WrapStringArray(waitingFor.Names()...)...)
 }

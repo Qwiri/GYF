@@ -42,9 +42,6 @@ var VoteCastHandler = &handler.Handler{
 		submission.Voters = append(submission.Voters, client)
 
 		// send response with waiting-for players
-		waiting := game.WaitingForVote(topic)
-		game.Broadcast(model.PVote(client, waiting.Names()))
-
 		return game.CheckCycle(true, false)
 	}),
 }
