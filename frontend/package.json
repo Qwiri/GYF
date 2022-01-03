@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build": "rollup -c --environment BUILD:production",
+    "buildstaging": "rollup -c --environment BUILD:staging",
     "dev": "rollup -c -w --environment BUILD:development",
     "start": "sirv public --no-clear --single",
     "check": "svelte-check --tsconfig ./tsconfig.json"
