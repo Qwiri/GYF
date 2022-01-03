@@ -3,8 +3,18 @@
 	import Game from "./Game.svelte";
 	import { Router, Route } from "svelte-navigator";
 	import { SvelteToast } from "@zerodevx/svelte-toast";
+	import { state } from "./store";
+	
+	let title: string = "GYF";
+	$: title = `GYF - ${$state}`;
+	$: {
+		document.title = title;
+	}
+
 	export let url = "";
 </script>
+
+<title>{title}</title>
 
 <main>
 	<SvelteToast />

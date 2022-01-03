@@ -1,5 +1,6 @@
 <script lang="ts">
     import { navigate, useFocus } from "svelte-navigator";
+    import Header from "./assets/Header.svelte";
     import { pushWarn } from "./types";
 
     const query: URLSearchParams = new URLSearchParams(window.location.search);
@@ -37,4 +38,5 @@
     };
 </script>
 
+<Header />
 <input use:registerFocus type="button" value="NEW GAME" on:click={createGame} />

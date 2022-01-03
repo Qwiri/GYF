@@ -3,6 +3,7 @@
     import { useFocus } from "svelte-navigator";
 
     import Avatar from "../assets/Avatar.svelte";
+    import Header from "../assets/Header.svelte";
     import { username, ws } from "../store";
 
     export let id: string;
@@ -28,14 +29,7 @@
     };
 </script>
 
-<div class="header">
-    <h1>
-        GYF
-        <img src="https://i.gifer.com/2iFd.gif" height="64px" alt="cat" />
-    </h1>
-    <h2>ANY DESCRIPTION HERE</h2>
-    <input type="button" value="LEARN HOW TO PLAY" />
-</div>
+<Header />
 
 <div class="invite">
     <p>You were invited to game <span>{id}</span></p>
@@ -55,15 +49,12 @@
 
 <style lang="scss">
     .invite {
-        margin-top: 6em;
-
         input[type="button"] {
             background-color: #fff500;
             border-radius: 5px;
             font-weight: bold;
             &:hover {
                 cursor: pointer;
-
             }
         }
 
@@ -82,30 +73,6 @@
             span {
                 color: #ffcb7e;
             }
-        }
-    }
-    .header {
-        input[type="button"] {
-            background-color: #131313;
-            color: grey;
-            border: none;
-            padding: 1em;
-            border-radius: 7px;
-        }
-
-        h1 {
-            font-size: 6em;
-            color: greenyellow;
-            text-transform: uppercase;
-            font-weight: 1000;
-
-            margin: 0;
-            margin-top: 5rem;
-        }
-        h2 {
-            margin-top: 0;
-            font-weight: normal;
-            color: grey;
         }
     }
 </style>
