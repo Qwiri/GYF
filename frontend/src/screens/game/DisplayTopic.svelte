@@ -33,6 +33,10 @@
 <!-- Skip Button for Leader -->
 {#if $leader}
     <button on:click={sendSkip}>SKIP</button>
-    <!-- {#if $waitingFor && $waitingFor.length < Object.values($players).length}
-    {/if} -->
 {/if}
+
+<style lang="scss">
+    button:hover {
+        cursor: pointer;
+    }
+</style>

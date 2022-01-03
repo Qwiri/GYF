@@ -61,6 +61,10 @@
             background-color: #fff500;
             border-radius: 5px;
             font-weight: bold;
+            &:hover {
+                cursor: pointer;
+
+            }
         }
 
         input[type="text"] {

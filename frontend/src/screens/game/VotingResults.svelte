@@ -76,6 +76,10 @@
         font-weight: bold;
         font-size: 1.3rem;
         margin-top: 1em;
+
+        &:hover {
+            cursor: pointer;
+        }
     }
 
     @keyframes cooliconSlideIn {

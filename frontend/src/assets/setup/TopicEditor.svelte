@@ -49,6 +49,14 @@ import { toast } from "@zerodevx/svelte-toast";
     li {
         list-style: none;
     }
+
+    input[type="button"]:hover {
+        cursor: pointer;
+    }
+    .clickable:hover {
+        cursor: pointer;
+    }
+
 </style>
 
 <!-- display topics -->
@@ -71,7 +79,7 @@ import { toast } from "@zerodevx/svelte-toast";
 
 <!-- start game button -->
 {#if Object.keys($players).length >= 3}
-    <button on:click={startGame}>Start game!</button>
+    <button class="clickable" on:click={startGame}>Start game!</button>
 {:else}
     <button>Need {3 - Object.keys($players).length} more players!</button>
 {/if}
