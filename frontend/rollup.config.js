@@ -31,6 +31,16 @@ function serve() {
 	};
 }
 
+function devStagingProd(dev, staging, prod) {
+	if (process.env.BUILD == "development") {
+		return dev;
+	}
+	if (process.env.BUILD == "staging") {
+		return staging;
+	}
+	return prod;
+}
+
 export default {
 	input: 'src/main.ts',
 	output: {
@@ -41,12 +51,13 @@ export default {
 	},
 	plugins: [
 		replace({
-			"http://127.0.0.1:8080": process.env.BUILD == "development" ? "http://127.0.0.1:8080" : "https://backend.staging.gyf.d2a.io",
-			"127.0.0.1:8080": process.env.BUILD == "development" ? "127.0.0.1:8080" : "https://backend.staging.gyf.d2a.io",
-			"http://localhost:8080": process.env.BUILD == "development" ? "http://localhost:8080" : "https://backend.staging.gyf.d2a.io",
-			"localhost:8080": process.env.BUILD == "development" ? "localhost:8080" : "https://backend.staging.gyf.d2a.io",
-			"ws://localhost:8080": process.env.BUILD == "development" ? "ws://localhost:8080" : "wss://backend.staging.gyf.d2a.io",
-			"ws://127.0.0.1:8080": process.env.BUILD == "development" ? "ws://127.0.0.1:8080" : "wss://backend.staging.gyf.d2a.io"
+			"http://127.0.0.1:8080": devStagingProd("http://127.0.0.1:8080", "https://backend.staging.gyf.d2a.io", "https://backend.prod.gyf.d2a.io"),
+			"127.0.0.1:8080": devStagingProd("127.0.0.1:8080", "backend.staging.gyf.d2a.io", "backend.prod.gyf.d2a.io"),
+			"http://localhost:8080": devStagingProd("http://localhost:8080", "https://backend.staging.gyf.d2a.io", "https://backend.prod.gyf.d2a.io"),
+			"localhost:8080": devStagingProd("localhost:8080", "backend.staging.gyf.d2a.io", "backend.prod.gyf.d2a.io"),
+
+			"ws://localhost:8080": devStagingProd("ws://localhost:8080", "wss://backend.staging.gyf.d2a.io", "wss://backend.prod.gyf.d2a.io"),
+			"ws://127.0.0.1:8080": devStagingProd("ws://127.0.0.1:8080", "wss://backend.staging.gyf.d2a.io", "wss://backend.prod.gyf.d2a.io"),
 		}),
 		svelte({
 			preprocess: sveltePreprocess({ sourceMap: !production }),
