@@ -50,7 +50,7 @@ jobs:
           tags: ghcr.io/qwiri/gyf-backend:prod
 
       - name: Restart staged Backend
-        run: curl http://backend.staged.gyf.d2a.io:9830/BACKEND_STAGED/${{ secrets.STAGED_DEPLOY_SECRET }}
+        run: curl http://backend.staging.gyf.d2a.io:9830/BACKEND_STAGED/${{ secrets.STAGED_DEPLOY_SECRET }}
 
       - if: steps.extract_branch.outputs.branch == 'main'
         name: Restart deployed Backend
