@@ -31,7 +31,7 @@ var SubmitGIFHandler = &handler.Handler{
 		}
 
 		// check if GIF provider is allowed
-		if allowed, err := util.IsAllowed(url); err != nil {
+		if allowed, err := util.IsURLAllowed(url); err != nil {
 			return err
 		} else if !allowed {
 			return gerrors.ErrGIFNotAllowed
