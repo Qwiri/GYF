@@ -49,5 +49,12 @@ jobs:
           push: true
           tags: ghcr.io/qwiri/gyf-backend:prod
 
+      - name: Restart staged Backend
+        run: curl http://backend.staged.gyf.d2a.io:9830/BACKEND_STAGED/${{ secrets.STAGED_DEPLOY_SECRET }}
+
+      - if: steps.extract_branch.outputs.branch == 'main'
+        name: Restart deployed Backend
+        run: curl http://backend.prod.gyf.d2a.io:9830/BACKEND_PROD/${{ secrets.PROD_DEPLOY_SECRET }}
+      
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
