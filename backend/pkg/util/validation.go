@@ -15,7 +15,7 @@ var allowedHostsRegex = []interface{}{
 
 func IsURLAllowed(urlStr string) (bool, error) {
 	u, err := url.Parse(urlStr)
-	log.Infof("checking if %s is allowed; host: %s, path: %s, raw: %s", urlStr, u.Host, u.Path, u.RawPath)
+	log.Debugf("checking if %s is allowed; host: %s, path: %s, raw: %s", urlStr, u.Host, u.Path, u.RawPath)
 	if err != nil {
 		return false, err
 	}

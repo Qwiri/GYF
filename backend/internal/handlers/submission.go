@@ -41,6 +41,9 @@ var SubmitGIFHandler = &handler.Handler{
 		sub := model.NewSubmission(client, url)
 		topic.Submissions[client.Name] = sub
 
+		// broadcast player submit
+		game.Broadcast(model.PSubmitGIF(client))
+
 		return game.CheckCycle(true, false)
 	}),
 }

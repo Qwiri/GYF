@@ -89,3 +89,7 @@ func PPlayerLeave(client *Client, reason string) *Response {
 func PWaitingFor(waitingFor ClientArray) *Response {
 	return NewResponse("WAITING_FOR", util.WrapStringArray(waitingFor.Names()...)...)
 }
+
+func PSubmitGIF(client *Client) *Response {
+	return NewResponse("SUBMIT_GIF", client.Name)
+}
