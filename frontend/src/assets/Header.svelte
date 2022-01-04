@@ -1,9 +1,8 @@
 <div class="header">
     <h1>
-        GYF
-        <img src="https://i.gifer.com/2iFd.gif" height="64px" alt="cat" />
+        <img src="/assets/gyf.gif" width="128px" alt="logo" class="logo" />
     </h1>
-    <h2>ANY DESCRIPTION HERE</h2>
+    <h2>Simple GIF Tournament</h2>
     <input type="button" value="LEARN HOW TO PLAY" />
 </div>
 
