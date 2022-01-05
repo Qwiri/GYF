@@ -9,6 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	recov "github.com/gofiber/fiber/v2/middleware/recover"
+	"math/rand"
 	"os"
 	"os/signal"
 	"strings"
@@ -38,7 +39,6 @@ func init() {
 
 func main() {
 	svr := server.NewServer(DevMode)
-	_ = svr.RouteCreateGame(nil) // TODO: remove dummy game
 
 	app := fiber.New(fiber.Config{
 		IdleTimeout: 5 * time.Second,
@@ -64,6 +64,12 @@ func main() {
 		corsConfig = cors.Config{
 			AllowOrigins: "https://prod.gyf.d2a.io, https://staging.gyf.d2a.io",
 		}
+
+		// "proper" random seed
+		rand.Seed(time.Now().Unix())
+	} else {
+		// create dummy game for debugging
+		_ = svr.RouteCreateGame(nil)
 	}
 	app.Use(cors.New(corsConfig))
 
