@@ -58,16 +58,14 @@
 
             <!-- Skip Button -->
             {#if $leader}
-                {#if $state != GameState.VotingResults}
-                    {#if $waitingFor && $waitingFor.length > 0}
-                        <button class="btn-force" on:click={skip}
-                            >Force Continue</button
-                        >
-                    {:else}
-                        <button class="btn-continue" on:click={skip}
-                            >Continue</button
-                        >
-                    {/if}
+                {#if $waitingFor && $waitingFor.length > 0}
+                    <button class="btn-force" on:click={skip}
+                        >Force Continue</button
+                    >
+                {:else}
+                    <button class="btn-continue" on:click={skip}
+                        >Continue</button
+                    >
                 {/if}
             {/if}
         {/if}
