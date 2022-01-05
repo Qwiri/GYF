@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/Qwiri/GYF/backend/pkg/gerrors"
+	"math/rand"
 	"strings"
 )
 
@@ -41,6 +42,14 @@ func (T *TopicArray) Delete(topic string) {
 			*T = append(*T, t)
 		}
 	}
+}
+
+func (T TopicArray) RandomTopic() (*Topic, error) {
+	arr := T
+	rand.Shuffle(len(arr), func(i, j int) {
+		arr[i], arr[j] = arr[j], arr[i]
+	})
+	return arr.NextTopic()
 }
 
 func (T TopicArray) NextTopic() (*Topic, error) {

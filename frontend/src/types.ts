@@ -49,6 +49,7 @@ export interface Preferences {
     MaxPlayers: number;
     MinTopics: number;
     MaxTopics: number;
+    ShuffleTopics: boolean;
 }
 
 import { toast } from "@zerodevx/svelte-toast";

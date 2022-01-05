@@ -253,7 +253,12 @@ func (g *Game) ForceEndGame(reason string) (err error) {
 func (g *Game) ForceNextRound() (err error) {
 	// get next topic
 	var topic *Topic
-	if topic, err = g.Topics.NextTopic(); err != nil {
+	if g.Preferences.ShuffleTopics {
+		topic, err = g.Topics.RandomTopic()
+	} else {
+		topic, err = g.Topics.NextTopic()
+	}
+	if err != nil {
 		if err == gerrors.ErrNoTopicsLeft {
 			err = g.ForceEndGame("NO_TOPIC_LEFT")
 		} else {
