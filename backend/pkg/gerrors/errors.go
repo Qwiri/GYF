@@ -5,11 +5,11 @@ import "errors"
 var (
 	// ErrGameNotFound is returned when a game id was specified but the according game was not found
 	ErrGameNotFound = errors.New("game not found")
-	// ErrGameStarted is returned when a client tries to join a game that already started
-	ErrGameStarted = errors.New("game already started")
 	// ErrGameStateAccess is returned when a client tries to execute a command that is disabled in the current state
 	// e.g. vote is disabled in the lobby
 	ErrGameStateAccess = errors.New("no access in that state")
+	// ErrPayloadTooLarge is returned when a client sent a payload larger than 4 KB
+	ErrPayloadTooLarge = errors.New("payload too large")
 
 	// ErrMessageTooShort is returned when a client sends an empty websocket message
 	ErrMessageTooShort = errors.New("message too short")

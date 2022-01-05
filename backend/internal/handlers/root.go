@@ -12,6 +12,8 @@ import (
 	"github.com/gofiber/websocket/v2"
 )
 
+const MaxPayloadLength = 4096
+
 var SpacesRegEx = regexp.MustCompile(`\s+`)
 
 var Handlers = map[string]*handler.Handler{
@@ -34,6 +36,10 @@ var Handlers = map[string]*handler.Handler{
 
 func OnClientMessage(conn *websocket.Conn, game *model.Game, msg string, devMode bool) error {
 	game.LastInteraction = time.Now() // update game's last interaction for janitor grace
+
+	if len(msg) > MaxPayloadLength {
+		return gerrors.ErrPayloadTooLarge
+	}
 
 	msg = strings.TrimSpace(msg)
 	if msg == "" {
