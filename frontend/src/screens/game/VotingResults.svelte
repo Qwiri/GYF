@@ -45,7 +45,7 @@
                         />
                     </svg>
                 {/if}
-                <span>{result.creator}</span>
+                <span class="{i === 0 ? 'firstText' : result.voters.length > 0 ? 'secondText' : ''}">{result.creator.toUpperCase()}</span>
                 <div class="votedBy overlay">
                     {#each result.voters as voter}
                         <div class="avatar">
@@ -115,10 +115,12 @@
         align-items: center;
         bottom: 0;
         left: 0;
-        padding: .2rem;
         padding-left: .5rem;
         height: 1rem;
         width: 100%;
+        font-weight: bold;
+        font-size: .8rem;
+        padding: .5rem;
     }
 
     .resultWrapper {
@@ -159,6 +161,13 @@
     }
     .second {
         --custom-bg: #2d9cdb82;
+    }
+
+    .firstText {
+        color: #FFCB7E
+    }
+    .secondText {
+        color: #2d9cdb;
     }
 
     .overlayWrapper {
