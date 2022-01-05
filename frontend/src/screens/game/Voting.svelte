@@ -94,6 +94,11 @@
         #votedGif {
             background-color: #2196537d;
             animation: plop-heart-bg .5s cubic-bezier(0.075, 0.82, 0.165, 1) 0s 1 alternate forwards;
+
+            &:hover {
+                box-shadow: none;
+                backdrop-filter: none;
+            }
         }
 
     }
