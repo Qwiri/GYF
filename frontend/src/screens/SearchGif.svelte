@@ -1,89 +1,76 @@
-<script lang="ts" >
-import TopicDisplay from "../assets/TopicDisplay.svelte";
-import { gifSubmitted, ws } from "../store";
+<script lang="ts">
+    import TopicDisplay from "../assets/TopicDisplay.svelte";
+    import { gifSubmitted, ws } from "../store";
+    import { Giphy, Provider, Providers, SearchResult } from "./search";
 
+    let provider: Provider = Giphy; // Make Giphy the default provider
 
-    let searchQuery;
-    let provider = "Giphy";
-    let searchResults = [];
+    let searchQuery: string;
+    let searchResults: Array<SearchResult> = [];
 
-    let submission = "";
-
+    let submission: string = "";
 
     const handleEnter = async (e: KeyboardEvent) => {
         if (e.key !== "Enter") {
             return;
         }
+        searchResults = await provider.search(searchQuery);
+    };
+
+    const submitGif = (e: MouseEvent, r: SearchResult) => {
+        submission = r.original_url;
+        $ws.send(`SUBMIT_GIF ${r.original_url}`);
+    };
+
+    const chooseNew = (_: MouseEvent) => {
+        $gifSubmitted = false;
+    };
+
+    const changeProvider = (_: MouseEvent) => {
+        provider = Providers[(Providers.indexOf(provider) + 1) % Providers.length];
+        // clear search results
         searchResults = [];
-
-        if (provider === "Giphy") {
-            let res = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=epo51yrPMWiwryp1w5xbOEK9gJUpGbIX&q=${searchQuery}`).catch(e => console.log(e));
-            let body = await res.json().catch(e => console.log(e))
-            searchResults = body.data;
-
-        } else if (provider === "Tenor") {
-            let res = await fetch(`https://g.tenor.com/v1/search?q=${searchQuery}&key=LIDSRZULELA&limiT=8`).catch(e => console.log(e));
-            let body = await res.json().catch(e => console.log(e))
-            searchResults = body.results;
-
-        }
-
-    }
-
-    const handleGifClick = (e: MouseEvent, r) => {
-        submission = returnGifFullUrl(r);
-        $ws.send(`SUBMIT_GIF ${returnGifFullUrl(r)}`)
-    }
-
-    const returnGifPreviewUrl = (r) => {
-        if (provider === "Giphy") {
-            return r.images.preview_gif.url;
-        } else if (provider === "Tenor") {
-            return r.media[0].nanogif.url;
-        }
-
-    }
-    const returnGifFullUrl = (r) => {
-        if (provider === "Giphy") {
-            return r.images.original.url;
-        } else if (provider === "Tenor") {
-            return r.media[0].gif.url;
-        }
-
-    }
-
-    const changeProvider = (e: MouseEvent) => {
-        searchResults = [];
-        if (provider === "Giphy") {
-            provider = "Tenor";
-
-        } else if (provider === "Tenor") {
-            provider = "Giphy";
-        }
-
-
-    }
-
+    };
 </script>
+
 <TopicDisplay />
 {#if !$gifSubmitted}
     <div id="searchWrapper">
         <div id="searchBarWrapper">
             <div id="providerChoice">
-                <span id="shownProvider">{provider}</span>
-                <span id="otherProvider" on:click="{changeProvider}">{provider === "Giphy" ? "Tenor" : "Giphy"}</span>
+                <span id="shownProvider">{provider.name}</span>
+                <span id="otherProvider" on:click={changeProvider}>
+                    {Providers[
+                        (Providers.indexOf(provider) + 1) % Providers.length
+                    ].name}
+                </span>
             </div>
-            <input type="text" placeholder="Search via {provider}" on:keypress={handleEnter} bind:value={searchQuery}>
-            {#if provider === "Giphy"}
-                <img id="poweredByGiphy" src="/assets/Poweredby_100px-Black_VertLogo.png" alt="Powered by Giphy" />
+            <input
+                type="text"
+                placeholder="Search via {provider.name}"
+                on:keypress={handleEnter}
+                bind:value={searchQuery}
+            />
+
+            <!-- Display Giphy Badge -->
+            {#if provider === Giphy}
+                <img
+                    id="poweredByGiphy"
+                    src="/assets/Poweredby_100px-Black_VertLogo.png"
+                    alt="Powered by Giphy"
+                />
             {/if}
         </div>
         <div id="resultWrapper">
-            {#if searchResults !== []}
-                {#each searchResults as r}
-                <div class="imgContainer">
-                    <img src="{returnGifPreviewUrl(r)}" on:click={e => handleGifClick(e, r)} alt="gif">
-                </div>
+            {#if searchResults.length > 0}
+                {#each searchResults as result}
+                    <div class="imgContainer">
+                        <img
+                            src={result.preview_url}
+                            on:click={(e) => submitGif(e, result)}
+                            alt="gif"
+                        />
+                    </div>
                 {/each}
             {/if}
         </div>
@@ -92,7 +79,7 @@ import { gifSubmitted, ws } from "../store";
     <div id="submissionWrapper">
         <h1>Your Submission</h1>
         <img id="submission" src={submission} alt="Your submission" />
-        <button on:click={e => {$gifSubmitted = false}}>Choose another</button>
+        <button on:click={chooseNew}>Choose another</button>
     </div>
 {/if}
 
@@ -112,7 +99,7 @@ import { gifSubmitted, ws } from "../store";
     }
 
     button {
-        background-color: #24FF00;
+        background-color: #24ff00;
         margin-top: 1rem;
 
         &:hover {
@@ -122,7 +109,7 @@ import { gifSubmitted, ws } from "../store";
 
     img:hover {
         cursor: pointer;
-        opacity: .5;
+        opacity: 0.5;
     }
 
     .imgContainer {
@@ -147,6 +134,7 @@ import { gifSubmitted, ws } from "../store";
     #otherProvider {
         display: none;
     }
+
     #providerChoice {
         margin: 1rem;
         width: 5rem;
@@ -154,7 +142,7 @@ import { gifSubmitted, ws } from "../store";
 
     #providerChoice:hover span {
         display: block;
-        color:white;
+        color: white;
 
         &:before {
             content: "";
@@ -166,7 +154,6 @@ import { gifSubmitted, ws } from "../store";
             &:before {
                 content: "🡆";
             }
-
         }
     }
 
