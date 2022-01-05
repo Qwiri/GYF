@@ -351,7 +351,7 @@ func (g *Game) WaitingForVote(topic *Topic) (res ClientArray) {
 	}
 	for _, c := range g.Clients {
 		// if the client hasn't submitted any GIF, we don't have to wait for that client
-		if !topic.Submissions.HasSubmittedGIF(c) {
+		if len(topic.Submissions.AllExceptFrom(c)) == 0 {
 			continue
 		}
 		if !voters.Contains(c) {
