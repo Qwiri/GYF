@@ -1,17 +1,17 @@
 <script>
-import Avatar from "../../assets/Avatar.svelte";
-import Chat from "../../assets/Chat.svelte";
-import Stats from "../../assets/Stats.svelte";
+    import Avatar from "../../assets/Avatar.svelte";
+    import Chat from "../../assets/Chat.svelte";
+    import Stats from "../../assets/Stats.svelte";
 
-import { state, stats, waitingFor } from "../../store";
-import { GameState } from "../../types";
+    import { state, stats, waitingFor } from "../../store";
+    import { GameState } from "../../types";
 
-// components
-import DisplayTopic from "../game/DisplayTopic.svelte";
-import Voting from "../game/Voting.svelte";
-import VotingResults from "../game/VotingResults.svelte";
-import SearchGif from "../SearchGif.svelte";
-import GameEnd from "../lobby/GameEnd.svelte";
+    // components
+    import DisplayTopic from "../game/DisplayTopic.svelte";
+    import Voting from "../game/Voting.svelte";
+    import VotingResults from "../game/VotingResults.svelte";
+    import SearchGif from "../SearchGif.svelte";
+    import GameEnd from "../lobby/GameEnd.svelte";
 </script>
 
 <!-- Player Leaderboard -->
@@ -46,26 +46,27 @@ import GameEnd from "../lobby/GameEnd.svelte";
                 {/each}
                 <hr />
             {/if}
-        <!-- Game -->
-        {#if $state == GameState.SubmitGIF}
-            <SearchGif />
-        {:else if $state == GameState.Vote}
-            <Voting />
-        {:else if $state == GameState.VoteResults}
-            <VotingResults />
-        {/if}
-        <!-- Waiting For Block -->
-        {#if $waitingFor && $waitingFor.length > 0}
-            <hr />
-            <h3>
-                Waiting for
-                <span class="waiting">{$waitingFor.length}</span>
-                more people
-            </h3>
-            {#each $waitingFor as player}
-                <Avatar user={player} width="32px" />
-            {/each}
-            <hr />
+            <!-- Game -->
+            {#if $state == GameState.SubmitGIF}
+                <SearchGif />
+            {:else if $state == GameState.Vote}
+                <Voting />
+            {:else if $state == GameState.VoteResults}
+                <VotingResults />
+            {/if}
+            <!-- Waiting For Block -->
+            {#if $waitingFor && $waitingFor.length > 0}
+                <hr />
+                <h3>
+                    Waiting for
+                    <span class="waiting">{$waitingFor.length}</span>
+                    more people
+                </h3>
+                {#each $waitingFor as player}
+                    <Avatar user={player} width="32px" />
+                {/each}
+                <hr />
+            {/if}
         {/if}
     </div>
     <div id="chatContainer" class="screenSub">
