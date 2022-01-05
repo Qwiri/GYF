@@ -32,6 +32,7 @@ var Handlers = map[string]*handler.Handler{
 	"VOTE":          VoteCastHandler,
 	"NEXT_ROUND":    NextRoundHandler,
 	"STATS":         StatsHandler,
+	"CHANGE_PREF":   ChangePreferenceHandler,
 }
 
 func OnClientMessage(conn *websocket.Conn, game *model.Game, msg string, devMode bool) error {

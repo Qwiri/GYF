@@ -3,7 +3,7 @@
     import Chat from "../../assets/Chat.svelte";
     import Stats from "../../assets/Stats.svelte";
 
-    import { state, stats, waitingFor } from "../../store";
+    import { leader, state, stats, waitingFor, ws } from "../../store";
     import { GameState } from "../../types";
 
     // components
@@ -11,6 +11,16 @@
     import VotingResults from "../game/VotingResults.svelte";
     import SearchGif from "../SearchGif.svelte";
     import GameEnd from "../lobby/GameEnd.svelte";
+    import { toast } from "@zerodevx/svelte-toast";
+
+    function skip() {
+        toast.push("Skipping...");
+        if ($state === GameState.VotingResults) {
+            $ws.send("NEXT_ROUND");
+        } else {
+            $ws.send("SKIP");
+        }
+    }
 </script>
 
 <!-- Player Leaderboard -->
@@ -45,6 +55,19 @@
                 {/each}
                 <hr />
             {/if}
+
+            <!-- Skip Button -->
+            {#if $leader}
+                {#if $waitingFor && $waitingFor.length > 0}
+                    <button class="btn-force" on:click={skip}
+                        >Force Continue</button
+                    >
+                {:else}
+                    <button class="btn-continue" on:click={skip}
+                        >Continue</button
+                    >
+                {/if}
+            {/if}
         {/if}
     </div>
     <div id="chatContainer" class="screenSub">
@@ -72,5 +95,25 @@
     }
     .waiting {
         color: greenyellow;
+    }
+
+    button {
+        font-weight: bold;
+        border: none;
+        border-radius: 7px;
+
+        font-size: 1.3rem;
+        margin-top: 1em;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+
+    .btn-force {
+        background-color: salmon;
+    }
+    .btn-continue {
+        background-color: lightgreen;
     }
 </style>

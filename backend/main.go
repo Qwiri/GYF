@@ -99,8 +99,8 @@ func main() {
 		}
 		sc <- os.Interrupt
 	}(sc)
-	signal.Notify(sc, syscall.SIGKILL, syscall.SIGINT, syscall.SIGTERM)
-	_ = <-sc
+	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM)
+	<-sc
 
 	log.Info("Shutting down WebServer")
 	if err := app.Shutdown(); err != nil {

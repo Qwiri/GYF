@@ -2,10 +2,6 @@
     import Avatar from "../../assets/Avatar.svelte";
     import TopicDisplay from "../../assets/TopicDisplay.svelte";
     import { leader, votingResults, ws } from "../../store";
-
-    const nextRound = (event: MouseEvent) => {
-        $ws.send("NEXT_ROUND");
-    };
 </script>
 
 <TopicDisplay />
@@ -49,7 +45,7 @@
                         />
                     </svg>
                 {/if}
-                <span>{result.creator}</span>
+                <span class="{i === 0 ? 'firstText' : result.voters.length > 0 ? 'secondText' : ''}">{result.creator.toUpperCase()}</span>
                 <div class="votedBy overlay">
                     {#each result.voters as voter}
                         <div class="avatar">
@@ -62,26 +58,7 @@
     {/each}
 </div>
 
-<!-- Leader Specific Actions -->
-{#if $leader}
-    <div class="leaderActions">
-        <input type="button" value="NEXT ROUND" on:click={nextRound} />
-    </div>
-{/if}
-
 <style lang="scss">
-    input[type="button"] {
-        background-color: greenyellow;
-        border-radius: 5px;
-        font-weight: bold;
-        font-size: 1.3rem;
-        margin-top: 1em;
-
-        &:hover {
-            cursor: pointer;
-        }
-    }
-
     @keyframes cooliconSlideIn {
         from {
         }
@@ -138,10 +115,12 @@
         align-items: center;
         bottom: 0;
         left: 0;
-        padding: .2rem;
         padding-left: .5rem;
         height: 1rem;
         width: 100%;
+        font-weight: bold;
+        font-size: .8rem;
+        padding: .5rem;
     }
 
     .resultWrapper {
@@ -182,6 +161,13 @@
     }
     .second {
         --custom-bg: #2d9cdb82;
+    }
+
+    .firstText {
+        color: #FFCB7E
+    }
+    .secondText {
+        color: #2d9cdb;
     }
 
     .overlayWrapper {

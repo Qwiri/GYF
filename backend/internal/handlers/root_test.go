@@ -32,10 +32,4 @@ func TestOnClientMessage(t *testing.T) {
 	assert.NotEqual(t, err, gerrors.ErrUnknownCommand)
 	err = OnClientMessage(conn, game, "HAWDHAWDHAWDH", false)
 	assert.Equal(t, err, gerrors.ErrUnknownCommand)
-
-	// check devonly
-	err = OnClientMessage(conn, game, "SKIP", true)
-	assert.NotEqual(t, err, gerrors.ErrDevOnly)
-	err = OnClientMessage(conn, game, "SKIP", false)
-	assert.Equal(t, err, gerrors.ErrDevOnly)
 }

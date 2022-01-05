@@ -21,6 +21,7 @@ export const preferences: Writable<Preferences> = writable({
     MinPlayers: -1,
     MaxTopics: -1,
     MinTopics: -1,
+    ShuffleTopics: true,
 });
 
 export const round: Writable<Round> = writable({

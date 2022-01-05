@@ -39,7 +39,6 @@ var SkipHandler = &handler.Handler{
 	AccessLevel: handler.AccessLeader,
 	Bounds:      util.Bounds(util.BoundExact(0)),
 	StateLevel:  util.StateInGame,
-	DevOnly:     true,
 	Handler: handler.BasicHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client) error {
 		return game.CheckCycle(false, true)
 	}),
