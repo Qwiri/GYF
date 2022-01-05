@@ -62,6 +62,7 @@
             justify-content: center;
             width: clamp(200px, 20vw, 400px);
             height: clamp(200px, 20vw, 400px);
+            overflow: hidden;
         }
     }
 </style>
