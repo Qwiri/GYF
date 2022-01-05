@@ -27,7 +27,9 @@ var (
 	ErrArgLength = errors.New("unexpected arg length")
 
 	// ErrMessageEmpty is used by the chat handler and is returned when an empty chat message was sent
-	ErrMessageEmpty = errors.New("message empty")
+	ErrMessageEmpty      = errors.New("message empty")
+	ErrTypeInvalid       = errors.New("type invalid")
+	ErrUnknownPreference = errors.New("unknown preference")
 
 	// ErrNameInvalid is used by the join handler and is returned when the requested username doesn't meet the requirements
 	ErrNameInvalid = errors.New("name invalid")

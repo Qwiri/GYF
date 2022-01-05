@@ -2,10 +2,6 @@
     import Avatar from "../../assets/Avatar.svelte";
     import TopicDisplay from "../../assets/TopicDisplay.svelte";
     import { leader, votingResults, ws } from "../../store";
-
-    const nextRound = (event: MouseEvent) => {
-        $ws.send("NEXT_ROUND");
-    };
 </script>
 
 <TopicDisplay />
@@ -62,26 +58,7 @@
     {/each}
 </div>
 
-<!-- Leader Specific Actions -->
-{#if $leader}
-    <div class="leaderActions">
-        <input type="button" value="NEXT ROUND" on:click={nextRound} />
-    </div>
-{/if}
-
 <style lang="scss">
-    input[type="button"] {
-        background-color: greenyellow;
-        border-radius: 5px;
-        font-weight: bold;
-        font-size: 1.3rem;
-        margin-top: 1em;
-
-        &:hover {
-            cursor: pointer;
-        }
-    }
-
     @keyframes cooliconSlideIn {
         from {
         }

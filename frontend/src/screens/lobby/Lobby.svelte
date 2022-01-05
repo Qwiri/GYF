@@ -3,7 +3,7 @@
 
     import Avatar from "../../assets/Avatar.svelte";
     import TopicEditor from "../../assets/setup/TopicEditor.svelte";
-    import { leader, players, username } from "../../store";
+    import { leader, players, preferences, username, ws } from "../../store";
 
     /**
      * Please refactor this. Thanks! :)
@@ -13,7 +13,7 @@
             location.protocol,
             "//",
             location.host,
-            location.pathname
+            location.pathname,
         ];
         let url = urlPieces.join("");
 
@@ -22,11 +22,7 @@
         const gameID = url.slice(i);
         url = url.slice(0, i);
 
-        return [
-            url + gameID, 
-            url, 
-            gameID
-        ];
+        return [url + gameID, url, gameID];
     }
 
     function copyShareURL(_: MouseEvent) {
@@ -38,6 +34,32 @@
         document.body.removeChild(copyText);
 
         toast.push("Copied invite URL to clipboard!");
+    }
+
+    let checkedAutoSkip: boolean;
+    let checkedShuffleTopics: boolean;
+
+    $: checkedAutoSkip = $preferences.AutoSkip;
+    $: checkedShuffleTopics = $preferences.ShuffleTopics;
+
+    function clickChangeAutoSkip(event: MouseEvent) {
+        $ws.send(
+            "CHANGE_PREF " +
+                JSON.stringify({
+                    key: "AutoSkip",
+                    value: !checkedAutoSkip,
+                })
+        );
+    }
+
+    function clickChangeShuffleTopics(event: MouseEvent) {
+        $ws.send(
+            "CHANGE_PREF " +
+                JSON.stringify({
+                    key: "ShuffleTopics",
+                    value: !checkedShuffleTopics,
+                })
+        );
     }
 </script>
 
@@ -61,6 +83,34 @@
 <!-- Leader specific actions -->
 {#if $leader}
     <TopicEditor />
+
+    <div class="leaderActions">
+        <input
+            id="cbChangeAutoSkip"
+            type="checkbox"
+            on:click={clickChangeAutoSkip}
+            bind:checked={checkedAutoSkip}
+        />
+        <label
+            for="cbChangeAutoSkip"
+            style="color: {checkedAutoSkip ? 'greenyellow' : 'salmon'};"
+        >
+            Auto Skip
+        </label>
+
+        <input
+            id="cbChangeShuffleTopics"
+            type="checkbox"
+            on:click={clickChangeShuffleTopics}
+            bind:checked={checkedShuffleTopics}
+        />
+        <label
+            for="cbChangeShuffleTopics"
+            style="color: {checkedShuffleTopics ? 'greenyellow' : 'salmon'};"
+        >
+            Shuffle Topics
+        </label>
+    </div>
 {/if}
 
 <!-- share game -->
