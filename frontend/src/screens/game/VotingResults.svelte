@@ -120,7 +120,7 @@
         width: 100%;
         font-weight: bold;
         font-size: .8rem;
-        padding: .5rem;
+        padding: .8rem;
     }
 
     .resultWrapper {
