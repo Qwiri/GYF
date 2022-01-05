@@ -93,3 +93,7 @@ func PWaitingFor(waitingFor ClientArray) *Response {
 func PSubmitGIF(client *Client) *Response {
 	return NewResponse("SUBMIT_GIF", client.Name)
 }
+
+func PStart() *Response {
+	return NewResponse("START")
+}

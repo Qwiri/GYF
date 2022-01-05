@@ -11,6 +11,7 @@ import DisplayTopic from "../game/DisplayTopic.svelte";
 import Voting from "../game/Voting.svelte";
 import VotingResults from "../game/VotingResults.svelte";
 import SearchGif from "../SearchGif.svelte";
+import GameEnd from "../lobby/GameEnd.svelte";
 </script>
 
 <!-- Player Leaderboard -->
@@ -21,6 +22,30 @@ import SearchGif from "../SearchGif.svelte";
         {/if}
     </div>
     <div id="screenMain">
+        {#if $state == GameState.GameEnd}
+            <GameEnd />
+        {:else}
+            <!-- Game -->
+            {#if $state == GameState.SubmitGIF}
+                <SearchGif />
+            {:else if $state == GameState.Vote}
+                <Voting />
+            {:else if $state == GameState.VoteResults}
+                <VotingResults />
+            {/if}
+            <!-- Waiting For Block -->
+            {#if $waitingFor && $waitingFor.length > 0}
+                <hr />
+                <h3>
+                    Waiting for
+                    <span class="waiting">{$waitingFor.length}</span>
+                    more people
+                </h3>
+                {#each $waitingFor as player}
+                    <Avatar user={player} width="32px" />
+                {/each}
+                <hr />
+            {/if}
         <!-- Game -->
         {#if $state == GameState.SubmitGIF}
             <SearchGif />
@@ -33,8 +58,8 @@ import SearchGif from "../SearchGif.svelte";
         {#if $waitingFor && $waitingFor.length > 0}
             <hr />
             <h3>
-                Waiting for 
-                <span class="waiting">{$waitingFor.length}</span> 
+                Waiting for
+                <span class="waiting">{$waitingFor.length}</span>
                 more people
             </h3>
             {#each $waitingFor as player}
@@ -48,10 +73,7 @@ import SearchGif from "../SearchGif.svelte";
     </div>
 </div>
 
-
-
 <style lang="scss">
-
     #wholeScreen {
         display: flex;
         flex-direction: row;
@@ -69,7 +91,7 @@ import SearchGif from "../SearchGif.svelte";
     #chatContainer {
         align-self: flex-end;
     }
-.waiting {
-    color: greenyellow;
-}
+    .waiting {
+        color: greenyellow;
+    }
 </style>

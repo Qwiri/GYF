@@ -1,13 +1,19 @@
 import { toast } from "@zerodevx/svelte-toast";
 import { navigate } from "svelte-navigator";
 import { chatMessages, leader, players, round, state, stats, submissions, topics, username, waitingFor, votingResults, preferences, gifSubmitted } from "./store";
-import { ChatMessage, GameState, isLeader, Player, pushWarn, Response } from "./types";
+import { ChatMessage, GameState, isLeader, Player, pushWarn, Response, VotingResult } from "./types";
 
 let localUsername: string;
 username.subscribe(n => localUsername = n);
 
 let localPlayers: { [name: string]: Player };
 players.subscribe(n => localPlayers = n);
+
+let localVoteResults: Array<VotingResult>;
+votingResults.subscribe(n => localVoteResults = n);
+
+let localState: GameState;
+state.subscribe(n => localState = n);
 
 const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any } = {
     JOIN: (_: WebSocket, res: Response) => {
@@ -86,10 +92,17 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
     },
 
     VOTE_START: (_, res: Response) => {
+        // clear previous vote results
+        votingResults.set([]);
+
+        // load submissions from backend
         submissions.set(res.args);
     },
 
     VOTE_RESULTS: (_: WebSocket, res: Response) => {
+        // reset submissions
+        submissions.set([]);
+
         if (!res._s) {
             return;
         }
@@ -125,9 +138,14 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
 
     STATE: (_, res: Response) => {
         const _state = res.args[0];
-        if (GameState[_state]) {
+        const _gs = GameState[_state];
+        if (_gs) {
+            if (_gs === "Lobby" && localState === GameState.GameEnd) {
+                console.log("Skipped State Change.");
+                return;
+            }
             state.set(_state);
-            console.log("changed state to", _state);
+            console.log("changed state to", _state, "::", GameState[_state]);
         }
     },
 
@@ -148,9 +166,26 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
         if (res.args[0] == localUsername) {
             gifSubmitted.set(true);
         }
-    }
+    },
+
+    GAME_END: (_, res: Response) => {
+        toast.push(`Game ended (${res.args[0]})! Thanks for playing!`);
+        state.set(GameState.GameEnd);
+    },
+
+    START: (_, res: Response) => {
+        // reset
+        resetGameValues();
+    },
 };
 
+export function resetGameValues() {
+    round.set({topic: '', currentRound: 0, totalRounds: 0});
+    stats.set({});
+    votingResults.set([]);
+    submissions.set([]);
+    waitingFor.set([]);
+}
 
 export function hijack(ws: WebSocket) {
     ws.onerror = (e) => {

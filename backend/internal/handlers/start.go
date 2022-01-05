@@ -30,6 +30,7 @@ var StartHandler = &handler.Handler{
 			return gerrors.ErrTooManyPlayers
 		}
 		// start next round
+		game.Broadcast(model.PStart())
 		return game.ForceNextRound()
 	}),
 }
