@@ -10,6 +10,7 @@ import { GameState } from "../../types";
 import DisplayTopic from "../game/DisplayTopic.svelte";
 import Voting from "../game/Voting.svelte";
 import VotingResults from "../game/VotingResults.svelte";
+import SearchGif from "../SearchGif.svelte";
 </script>
 
 <!-- Player Leaderboard -->
@@ -22,7 +23,7 @@ import VotingResults from "../game/VotingResults.svelte";
     <div id="screenMain">
         <!-- Game -->
         {#if $state == GameState.SubmitGIF}
-            <DisplayTopic />
+            <SearchGif />
         {:else if $state == GameState.Vote}
             <Voting />
         {:else if $state == GameState.VoteResults}

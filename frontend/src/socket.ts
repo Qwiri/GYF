@@ -1,6 +1,6 @@
 import { toast } from "@zerodevx/svelte-toast";
 import { navigate } from "svelte-navigator";
-import { chatMessages, leader, players, round, state, stats, submissions, topics, username, waitingFor, votingResults, preferences } from "./store";
+import { chatMessages, leader, players, round, state, stats, submissions, topics, username, waitingFor, votingResults, preferences, gifSubmitted } from "./store";
 import { ChatMessage, GameState, isLeader, Player, pushWarn, Response } from "./types";
 
 let localUsername: string;
@@ -77,6 +77,7 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
     },
 
     NEXT_ROUND: (_: WebSocket, res: Response) => {
+        gifSubmitted.set(false);
         round.set({
             topic: res.args[0],
             currentRound: res.args[1],
@@ -136,6 +137,17 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
 
     PREFERENCES: (_, res: Response) => {
         preferences.set(res.args[0]);
+    },
+
+    SUBMIT_GIF: (_, res: Response) => {
+        if (!res._s) {
+            handleErrors(res);
+            return;
+        }
+        toast.push(`'${res.args[0]}' submitted a gif!`)
+        if (res.args[0] == localUsername) {
+            gifSubmitted.set(true);
+        }
     }
 };
 

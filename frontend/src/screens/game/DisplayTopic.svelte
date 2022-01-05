@@ -26,6 +26,7 @@ import { onMount } from "svelte";
 <TopicDisplay />
 
 {#if gifBuffer}
+<h1>Your submission</h1>
     <p>
         <img width="200px" src={gifBuffer} alt="submitted gif" />
     </p>

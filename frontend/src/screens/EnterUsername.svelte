@@ -50,8 +50,9 @@
 <style lang="scss">
     .invite {
         input[type="button"] {
-            background-color: #fff500;
+            background-color: #24FF00;
             border-radius: 5px;
+            border: none;
             font-weight: bold;
             &:hover {
                 cursor: pointer;
@@ -71,7 +72,7 @@
         p {
             color: grey;
             span {
-                color: #ffcb7e;
+                color: #24FF00;
             }
         }
     }
