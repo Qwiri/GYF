@@ -1,7 +1,8 @@
 import { toast } from "@zerodevx/svelte-toast";
 import { navigate } from "svelte-navigator";
 import { chatMessages, leader, players, round, state, stats, submissions, topics, username, waitingFor, votingResults, preferences, gifSubmitted } from "./store";
-import { ChatMessage, GameState, isLeader, Player, pushWarn, Response, VotingResult } from "./types";
+import { GameState, isLeader, pushWarn } from "./types";
+import type { ChatMessage, Player, Response, VotingResult } from "./types";
 
 let localUsername: string;
 username.subscribe(n => localUsername = n);

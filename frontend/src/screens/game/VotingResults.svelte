@@ -201,11 +201,6 @@
         position: absolute;
     }
 
-    .creatorAvatar {
-        top: 0;
-        left: 0;
-    }
-
     .votedBy {
         display: flex;
         bottom: 0;

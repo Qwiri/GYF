@@ -1,7 +1,8 @@
 <script lang="ts">
     import TopicDisplay from "../assets/TopicDisplay.svelte";
     import { gifSubmitted, ws } from "../store";
-    import { Giphy, Provider, Providers, SearchResult } from "./search";
+    import { Giphy, Providers } from "./search";
+    import type { Provider, SearchResult } from "./search";
 
     let provider: Provider = Giphy; // Make Giphy the default provider
 
