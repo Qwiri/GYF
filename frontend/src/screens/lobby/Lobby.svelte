@@ -123,18 +123,20 @@
 
 <style lang="scss">
     #playerBar {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 10px;
-        grid-auto-rows: minmax(100px, auto);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        margin-bottom: 1rem;
+        gap: 1rem;
 
         .playerCard {
-            margin: 10px;
-            padding: 10px;
-            border-radius: 10px;
+            padding: .8rem;
+            border-radius: .8rem;
             background-color: #101010;
             color: white;
             font-size: 1.2em;
+            width: 10rem;
+            height: 10rem;
         }
 
         .playerName {

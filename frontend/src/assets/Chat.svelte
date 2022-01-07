@@ -40,15 +40,27 @@
     </div>
 </div>
 
-<style>
+<style lang="scss">
     #chatContainer {
         width: 80%;
         float: right;
         margin-right: 0.5rem;
         border-radius: 0.5rem;
+        display: flex;
+        flex-direction: column;
+
+        /* turn the chat arround, if on mobile */
+        @media (max-width: 40rem) {
+            flex-direction: column-reverse;
+        }
     }
     ul {
         padding: 0;
+        display: flex;
+        flex-direction: column;
+        @media (max-width: 40rem) {
+            flex-direction: column-reverse;
+        }
     }
     li {
         list-style: none;

@@ -128,6 +128,8 @@
         flex-direction: row;
         flex-wrap: wrap;
         gap: 2rem;
+        justify-content: center;
+
     }
 
     .coolicon {

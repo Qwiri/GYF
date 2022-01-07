@@ -53,6 +53,10 @@ import { toast } from "@zerodevx/svelte-toast";
     input[type="button"]:hover {
         cursor: pointer;
     }
+    input[type="file"] {
+        width: 100%;
+        max-width: 20rem;
+    }
     .clickable:hover {
         cursor: pointer;
     }

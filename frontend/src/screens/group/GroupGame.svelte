@@ -25,7 +25,7 @@
 
 <!-- Player Leaderboard -->
 <div id="wholeScreen">
-    <div class="screenSub">
+    <div id="statsWindow" class="screenSub">
         {#if $stats && Object.keys($stats).length > 0}
             <Stats />
         {/if}
@@ -78,16 +78,28 @@
 <style lang="scss">
     #wholeScreen {
         display: flex;
+        flex-wrap: wrap;
         flex-direction: row;
-        height: 100vh;
+        min-height: 100vh;
         align-items: center;
+        justify-content: center;
     }
 
+@media (min-width: 40rem) {
     .screenSub {
+
         width: 25vw;
     }
     #screenMain {
+
         width: 50vw;
+    }
+}
+
+    #screenMain {
+        flex-grow: 1;
+        flex-shrink: 1;
+        flex-basis: 20rem;
     }
 
     #chatContainer {

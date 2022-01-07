@@ -43,20 +43,27 @@
     {/if}
 {/if}
 
-<style>
+<style lang="scss">
     #wholeScreen {
         display: flex;
         flex-direction: row;
-        height: 100vh;
+        min-height: 100vh;
         align-items: center;
         justify-content: flex-end;
+
+        @media (max-width: 40rem) {
+            flex-direction: column;
+        }
     }
 
     #lobby {
         width: 50vw;
     }
     #chat {
-        width: 25vw;
-        align-self: flex-end;
+
+        @media (min-width: 40rem) {
+            width: 25vw;
+            align-self: flex-end;
+        }
     }
 </style>
