@@ -66,7 +66,7 @@ func (i BoundaryInt) String() string {
 		bob.WriteString(strconv.Itoa(*i.Max))
 	}
 	if i.Exact != nil {
-		bob.WriteString(" |= ")
+		bob.WriteString(" == ")
 		bob.WriteString(strconv.Itoa(*i.Exact))
 	}
 	bob.WriteRune(']')

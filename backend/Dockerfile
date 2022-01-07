@@ -16,7 +16,7 @@ RUN go mod graph | awk '{if ($1 !~ "@") print $2}' | xargs go get
 COPY . .
 
 # Build from sources
-RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o backend .
+RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o backend ./cmd/backend
 
 FROM alpine:3.15
 COPY --from=builder /usr/src/app/backend .
