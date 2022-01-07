@@ -29,14 +29,14 @@ func (e *Bob) Bytes() []byte {
 	return []byte(e.String())
 }
 
-func (e *Bob) If(cond bool, str string) string {
+func (*Bob) If(cond bool, str string) string {
 	if cond {
 		return str
 	}
 	return ""
 }
 
-func (e *Bob) IfElse(cond bool, str, els string) string {
+func (*Bob) IfElse(cond bool, str, els string) string {
 	if cond {
 		return str
 	}
