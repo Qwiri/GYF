@@ -10,13 +10,21 @@
     let searchResults: Array<SearchResult> = [];
 
     let submission: string = "";
+    let gifOffset: number = 0;
 
     const handleEnter = async (e: KeyboardEvent) => {
         if (e.key !== "Enter") {
             return;
         }
-        searchResults = await provider.search(searchQuery);
+        fetchGifs();
     };
+
+    const fetchGifs = async () => {
+        let newResults = await provider.search(searchQuery);
+        searchResults = [...searchResults, ...newResults];
+        console.log(searchResults)
+        gifOffset += 20;
+    }
 
     const submitGif = (e: MouseEvent, r: SearchResult) => {
         submission = r.original_url;
@@ -31,7 +39,9 @@
         provider = Providers[(Providers.indexOf(provider) + 1) % Providers.length];
         // clear search results
         searchResults = [];
+        gifOffset = 0;
     };
+
 </script>
 
 <TopicDisplay />
@@ -73,6 +83,7 @@
                         />
                     </div>
                 {/each}
+                <button on:click={fetchGifs}>Load more</button>
             {/if}
         </div>
     </div>
@@ -101,6 +112,7 @@
 
     button {
         background-color: #24ff00;
+        border: none;
         margin-top: 1rem;
 
         &:hover {
