@@ -2,17 +2,20 @@
     import Avatar from "../../assets/Avatar.svelte";
     import TopicDisplay from "../../assets/TopicDisplay.svelte";
     import { leader, votingResults, ws } from "../../store";
+
+
+    $: maxVotes = $votingResults[0]?.voters.length
 </script>
 
 <TopicDisplay />
 
 <h1>Voting results</h1>
 <div class="resultWrapper">
-    {#each $votingResults as result, i}
+    {#each $votingResults as result}
         <div class="votingResult">
             <img src={result.url} alt="Image of {result.creator}" />
-            <div class="overlayWrapper {i === 0 ? 'first' : result.voters.length > 0 ? 'second' : ''}">
-                {#if i === 0}
+            <div class="overlayWrapper {result.voters.length === maxVotes ? 'first' : result.voters.length > 0 ? 'second' : ''}">
+                {#if result.voters.length === maxVotes}
                     <svg
                         viewBox="0 0 44 46"
                         fill="none"
@@ -45,7 +48,7 @@
                         />
                     </svg>
                 {/if}
-                <span class="{i === 0 ? 'firstText' : result.voters.length > 0 ? 'secondText' : ''}">{result.creator.toUpperCase()}</span>
+                <span class="{result.voters.length === maxVotes ? 'firstText' : result.voters.length > 0 ? 'secondText' : ''}">{result.creator.toUpperCase()}</span>
                 <div class="votedBy overlay">
                     {#each result.voters as voter}
                         <div class="avatar">
