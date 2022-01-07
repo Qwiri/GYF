@@ -10,6 +10,8 @@ import (
 )
 
 var ChatHandler = &handler.Handler{
+	Description: "Sends a chat message",
+	Syntax:      "(...message!)",
 	AccessLevel: handler.AccessJoined,
 	Bounds:      util.Bounds(util.BoundMin(1)),
 	StateLevel:  util.StateAny,

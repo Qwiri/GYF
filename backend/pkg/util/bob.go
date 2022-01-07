@@ -28,3 +28,30 @@ func (e *Bob) Writef(msg string, args ...interface{}) {
 func (e *Bob) Bytes() []byte {
 	return []byte(e.String())
 }
+
+func (e *Bob) If(cond bool, str string) string {
+	if cond {
+		return str
+	}
+	return ""
+}
+
+func (e *Bob) IfElse(cond bool, str, els string) string {
+	if cond {
+		return str
+	}
+	return els
+}
+
+func (e *Bob) All(str ...string) {
+	for _, s := range str {
+		if s != "" {
+			_, _ = e.WriteString(s)
+		}
+	}
+}
+
+func (e *Bob) Alll(str ...string) {
+	e.All(str...)
+	e.NewLine()
+}

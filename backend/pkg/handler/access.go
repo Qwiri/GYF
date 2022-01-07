@@ -10,6 +10,12 @@ const (
 	AccessLeader
 )
 
+var Roles = map[string]Access{
+	"Guest":  AccessGuest,
+	"Joined": AccessJoined,
+	"Leader": AccessLeader,
+}
+
 func (a Access) Allowed(client *model.Client) bool {
 	// client is a guest
 	if client == nil {

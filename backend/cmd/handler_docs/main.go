@@ -75,18 +75,35 @@ func main() {
 }
 
 func generate() (bob util.Bob) {
+	bob.Writef("*Generated on %s*", time.Now().Format("02.01.2006 15:04:05"))
+	bob.NewLine(2)
+
 	// collect names
 	names := make([]string, len(handlers.Handlers))
 	i := 0
-	for name, _ := range handlers.Handlers {
+	for name := range handlers.Handlers {
 		names[i] = name
 		i += 1
 	}
-
 	// order ascending
 	sort.Strings(names)
 
-	for _, name := range names {
+	stateNames := make([]string, len(util.States))
+	i = 0
+	for name := range util.States {
+		stateNames[i] = name
+		i += 1
+	}
+	// order ascending
+	sort.Strings(stateNames)
+
+	for j, name := range names {
+		if j != 0 {
+			bob.NewLine()
+			_, _ = bob.WriteString("---")
+			bob.NewLine(2)
+		}
+
 		handler := handlers.Handlers[name]
 
 		bob.Writef("### %s", name)
@@ -95,11 +112,22 @@ func generate() (bob util.Bob) {
 		}
 		bob.NewLine(2)
 
-		bob.Writef("* Bounds: %s\n", handler.Bounds)
-		bob.Writef("* States: %v\n", handler.StateLevel)
-		bob.NewLine()
+		// Add description
+		if handler.Description != "" {
+			bob.Writef("> %s", handler.Description)
+			bob.NewLine(2)
+		}
+
+		// Add syntax
+		bob.All("`", name, bob.If(handler.Syntax != "", " "), handler.Syntax, "`")
+		bob.NewLine(2)
+
+		// Access
+		for _, stateName := range stateNames {
+			stateVal := util.States[stateName]
+			bob.Alll("- [", bob.IfElse(handler.AcceptsState(stateVal), "x", " "), "] ", stateName)
+		}
 	}
 
-	bob.Writef("*Generated on %s*", time.Now().Format("02.01.2006 15:04:05"))
 	return
 }
