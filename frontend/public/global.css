@@ -40,15 +40,18 @@ input, button, select, textarea {
 	border: 1px solid #ccc;
 	border-radius: 2px;
 }
+input[type="button"], button {
+	background-color: #24FF00;
+	border-radius: 5px;
+	border: none;
+	font-weight: bold;
+}
+input[type="button"]:hover, button:hover {
+	cursor: pointer;
+}
 
 input:disabled {
 	color: #ccc;
-}
-
-button {
-	color: #333;
-	background-color: #f4f4f4;
-	outline: none;
 }
 
 button:disabled {

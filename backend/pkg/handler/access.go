@@ -6,8 +6,13 @@ type Access uint8
 
 const (
 	AccessGuest Access = 1 << iota
-	AccessJoined
+	AccessPlayer
 	AccessLeader
+)
+
+const (
+	AccessJoined = AccessPlayer | AccessLeader
+	AccessAny    = AccessGuest | AccessJoined
 )
 
 func (a Access) Allowed(client *model.Client) bool {
@@ -15,7 +20,7 @@ func (a Access) Allowed(client *model.Client) bool {
 	if client == nil {
 		return a&AccessGuest == AccessGuest
 	}
-	if a&AccessJoined == AccessJoined {
+	if a&AccessPlayer == AccessPlayer {
 		// access requires joined access (if client has a name, the client has access)
 		return client.Name != ""
 	}

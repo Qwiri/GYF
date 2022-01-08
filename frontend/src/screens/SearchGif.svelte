@@ -15,8 +15,17 @@
         if (e.key !== "Enter") {
             return;
         }
-        searchResults = await provider.search(searchQuery);
+        fetchFirstGifs();
     };
+
+    const fetchFirstGifs = async () => {
+        searchResults = await provider.search(searchQuery);
+    }
+
+    const fetchGifs = async () => {
+        let newResults = await provider.search(searchQuery);
+        searchResults = [...searchResults, ...newResults];
+    }
 
     const submitGif = (e: MouseEvent, r: SearchResult) => {
         submission = r.original_url;
@@ -32,6 +41,7 @@
         // clear search results
         searchResults = [];
     };
+
 </script>
 
 <TopicDisplay />
@@ -47,8 +57,9 @@
                 </span>
             </div>
             <input
+                id="searchBar"
                 type="text"
-                placeholder="Search via {provider.name}"
+                placeholder="Search via {provider.name} 🔍"
                 on:keypress={handleEnter}
                 bind:value={searchQuery}
             />
@@ -73,6 +84,7 @@
                         />
                     </div>
                 {/each}
+                <button on:click={fetchGifs}>Load more</button>
             {/if}
         </div>
     </div>
@@ -85,6 +97,15 @@
 {/if}
 
 <style lang="scss">
+
+    #searchBar {
+        background-color: #000000;
+        color: #ffffff;
+        border: none;
+        border-radius: 4px;
+        font-size: 1.1rem;
+    }
+
     #searchWrapper {
         background-color: #131313;
     }
@@ -101,6 +122,7 @@
 
     button {
         background-color: #24ff00;
+        border: none;
         margin-top: 1rem;
 
         &:hover {
@@ -171,6 +193,7 @@
     }
 
     #poweredByGiphy {
+        margin-left: 1em;
         justify-self: flex-end;
 
         &:hover {

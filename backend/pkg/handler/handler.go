@@ -5,6 +5,8 @@ import (
 )
 
 type Handler struct {
+	Description string
+	Syntax      string
 	AccessLevel Access
 	Bounds      util.Boundaries
 	StateLevel  util.GameState

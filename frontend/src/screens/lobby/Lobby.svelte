@@ -93,7 +93,7 @@
         />
         <label
             for="cbChangeAutoSkip"
-            style="color: {checkedAutoSkip ? 'greenyellow' : 'salmon'};"
+            style="color: {checkedAutoSkip ? '#24FF00' : 'salmon'};"
         >
             Auto Skip
         </label>
@@ -106,7 +106,7 @@
         />
         <label
             for="cbChangeShuffleTopics"
-            style="color: {checkedShuffleTopics ? 'greenyellow' : 'salmon'};"
+            style="color: {checkedShuffleTopics ? '#24FF00' : 'salmon'};"
         >
             Shuffle Topics
         </label>
@@ -123,25 +123,27 @@
 
 <style lang="scss">
     #playerBar {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 10px;
-        grid-auto-rows: minmax(100px, auto);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-evenly;
+        margin-bottom: 1rem;
+        gap: 1rem;
 
         .playerCard {
-            margin: 10px;
-            padding: 10px;
-            border-radius: 10px;
+            padding: .8rem;
+            border-radius: .8rem;
             background-color: #101010;
             color: white;
             font-size: 1.2em;
+            width: 10rem;
+            height: 10rem;
         }
 
         .playerName {
             margin-top: 5px;
 
             .self {
-                color: greenyellow;
+                color: #24FF00;
                 font-weight: bold;
             }
         }
@@ -162,7 +164,7 @@
             background-color: #131313;
             padding: 0.5rem;
             span {
-                color: greenyellow;
+                color: #24FF00;
             }
         }
 
@@ -172,7 +174,7 @@
             border-radius: 7px;
             color: #131313;
             font-size: 1.2em;
-            background-color: greenyellow;
+            background-color: #24FF00;
             font-weight: bold;
 
             &:hover {

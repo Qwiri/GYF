@@ -12,6 +12,8 @@ import (
 )
 
 var JoinHandler = &handler.Handler{
+	Description: "Joins a game with a username",
+	Syntax:      "(username!)",
 	AccessLevel: handler.AccessGuest,
 	Bounds:      util.Bounds(util.BoundExact(1)),
 	StateLevel:  util.StateAny,

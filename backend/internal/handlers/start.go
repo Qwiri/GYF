@@ -9,6 +9,8 @@ import (
 )
 
 var StartHandler = &handler.Handler{
+	Description: "Starts a game",
+	Syntax:      "",
 	AccessLevel: handler.AccessLeader,
 	Bounds:      util.Bounds(util.BoundExact(0)),
 	StateLevel:  util.StateLobby,
@@ -36,6 +38,8 @@ var StartHandler = &handler.Handler{
 }
 
 var SkipHandler = &handler.Handler{
+	Description: "Skips to the next game circle",
+	Syntax:      "",
 	AccessLevel: handler.AccessLeader,
 	Bounds:      util.Bounds(util.BoundExact(0)),
 	StateLevel:  util.StateInGame,
@@ -45,6 +49,8 @@ var SkipHandler = &handler.Handler{
 }
 
 var NextRoundHandler = &handler.Handler{
+	Description: "Starts the next round (displays the next topic)",
+	Syntax:      "",
 	AccessLevel: handler.AccessLeader,
 	Bounds:      util.Bounds(util.BoundExact(0)),
 	StateLevel:  util.StateShowVotes,
