@@ -2,6 +2,7 @@ package util
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -20,9 +21,18 @@ func (e *Bob) NewLine(repeat ...int) {
 	e.WriteRune('\n')
 }
 
-//goland:noinspection ALL
 func (e *Bob) Writef(msg string, args ...interface{}) {
-	e.WriteString(fmt.Sprintf(msg, args...))
+	_, _ = e.WriteString(fmt.Sprintf(msg, args...))
+}
+
+func (e *Bob) Writefl(msg string, args ...interface{}) {
+	e.Writef(msg, args...)
+	e.NewLine()
+}
+
+func (e *Bob) Writel(msg string) {
+	_, _ = e.WriteString(msg)
+	e.NewLine()
 }
 
 func (e *Bob) Bytes() []byte {
@@ -43,15 +53,30 @@ func (*Bob) IfElse(cond bool, str, els string) string {
 	return els
 }
 
-func (e *Bob) All(str ...string) {
+func (e *Bob) All(str ...interface{}) {
 	for _, s := range str {
-		if s != "" {
-			_, _ = e.WriteString(s)
+		var sv string
+
+		switch t := s.(type) {
+		case string:
+			sv = t
+		case int:
+			sv = strconv.Itoa(t)
+		case fmt.Stringer:
+			sv = t.String()
+		// special
+		case rune:
+			_, _ = e.WriteRune(t)
+			continue
+		}
+
+		if sv != "" {
+			_, _ = e.WriteString(sv)
 		}
 	}
 }
 
-func (e *Bob) Alll(str ...string) {
+func (e *Bob) Alll(str ...interface{}) {
 	e.All(str...)
 	e.NewLine()
 }

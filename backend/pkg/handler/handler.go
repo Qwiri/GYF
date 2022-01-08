@@ -13,7 +13,3 @@ type Handler struct {
 	Handler     interface{}
 	DevOnly     bool
 }
-
-func (h *Handler) AcceptsState(state util.GameState) bool {
-	return h.StateLevel.Contains(state)
-}

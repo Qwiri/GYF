@@ -9,6 +9,8 @@ import (
 )
 
 var VoteCastHandler = &handler.Handler{
+	Description: "Votes for a submission",
+	Syntax:      "(url!)",
 	AccessLevel: handler.AccessJoined,
 	Bounds:      util.Bounds(util.BoundExact(1)),
 	StateLevel:  util.StateCastVotes,

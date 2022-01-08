@@ -33,6 +33,7 @@ var Handlers = map[string]*handler.Handler{
 	"NEXT_ROUND":    NextRoundHandler,
 	"STATS":         StatsHandler,
 	"CHANGE_PREF":   ChangePreferenceHandler,
+	"EXPLAIN":       ExplainHandler,
 }
 
 func OnClientMessage(conn *websocket.Conn, game *model.Game, msg string, devMode bool) error {
@@ -94,6 +95,8 @@ func OnClientMessage(conn *websocket.Conn, game *model.Game, msg string, devMode
 		err = hdl(conn, game, client, prefix)
 	case handler.PrefixedMessagedHandler:
 		err = hdl(conn, game, client, prefix, str[1:])
+	case handler.HandlersHandler:
+		err = hdl(conn, game, client, str[1:], Handlers)
 	default:
 		log.Warnf("cannot find h for %s", prefix)
 		err = gerrors.ErrInvalidHandler

@@ -9,6 +9,8 @@ import (
 )
 
 var SubmitGIFHandler = &handler.Handler{
+	Description: "Submits a GIF",
+	Syntax:      "(url!)",
 	AccessLevel: handler.AccessJoined,
 	Bounds:      util.Bounds(util.BoundExact(1)),
 	StateLevel:  util.StateSubmitGIF,

@@ -8,7 +8,9 @@ import (
 )
 
 var WhoAmIHandler = &handler.Handler{
-	AccessLevel: handler.AccessGuest | handler.AccessJoined | handler.AccessLeader,
+	Description: "Returns information about the client and game",
+	Syntax:      "",
+	AccessLevel: handler.AccessAny,
 	Bounds:      util.Bounds(util.BoundExact(0)),
 	StateLevel:  util.StateAny,
 	DevOnly:     true,

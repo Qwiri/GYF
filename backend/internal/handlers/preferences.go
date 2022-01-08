@@ -11,6 +11,8 @@ import (
 )
 
 var ChangePreferenceHandler = &handler.Handler{
+	Description: "Changes a game-setting",
+	Syntax:      `{ "key": (key!), "value": (value!)" }`,
 	AccessLevel: handler.AccessLeader,
 	Bounds:      util.Bounds(util.BoundMin(1)),
 	StateLevel:  util.StateAny,

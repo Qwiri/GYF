@@ -13,13 +13,6 @@ const (
 	StateInGame = StateSubmitGIF | StateCastVotes | StateShowVotes
 )
 
-var States = map[string]GameState{
-	"1. Lobby":             StateLobby,
-	"2. Submit GIF":        StateSubmitGIF,
-	"3. Cast Votes":        StateCastVotes,
-	"4. Show Vote Results": StateShowVotes,
-}
-
 func (g GameState) Contains(state GameState) bool {
 	return g&state == state
 }

@@ -12,6 +12,8 @@ import (
 )
 
 var TopicListHandler = &handler.Handler{
+	Description: "Returns a list with all topics from the current game",
+	Syntax:      "",
 	AccessLevel: handler.AccessLeader,
 	Bounds:      util.Bounds(util.BoundExact(0)),
 	StateLevel:  util.StateAny,
@@ -21,6 +23,8 @@ var TopicListHandler = &handler.Handler{
 }
 
 var TopicAddHandler = &handler.Handler{
+	Description: "Adds a new topic to the game",
+	Syntax:      "(topic!)",
 	AccessLevel: handler.AccessLeader,
 	Bounds:      util.Bounds(util.BoundMin(1)),
 	StateLevel:  util.StateLobby,
@@ -41,6 +45,8 @@ var TopicAddHandler = &handler.Handler{
 }
 
 var TopicAddAllHandler = &handler.Handler{
+	Description: "Adds all topics from a JSON array",
+	Syntax:      "(...topics: Array<string>!)",
 	AccessLevel: handler.AccessLeader,
 	Bounds:      util.Bounds(util.BoundMin(1)),
 	StateLevel:  util.StateLobby,
@@ -74,6 +80,8 @@ var TopicAddAllHandler = &handler.Handler{
 }
 
 var TopicRemoveHandler = &handler.Handler{
+	Description: "Removes a topic from the game",
+	Syntax:      "(topic!)",
 	AccessLevel: handler.AccessLeader,
 	Bounds:      util.Bounds(util.BoundMin(1)),
 	StateLevel:  util.StateLobby,
@@ -91,6 +99,8 @@ var TopicRemoveHandler = &handler.Handler{
 }
 
 var TopicClearHandler = &handler.Handler{
+	Description: "Removes all topics from the current game",
+	Syntax:      "",
 	AccessLevel: handler.AccessLeader,
 	Bounds:      util.Bounds(util.BoundExact(0)),
 	StateLevel:  util.StateLobby,

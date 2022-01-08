@@ -8,6 +8,8 @@ import (
 )
 
 var ListHandler = &handler.Handler{
+	Description: "Returns a list of all connected players from the current game",
+	Syntax:      "",
 	AccessLevel: handler.AccessJoined,
 	Bounds:      util.Bounds(util.BoundExact(0)),
 	StateLevel:  util.StateAny,

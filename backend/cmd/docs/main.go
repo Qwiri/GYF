@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/Qwiri/GYF/backend/internal/handlers"
+	"github.com/Qwiri/GYF/backend/internal/stringify"
 	"github.com/Qwiri/GYF/backend/pkg/util"
 	"os"
 	"path"
@@ -88,15 +89,6 @@ func generate() (bob util.Bob) {
 	// order ascending
 	sort.Strings(names)
 
-	stateNames := make([]string, len(util.States))
-	i = 0
-	for name := range util.States {
-		stateNames[i] = name
-		i += 1
-	}
-	// order ascending
-	sort.Strings(stateNames)
-
 	for j, name := range names {
 		if j != 0 {
 			bob.NewLine()
@@ -104,29 +96,8 @@ func generate() (bob util.Bob) {
 			bob.NewLine(2)
 		}
 
-		handler := handlers.Handlers[name]
-
-		bob.Writef("### %s", name)
-		if handler.DevOnly {
-			_, _ = bob.WriteString(" 🔰[^1]")
-		}
-		bob.NewLine(2)
-
-		// Add description
-		if handler.Description != "" {
-			bob.Writef("> %s", handler.Description)
-			bob.NewLine(2)
-		}
-
-		// Add syntax
-		bob.All("`", name, bob.If(handler.Syntax != "", " "), handler.Syntax, "`")
-		bob.NewLine(2)
-
-		// Access
-		for _, stateName := range stateNames {
-			stateVal := util.States[stateName]
-			bob.Alll("- [", bob.IfElse(handler.AcceptsState(stateVal), "x", " "), "] ", stateName)
-		}
+		h := handlers.Handlers[name]
+		stringify.HandlerToString(&bob, name, h)
 	}
 
 	return

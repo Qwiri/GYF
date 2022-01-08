@@ -8,6 +8,8 @@ import (
 )
 
 var StatsHandler = &handler.Handler{
+	Description: "Returns the points for each player",
+	Syntax:      "",
 	AccessLevel: handler.AccessJoined,
 	Bounds:      util.Bounds(util.BoundExact(0)),
 	StateLevel:  util.StateInGame & ^util.StateCastVotes,
