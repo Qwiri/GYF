@@ -1,4 +1,4 @@
-const defaultLimit: number = 30;
+const defaultLimit = 30;
 
 export interface Provider {
     name: string;
