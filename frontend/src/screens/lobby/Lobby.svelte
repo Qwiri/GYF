@@ -93,7 +93,7 @@
         />
         <label
             for="cbChangeAutoSkip"
-            style="color: {checkedAutoSkip ? 'greenyellow' : 'salmon'};"
+            style="color: {checkedAutoSkip ? '#24FF00' : 'salmon'};"
         >
             Auto Skip
         </label>
@@ -106,7 +106,7 @@
         />
         <label
             for="cbChangeShuffleTopics"
-            style="color: {checkedShuffleTopics ? 'greenyellow' : 'salmon'};"
+            style="color: {checkedShuffleTopics ? '#24FF00' : 'salmon'};"
         >
             Shuffle Topics
         </label>
@@ -143,7 +143,7 @@
             margin-top: 5px;
 
             .self {
-                color: greenyellow;
+                color: #24FF00;
                 font-weight: bold;
             }
         }
@@ -164,7 +164,7 @@
             background-color: #131313;
             padding: 0.5rem;
             span {
-                color: greenyellow;
+                color: #24FF00;
             }
         }
 
@@ -174,7 +174,7 @@
             border-radius: 7px;
             color: #131313;
             font-size: 1.2em;
-            background-color: greenyellow;
+            background-color: #24FF00;
             font-weight: bold;
 
             &:hover {
