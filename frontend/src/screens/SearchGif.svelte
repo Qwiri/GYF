@@ -10,20 +10,21 @@
     let searchResults: Array<SearchResult> = [];
 
     let submission: string = "";
-    let gifOffset: number = 0;
 
     const handleEnter = async (e: KeyboardEvent) => {
         if (e.key !== "Enter") {
             return;
         }
-        fetchGifs();
+        fetchFirstGifs();
     };
+
+    const fetchFirstGifs = async () => {
+        searchResults = await provider.search(searchQuery);
+    }
 
     const fetchGifs = async () => {
         let newResults = await provider.search(searchQuery);
         searchResults = [...searchResults, ...newResults];
-        console.log(searchResults)
-        gifOffset += 20;
     }
 
     const submitGif = (e: MouseEvent, r: SearchResult) => {
@@ -39,7 +40,6 @@
         provider = Providers[(Providers.indexOf(provider) + 1) % Providers.length];
         // clear search results
         searchResults = [];
-        gifOffset = 0;
     };
 
 </script>
