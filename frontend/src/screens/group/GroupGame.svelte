@@ -25,15 +25,16 @@
 
 <!-- Player Leaderboard -->
 <div id="wholeScreen">
-    <div id="statsWindow" class="screenSub">
-        {#if $stats && Object.keys($stats).length > 0}
-            <Stats />
-        {/if}
-    </div>
-    <div id="screenMain">
-        {#if $state == GameState.GameEnd}
-            <GameEnd />
-        {:else}
+    {#if $state == GameState.GameEnd}
+        <GameEnd />
+    {:else}
+            
+        <div id="statsWindow" class="screenSub">
+            {#if $stats && Object.keys($stats).length > 0}
+                <Stats />
+            {/if}
+        </div>
+        <div id="screenMain">
             <!-- Game -->
             {#if $state == GameState.SubmitGIF}
                 <SearchGif />
@@ -68,11 +69,11 @@
                     >
                 {/if}
             {/if}
-        {/if}
-    </div>
-    <div id="chatContainer" class="screenSub">
-        <Chat />
-    </div>
+        </div>
+        <div id="chatContainer" class="screenSub">
+            <Chat />
+        </div>
+    {/if}
 </div>
 
 <style lang="scss">

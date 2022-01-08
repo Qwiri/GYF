@@ -63,8 +63,6 @@
 
 <style lang="scss">
     @keyframes cooliconSlideIn {
-        from {
-        }
         0% {
             transform: translateY(100px);
         }

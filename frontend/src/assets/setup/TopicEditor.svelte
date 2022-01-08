@@ -61,6 +61,10 @@ import { toast } from "@zerodevx/svelte-toast";
         cursor: pointer;
     }
 
+    #clearTopicsButton {
+        background-color: white;
+    }
+
 </style>
 
 <!-- display topics -->
@@ -79,7 +83,7 @@ import { toast } from "@zerodevx/svelte-toast";
     bind:value={topicBuffer}
 />
 <input type="file" on:change="{loadFromFile}" />
-<input type="button" value="Clear Topics" on:click="{clearTopics}" />
+<input id="clearTopicsButton" type="button" value="Clear Topics" on:click="{clearTopics}" />
 
 <!-- start game button -->
 {#if Object.keys($players).length >= 3}
