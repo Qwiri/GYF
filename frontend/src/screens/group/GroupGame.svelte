@@ -46,11 +46,11 @@
             <!-- Waiting For Block -->
             {#if $waitingFor && $waitingFor.length > 0}
                 <hr />
-                <h3>
+                <p>
                     Waiting for
                     <span class="waiting">{$waitingFor.length}</span>
-                    more people
-                </h3>
+                    more {$waitingFor.length == 1 ? "player" : "players"} ⏱
+                </p>
                 {#each $waitingFor as player}
                     <Avatar user={player} width="32px" />
                 {/each}
@@ -77,6 +77,10 @@
 </div>
 
 <style lang="scss">
+    hr {
+        border-color: #010101;
+    }
+
     #wholeScreen {
         display: flex;
         flex-wrap: wrap;

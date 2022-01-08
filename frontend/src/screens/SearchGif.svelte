@@ -57,8 +57,9 @@
                 </span>
             </div>
             <input
+                id="searchBar"
                 type="text"
-                placeholder="Search via {provider.name}"
+                placeholder="Search via {provider.name} 🔍"
                 on:keypress={handleEnter}
                 bind:value={searchQuery}
             />
@@ -96,6 +97,15 @@
 {/if}
 
 <style lang="scss">
+
+    #searchBar {
+        background-color: #000000;
+        color: #ffffff;
+        border: none;
+        border-radius: 4px;
+        font-size: 1.1rem;
+    }
+
     #searchWrapper {
         background-color: #131313;
     }
@@ -183,6 +193,7 @@
     }
 
     #poweredByGiphy {
+        margin-left: 1em;
         justify-self: flex-end;
 
         &:hover {

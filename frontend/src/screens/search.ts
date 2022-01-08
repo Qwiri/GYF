@@ -1,3 +1,5 @@
+const defaultLimit: number = 30;
+
 export interface Provider {
     name: string;
     apiKey: string;
@@ -23,7 +25,7 @@ export const Giphy: Provider = {
         }
         this.lastQuery = query;
 
-        const res: Response = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${this.apiKey}&q=${query}&limit=20&offset=${this.offset}`);
+        const res: Response = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${this.apiKey}&q=${query}&limit=${defaultLimit}&offset=${this.offset}`);
         const body: any = await res.json();
 
         this.offset += 20;
@@ -52,7 +54,7 @@ export const Tenor: Provider = {
         }
         this.lastQuery = query;
 
-        const res: Response = await fetch(`https://g.tenor.com/v1/search?q=${query}&key=${this.apiKey}&limit=20&pos=${this.offset}`);
+        const res: Response = await fetch(`https://g.tenor.com/v1/search?q=${query}&key=${this.apiKey}&limit=${defaultLimit}&pos=${this.offset}`);
         const body: any = await res.json();
 
         this.offset = parseInt(body.next);
