@@ -1,6 +1,6 @@
 <script lang="ts">
     import Avatar from "../../assets/Avatar.svelte";
-    import { resetGameValues } from "../../socket";
+    import { resetGameValues } from "../../utils";
 
     import { state, username, stats, players } from "../../store";
     import { GameState } from "../../types";
