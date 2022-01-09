@@ -1,11 +1,10 @@
 <script lang="ts">
     import Avatar from "../../assets/Avatar.svelte";
-import Image from "../../assets/Image.svelte";
+    import Image from "../../assets/Image.svelte";
     import TopicDisplay from "../../assets/TopicDisplay.svelte";
-    import { leader, votingResults, ws } from "../../store";
+    import { votingResults } from "../../store";
 
-
-    $: maxVotes = $votingResults[0]?.voters.length
+    $: maxVotes = $votingResults[0]?.voters.length;
 </script>
 
 <TopicDisplay />
@@ -14,8 +13,19 @@ import Image from "../../assets/Image.svelte";
 <div class="resultWrapper">
     {#each $votingResults as result}
         <div class="votingResult">
-            <Image width="auto" height="auto" src={result.url} alt="Image of {result.creator}" />
-            <div class="overlayWrapper {result.voters.length === maxVotes ? 'first' : result.voters.length > 0 ? 'second' : ''}">
+            <Image
+                width="auto"
+                height="auto"
+                src={result.url}
+                alt="Image of {result.creator}"
+            />
+            <div
+                class="overlayWrapper {result.voters.length === maxVotes
+                    ? 'first'
+                    : result.voters.length > 0
+                    ? 'second'
+                    : ''}"
+            >
                 {#if result.voters.length === maxVotes}
                     <svg
                         viewBox="0 0 44 46"
@@ -49,7 +59,13 @@ import Image from "../../assets/Image.svelte";
                         />
                     </svg>
                 {/if}
-                <span class="{result.voters.length === maxVotes ? 'firstText' : result.voters.length > 0 ? 'secondText' : ''}">{result.creator.toUpperCase()}</span>
+                <span
+                    class={result.voters.length === maxVotes
+                        ? "firstText"
+                        : result.voters.length > 0
+                        ? "secondText"
+                        : ""}>{result.creator.toUpperCase()}</span
+                >
                 <div class="votedBy overlay">
                     {#each result.voters as voter}
                         <div class="avatar">
@@ -82,7 +98,7 @@ import Image from "../../assets/Image.svelte";
             background-color: none;
         }
         50% {
-            backdrop-filter: blur(3px) grayscale(.8);
+            backdrop-filter: blur(3px) grayscale(0.8);
             background-color: var(--custom-bg);
         }
         100% {
@@ -90,7 +106,6 @@ import Image from "../../assets/Image.svelte";
             background-color: none;
         }
     }
-
 
     .single-coolicon {
         --custom-delay: 4s;
@@ -117,12 +132,12 @@ import Image from "../../assets/Image.svelte";
         align-items: center;
         bottom: 0;
         left: 0;
-        padding-left: .5rem;
+        padding-left: 0.5rem;
         height: 1rem;
         width: 100%;
         font-weight: bold;
-        font-size: .8rem;
-        padding: .8rem;
+        font-size: 0.8rem;
+        padding: 0.8rem;
     }
 
     .resultWrapper {
@@ -131,7 +146,6 @@ import Image from "../../assets/Image.svelte";
         flex-wrap: wrap;
         gap: 2rem;
         justify-content: center;
-
     }
 
     .coolicon {
@@ -153,7 +167,7 @@ import Image from "../../assets/Image.svelte";
         display: flex;
         flex-direction: column;
         justify-content: center;
-        border-radius: .5rem;
+        border-radius: 0.5rem;
 
         :global(.imageComponent) {
             width: 100%;
@@ -168,7 +182,7 @@ import Image from "../../assets/Image.svelte";
     }
 
     .firstText {
-        color: #FFCB7E
+        color: #ffcb7e;
     }
     .secondText {
         color: #2d9cdb;
@@ -182,8 +196,8 @@ import Image from "../../assets/Image.svelte";
         right: 0;
         left: 0;
         --custom-delay: 4s;
-        animation: background-effects calc(var(--custom-delay)) cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
-
+        animation: background-effects calc(var(--custom-delay))
+            cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
     }
 
     .overlay {

@@ -1,42 +1,38 @@
 <script lang="ts">
-import { onMount } from "svelte";
-import Avatar from "../../assets/Avatar.svelte";
-import { resetGameValues } from "../../socket";
+    import Avatar from "../../assets/Avatar.svelte";
+    import { resetGameValues } from "../../socket";
 
-import { state, username, stats, players } from "../../store";
-import { GameState } from "../../types";
+    import { state, username, stats, players } from "../../store";
+    import { GameState } from "../../types";
 
-let firstPlace = [];
-let secondPlace = [];
-let honorableMentions = [];
+    let firstPlace = [];
+    let secondPlace = [];
+    let honorableMentions = [];
 
-// create a sorted list of the points in game
-let points = [...new Set(Object.values($stats).sort().reverse())];
+    // create a sorted list of the points in game
+    let points = [...new Set(Object.values($stats).sort().reverse())];
 
-Object.entries($stats).forEach(([username, userPoints]) => {
-    console.log(username, userPoints)
-    if (userPoints === points[0]) {
-        firstPlace.push(username)
+    Object.entries($stats).forEach(([username, userPoints]) => {
+        console.log(username, userPoints);
+        if (userPoints === points[0]) {
+            firstPlace.push(username);
+        } else if (userPoints === points[1]) {
+            secondPlace.push(username);
+        } else {
+            honorableMentions.push(username);
+        }
+    });
+    console.log({ points, firstPlace, secondPlace, honorableMentions });
 
-    } else if (userPoints === points[1]) {
-        secondPlace.push(username);
-
-    } else {
-        honorableMentions.push(username)
+    function gotoLobby() {
+        state.set(GameState.Lobby);
+        resetGameValues();
     }
-
-})
-console.log({points, firstPlace, secondPlace, honorableMentions})
-
-function gotoLobby() {
-    state.set(GameState.Lobby);
-    resetGameValues();
-}
 </script>
 
 <div id="wholeScreen">
     <div id="avatarDiv">
-        <Avatar user={$username} width="auto"/>
+        <Avatar user={$username} width="auto" />
     </div>
     <div id="resultDiv">
         <h1>THE WINNERS ARE SET</h1>
@@ -48,7 +44,8 @@ function gotoLobby() {
                         viewBox="0 0 44 46"
                         fill="none"
                         class="coolicon"
-                        xmlns="http://www.w3.org/2000/svg" >
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
                         <path
                             style="fill:none;stroke:#f29e51;stroke-width:6.4252;stroke-miterlimit:4;stroke-dasharray:none"
                             d="M 3.825032,42.708813 22.292464,24.690138 40.643678,42.943806"
@@ -81,7 +78,8 @@ function gotoLobby() {
                         class="coolicon"
                         fill="none"
                         version="1.1"
-                        xmlns="http://www.w3.org/2000/svg" >
+                        xmlns="http://www.w3.org/2000/svg"
+                    >
                         <path
                             class="single-coolicon"
                             style="fill:none;stroke:#2d9cdb;stroke-width:6.4252;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
@@ -105,9 +103,7 @@ function gotoLobby() {
                 {/if}
             </div>
             <div id="honorableMentions">
-                <div id="honorableMentionsBadge" class="badge">
-
-                </div>
+                <div id="honorableMentionsBadge" class="badge" />
                 <div id="honorableMentionsAvatars">
                     {#each honorableMentions as name}
                         <div class="avatar">
@@ -118,13 +114,13 @@ function gotoLobby() {
                 </div>
             </div>
         </div>
-        <button on:click="{gotoLobby}">Back to Lobby</button>
+        <button on:click={gotoLobby}>Back to Lobby</button>
     </div>
 </div>
 
-<style lang="scss" >
-
-    h1, h2 {
+<style lang="scss">
+    h1,
+    h2 {
         margin: 0;
     }
 
@@ -159,8 +155,8 @@ function gotoLobby() {
         display: flex;
         justify-content: center;
         align-items: center;
-        border-radius: .5rem;
-        margin: .5rem;
+        border-radius: 0.5rem;
+        margin: 0.5rem;
         flex-shrink: 0;
 
         svg {
@@ -169,7 +165,7 @@ function gotoLobby() {
     }
 
     .pointText {
-        color: #24FF00;
+        color: #24ff00;
         font-size: 1.3rem;
         font-weight: bold;
     }
@@ -192,7 +188,6 @@ function gotoLobby() {
         justify-content: space-around;
         width: 100vw;
 
-
         @media (max-width: 40rem) {
             padding: 1rem;
         }
@@ -207,10 +202,9 @@ function gotoLobby() {
             height: 100vh;
         }
 
-        @media (max-width:40rem) {
-            display: none
+        @media (max-width: 40rem) {
+            display: none;
         }
-
     }
 
     #resultDiv {
@@ -224,24 +218,28 @@ function gotoLobby() {
     #ranking {
         display: flex;
         flex-direction: column;
-        gap: .5rem;
+        gap: 0.5rem;
         min-width: 30vw;
 
-        #firstPlace, #secondPlace, #honorableMentions {
+        #firstPlace,
+        #secondPlace,
+        #honorableMentions {
             display: flex;
             background-color: #131313;
-            border-radius: .5rem;
+            border-radius: 0.5rem;
         }
 
-        #firstPlaceAvatars, #secondPlaceAvatars, #honorableMentionsAvatars {
+        #firstPlaceAvatars,
+        #secondPlaceAvatars,
+        #honorableMentionsAvatars {
             min-height: 6rem;
             display: flex;
             flex-wrap: wrap;
             align-items: center;
             background-color: #131313;
-            border-radius: .5rem;
+            border-radius: 0.5rem;
             row-gap: 1rem;
-            padding: .5rem 0;
+            padding: 0.5rem 0;
             max-width: 20rem;
         }
 
@@ -266,8 +264,8 @@ function gotoLobby() {
             height: 6rem;
             background-color: black;
             margin-left: auto;
-            border-radius: .5rem;
-            margin: .5rem;
+            border-radius: 0.5rem;
+            margin: 0.5rem;
             margin-left: auto;
             flex-shrink: 0;
         }

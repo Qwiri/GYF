@@ -3,7 +3,7 @@
     import { gifSubmitted, ws } from "../store";
     import { Giphy, Providers } from "./search";
     import type { Provider, SearchResult } from "./search";
-import Image from "../assets/Image.svelte";
+    import Image from "../assets/Image.svelte";
 
     let provider: Provider = Giphy; // Make Giphy the default provider
 
@@ -21,12 +21,12 @@ import Image from "../assets/Image.svelte";
 
     const fetchFirstGifs = async () => {
         searchResults = await provider.search(searchQuery);
-    }
+    };
 
     const fetchGifs = async () => {
         let newResults = await provider.search(searchQuery);
         searchResults = [...searchResults, ...newResults];
-    }
+    };
 
     const submitGif = (e: MouseEvent, r: SearchResult) => {
         submission = r.original_url;
@@ -38,11 +38,11 @@ import Image from "../assets/Image.svelte";
     };
 
     const changeProvider = (_: MouseEvent) => {
-        provider = Providers[(Providers.indexOf(provider) + 1) % Providers.length];
+        provider =
+            Providers[(Providers.indexOf(provider) + 1) % Providers.length];
         // clear search results
         searchResults = [];
     };
-
 </script>
 
 <TopicDisplay />
@@ -77,7 +77,10 @@ import Image from "../assets/Image.svelte";
         <div id="resultWrapper">
             {#if searchResults.length > 0}
                 {#each searchResults as result}
-                    <div class="imgContainer" on:click={(e) => submitGif(e, result)} >
+                    <div
+                        class="imgContainer"
+                        on:click={(e) => submitGif(e, result)}
+                    >
                         <Image
                             width="100%"
                             height="100%"
@@ -93,13 +96,17 @@ import Image from "../assets/Image.svelte";
 {:else}
     <div id="submissionWrapper">
         <h1>Your Submission</h1>
-        <Image width="auto" height="auto" src={submission} alt="Your submission" />
+        <Image
+            width="auto"
+            height="auto"
+            src={submission}
+            alt="Your submission"
+        />
         <button on:click={chooseNew}>Choose another</button>
     </div>
 {/if}
 
 <style lang="scss">
-
     #searchWrapper {
         background-color: #131313;
     }
@@ -123,7 +130,6 @@ import Image from "../assets/Image.svelte";
             cursor: pointer;
         }
     }
-
 
     .imgContainer {
         width: 8rem;
@@ -197,7 +203,6 @@ import Image from "../assets/Image.svelte";
             opacity: 1;
         }
     }
-
 
     #submissionWrapper {
         height: 100%;

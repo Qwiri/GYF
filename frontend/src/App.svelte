@@ -4,8 +4,7 @@
 	import { Router, Route } from "svelte-navigator";
 	import { SvelteToast } from "@zerodevx/svelte-toast";
 	import { state } from "./store";
-import Image from "./assets/Image.svelte";
-	
+
 	let title: string = "GYF";
 	$: title = `GYF - ${$state}`;
 	$: {

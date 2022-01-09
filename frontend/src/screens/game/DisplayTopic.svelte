@@ -1,8 +1,7 @@
 <script lang="ts">
     import { toast } from "@zerodevx/svelte-toast";
-import { onMount } from "svelte";
     import TopicDisplay from "../../assets/TopicDisplay.svelte";
-    import { leader, players, round, waitingFor, ws } from "../../store";
+    import { leader, ws } from "../../store";
 
     const sendSkip = (_) => {
         $ws.send("SKIP");
@@ -19,23 +18,27 @@ import { onMount } from "svelte";
     let gifBuffer: string;
 
     let showGifWindow: boolean = false;
-
 </script>
 
 <!-- Display Round Number -->
 <TopicDisplay />
 
 {#if gifBuffer}
-<h1>Your submission</h1>
+    <h1>Your submission</h1>
     <p>
         <img width="200px" src={gifBuffer} alt="submitted gif" />
     </p>
 {/if}
 
-<input type="text" placeholder="Enter a gif url" on:click={_ => showGifWindow = !showGifWindow} bind:value={gifBuffer} />
+<input
+    type="text"
+    placeholder="Enter a gif url"
+    on:click={(_) => (showGifWindow = !showGifWindow)}
+    bind:value={gifBuffer}
+/>
 <div id="searchBarWrapper">
     {#if showGifWindow}
-        <div id="gifSearchWrapper"></div>
+        <div id="gifSearchWrapper" />
     {/if}
 </div>
 <button on:click={sendGif}>Submit!</button>

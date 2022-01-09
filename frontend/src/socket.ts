@@ -1,8 +1,9 @@
 import { toast } from "@zerodevx/svelte-toast";
 import { navigate } from "svelte-navigator";
 import { chatMessages, leader, players, round, state, stats, submissions, topics, username, waitingFor, votingResults, preferences, gifSubmitted } from "./store";
-import { GameState, isLeader, pushWarn } from "./types";
+import { GameState, type Preferences } from "./types";
 import type { ChatMessage, Player, Response, VotingResult } from "./types";
+import { isLeader, pushInfo, pushSuccess, pushWarn } from "./utils";
 
 let localUsername: string;
 username.subscribe(n => localUsername = n);
@@ -31,32 +32,37 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
         }
 
         // self joined?
-        if (res.args[0] === localUsername) {
+        const payloadUser = res.args[0] as string;
+        if (payloadUser === localUsername) {
             state.set(GameState.Lobby);
-            toast.push("Have fun playing GYF! :)", { theme: { "--toastBackground": "#64F4A0", "--toastBarBackground": "#3BDD7F" } });
+            pushSuccess("Have fun playing GYF! :)");
         } else {
-            toast.push(`Say hi to ${res.args[0]} 👋!`);
+            pushInfo(`👋 Say hi to ${payloadUser}!`);
         }
         return;
     },
 
     PLAYER_LEAVE: (_: WebSocket, res: Response) => {
-        console.log("Player", res.args[0], "left");
+        const payloadUser = res.args[0] as string;
+        pushInfo("🚪", payloadUser, "left");
     },
 
     LIST: (_, res: Response) => {
+        const payloadPlayers = res.args as Array<Player>;
+
         let temp: { [name: string]: Player } = {};
-        res.args.forEach((player: Player) => {
+        payloadPlayers.forEach((player: Player) => {
             temp[player.name] = player;
         });
+
         players.set(temp);
     },
 
     CHAT: (_, res: Response) => {
         const message: ChatMessage = {
-            leader: isLeader(res.args[0]),
-            author: res.args[0],
-            message: res.args[1],
+            leader: isLeader(res.args[0] as string),
+            author: res.args[0] as string,
+            message: res.args[1] as string,
         };
         chatMessages.update(msgs => {
             msgs.push(message);
@@ -65,20 +71,25 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
     },
 
     TOPIC_LIST: (_, res: Response) => {
-        topics.set([...res.args])
+        const payloadTopics = res.args as Array<string>;
+        topics.set(payloadTopics);
     },
 
     CHANGE_ROLE: (_: WebSocket, res: Response) => {
-        if (res.args[0] !== localUsername) {
+        const payloadUser = res.args[0] as string;
+        const payloadRole = res.args[1] as string;
+
+        if (payloadUser !== localUsername) {
             return;
         }
-        const _leader = res.args[1] === "LEADER";
+
+        const _leader = payloadRole === "LEADER";
         leader.set(_leader); // update leader in store
 
         if (_leader) {
             toast.push("You are now the leader!");
         } else {
-            toast.push("You are no longer the leader!");
+            pushWarn("You are no longer the leader!");
             topics.set([]); // clear topics
         }
     },
@@ -86,9 +97,9 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
     NEXT_ROUND: (_: WebSocket, res: Response) => {
         gifSubmitted.set(false);
         round.set({
-            topic: res.args[0],
-            currentRound: res.args[1],
-            totalRounds: res.args[2],
+            topic: res.args[0] as string,
+            currentRound: res.args[1] as number,
+            totalRounds: res.args[2] as number,
         });
     },
 
@@ -97,7 +108,8 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
         votingResults.set([]);
 
         // load submissions from backend
-        submissions.set(res.args);
+        const payloadSubmissions = res.args[0] as Array<string>;
+        submissions.set(payloadSubmissions);
     },
 
     VOTE_RESULTS: (_: WebSocket, res: Response) => {
@@ -107,38 +119,47 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
         if (!res._s) {
             return;
         }
+
+        const payloadResults = res.args[0] as Array<VotingResult>;
+
         // sort voting results
-        res.args.sort((a,b) => {
+        payloadResults.sort((a: VotingResult, b: VotingResult) => {
             if (a.voters.length > b.voters.length) {
                 return -1;
-            } 
+            }
             if (a.voters.length < b.voters.length) {
                 return 1;
             }
             return 0;
         });
-        votingResults.set(res.args);
+
+        votingResults.set(payloadResults);
     },
 
     STATS: (_, res: Response) => {
         if (!res._s) {
             return;
         }
+        
+        const payloadStats = res.args[0] as {[name: string]: number};
+
         // sort stats by value
         const sortable = [];
-        for (const name in res.args[0]) {
-            sortable.push([name, res.args[0][name]]);
+        for (const name in payloadStats) {
+            sortable.push([name, payloadStats[name]]);
         }
         sortable.sort((a, b) => b[1] - a[1]);
+        
         // rebuild object
         const objSorted: { [name: string]: number } = {};
         sortable.forEach((item) => (objSorted[item[0]] = item[1]));
+        
         // update stats
         stats.set(objSorted);
     },
 
     STATE: (_, res: Response) => {
-        const _state = res.args[0];
+        const _state = res.args[0] as number;
         const _gs = GameState[_state];
         if (_gs) {
             if (_gs === "Lobby" && localState === GameState.GameEnd) {
@@ -146,16 +167,18 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
                 return;
             }
             state.set(_state);
-            console.log("changed state to", _state, "::", GameState[_state]);
+            console.log("Changed state to", _state, "::", GameState[_state]);
         }
     },
 
     WAITING_FOR: (_, res: Response) => {
-        waitingFor.set(res.args);
+        const payloadWaitingFor = res.args as Array<string>;
+        waitingFor.set(payloadWaitingFor);
     },
 
     PREFERENCES: (_, res: Response) => {
-        preferences.set(res.args[0]);
+        const payloadPreferences = res.args[0] as Preferences;
+        preferences.set(payloadPreferences);
     },
 
     SUBMIT_GIF: (_, res: Response) => {
@@ -163,14 +186,14 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
             handleErrors(res);
             return;
         }
-        toast.push(`'${res.args[0]}' submitted a gif!`)
+        toast.push(`✅ '${res.args[0]}' submitted a GYF. Hurry up!`)
         if (res.args[0] == localUsername) {
             gifSubmitted.set(true);
         }
     },
 
     GAME_END: (_, res: Response) => {
-        toast.push(`Game ended (${res.args[0]})! Thanks for playing!`);
+        pushInfo(`Game ended! Thanks for playing!`);
         state.set(GameState.GameEnd);
     },
 
@@ -181,7 +204,7 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
 };
 
 export function resetGameValues() {
-    round.set({topic: '', currentRound: 0, totalRounds: 0});
+    round.set({ topic: '', currentRound: 0, totalRounds: 0 });
     stats.set({});
     votingResults.set([]);
     submissions.set([]);

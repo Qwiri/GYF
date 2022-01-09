@@ -1,7 +1,7 @@
 <script lang="ts">
     import { navigate, useFocus } from "svelte-navigator";
     import Header from "./assets/Header.svelte";
-    import { base64DecodeUnicode, pushWarn } from "./types";
+    import { base64DecodeUnicode, pushWarn } from "./utils";
 
     const query: URLSearchParams = new URLSearchParams(window.location.search);
     if (query.has("warn")) {
