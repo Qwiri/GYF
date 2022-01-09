@@ -13,7 +13,7 @@ export const stats: Writable<{ [name: string]: number }> = writable({});
 
 export const chatMessages: Writable<Array<ChatMessage>> = writable([]);
 
-export const leader: Writable<Boolean> = writable(false);
+export const leader: Writable<boolean> = writable(false);
 export const topics: Writable<Array<string>> = writable([]);
 export const preferences: Writable<Preferences> = writable({
     AutoSkip: true,

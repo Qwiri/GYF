@@ -3,22 +3,36 @@ import { navigate } from "svelte-navigator";
 import { chatMessages, leader, players, round, state, stats, submissions, topics, username, waitingFor, votingResults, preferences, gifSubmitted } from "./store";
 import { GameState, type Preferences } from "./types";
 import type { ChatMessage, Player, Response, VotingResult } from "./types";
-import { isLeader, pushInfo, pushSuccess, pushWarn } from "./utils";
+import { isLeader, pushInfo, pushSuccess, pushWarn, resetGameValues } from "./utils";
 
-let localUsername: string;
+let localUsername: string = "";
 username.subscribe(n => localUsername = n);
 
-let localPlayers: { [name: string]: Player };
-players.subscribe(n => localPlayers = n);
-
-let localVoteResults: Array<VotingResult>;
-votingResults.subscribe(n => localVoteResults = n);
-
-let localState: GameState;
+let localState: GameState = GameState.ChooseUsername;
 state.subscribe(n => localState = n);
 
-const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any } = {
-    JOIN: (_: WebSocket, res: Response) => {
+function handleErrors(resp: Response): boolean {
+    if (!resp._s) {
+        if (resp.warn != "") {
+            console.log("AN ERROR OCCURRED");
+            console.log(resp.warn);
+            console.log("Full log:", resp);
+
+            pushWarn(resp.warn);
+        } else {
+            console.log("AN ERROR OCCURRED");
+            console.log("Full log:", resp);
+
+            pushWarn(
+                "An error occurred but there was no warning message given"
+            );
+        }
+    }
+    return !resp._s;
+}
+
+const commands: { [name: string]: (res: Response) => void | string } = {
+    JOIN: (res: Response) => {
         // errored responses only occurr as responses to the JOIN command
         if (!res._s) {
             switch (res.warn) {
@@ -39,18 +53,17 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
         } else {
             pushInfo(`👋 Say hi to ${payloadUser}!`);
         }
-        return;
     },
 
-    PLAYER_LEAVE: (_: WebSocket, res: Response) => {
+    PLAYER_LEAVE: (res: Response) => {
         const payloadUser = res.args[0] as string;
         pushInfo("🚪", payloadUser, "left");
     },
 
-    LIST: (_, res: Response) => {
+    LIST: (res: Response) => {
         const payloadPlayers = res.args as Array<Player>;
 
-        let temp: { [name: string]: Player } = {};
+        const temp: { [name: string]: Player } = {};
         payloadPlayers.forEach((player: Player) => {
             temp[player.name] = player;
         });
@@ -58,7 +71,7 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
         players.set(temp);
     },
 
-    CHAT: (_, res: Response) => {
+    CHAT: (res: Response) => {
         const message: ChatMessage = {
             leader: isLeader(res.args[0] as string),
             author: res.args[0] as string,
@@ -70,12 +83,12 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
         });
     },
 
-    TOPIC_LIST: (_, res: Response) => {
+    TOPIC_LIST: (res: Response) => {
         const payloadTopics = res.args as Array<string>;
         topics.set(payloadTopics);
     },
 
-    CHANGE_ROLE: (_: WebSocket, res: Response) => {
+    CHANGE_ROLE: (res: Response) => {
         const payloadUser = res.args[0] as string;
         const payloadRole = res.args[1] as string;
 
@@ -94,7 +107,7 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
         }
     },
 
-    NEXT_ROUND: (_: WebSocket, res: Response) => {
+    NEXT_ROUND: (res: Response) => {
         gifSubmitted.set(false);
         round.set({
             topic: res.args[0] as string,
@@ -103,7 +116,7 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
         });
     },
 
-    VOTE_START: (_, res: Response) => {
+    VOTE_START: (res: Response) => {
         // clear previous vote results
         votingResults.set([]);
 
@@ -112,7 +125,7 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
         submissions.set(payloadSubmissions);
     },
 
-    VOTE_RESULTS: (_: WebSocket, res: Response) => {
+    VOTE_RESULTS: (res: Response) => {
         // reset submissions
         submissions.set([]);
 
@@ -136,12 +149,12 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
         votingResults.set(payloadResults);
     },
 
-    STATS: (_, res: Response) => {
+    STATS: (res: Response) => {
         if (!res._s) {
             return;
         }
-        
-        const payloadStats = res.args[0] as {[name: string]: number};
+
+        const payloadStats = res.args[0] as { [name: string]: number };
 
         // sort stats by value
         const sortable = [];
@@ -149,16 +162,16 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
             sortable.push([name, payloadStats[name]]);
         }
         sortable.sort((a, b) => b[1] - a[1]);
-        
+
         // rebuild object
         const objSorted: { [name: string]: number } = {};
         sortable.forEach((item) => (objSorted[item[0]] = item[1]));
-        
+
         // update stats
         stats.set(objSorted);
     },
 
-    STATE: (_, res: Response) => {
+    STATE: (res: Response) => {
         const _state = res.args[0] as number;
         const _gs = GameState[_state];
         if (_gs) {
@@ -171,17 +184,17 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
         }
     },
 
-    WAITING_FOR: (_, res: Response) => {
+    WAITING_FOR: (res: Response) => {
         const payloadWaitingFor = res.args as Array<string>;
         waitingFor.set(payloadWaitingFor);
     },
 
-    PREFERENCES: (_, res: Response) => {
+    PREFERENCES: (res: Response) => {
         const payloadPreferences = res.args[0] as Preferences;
         preferences.set(payloadPreferences);
     },
 
-    SUBMIT_GIF: (_, res: Response) => {
+    SUBMIT_GIF: (res: Response) => {
         if (!res._s) {
             handleErrors(res);
             return;
@@ -192,24 +205,16 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
         }
     },
 
-    GAME_END: (_, res: Response) => {
+    GAME_END: () => {
         pushInfo(`Game ended! Thanks for playing!`);
         state.set(GameState.GameEnd);
     },
 
-    START: (_, res: Response) => {
+    START: () => {
         // reset
         resetGameValues();
     },
 };
-
-export function resetGameValues() {
-    round.set({ topic: '', currentRound: 0, totalRounds: 0 });
-    stats.set({});
-    votingResults.set([]);
-    submissions.set([]);
-    waitingFor.set([]);
-}
 
 export function hijack(ws: WebSocket) {
     ws.onerror = (e) => {
@@ -236,7 +241,7 @@ export function hijack(ws: WebSocket) {
     }
 
     // brutally hijack server message handler
-    ws.onmessage = (msg: MessageEvent<any>) => {
+    ws.onmessage = (msg: MessageEvent<string>) => {
         console.log("[ws] 📦 ->", msg.data);
 
         // try to parse message
@@ -262,22 +267,3 @@ export function hijack(ws: WebSocket) {
     }
 }
 
-function handleErrors(resp: Response): boolean {
-    if (!resp._s) {
-        if (resp.warn != "") {
-            console.log("AN ERROR OCCURRED");
-            console.log(resp.warn);
-            console.log("Full log:", resp);
-
-            pushWarn(resp.warn);
-        } else {
-            console.log("AN ERROR OCCURRED");
-            console.log("Full log:", resp);
-
-            pushWarn(
-                "An error occurred but there was no warning message given"
-            );
-        }
-    }
-    return !resp._s;
-}

@@ -1,5 +1,5 @@
 import { toast } from "@zerodevx/svelte-toast";
-import { players } from "./store";
+import { players, round, stats, submissions, votingResults, waitingFor } from "./store";
 import type { Player } from "./types";
 
 let localPlayers: { [name: string]: Player } = {};
@@ -57,4 +57,12 @@ export function copyToClipboard(str) {
     copyText.select();
     document.execCommand("copy");
     document.body.removeChild(copyText);
+}
+
+export function resetGameValues() {
+    round.set({ topic: '', currentRound: 0, totalRounds: 0 });
+    stats.set({});
+    votingResults.set([]);
+    submissions.set([]);
+    waitingFor.set([]);
 }
