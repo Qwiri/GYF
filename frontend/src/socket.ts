@@ -248,7 +248,7 @@ export function hijack(ws: WebSocket) {
         const response: Response = JSON.parse(msg.data);
 
         if (commands[response.cmd]) {
-            const result = commands[response.cmd](ws, response);
+            const result = commands[response.cmd](response);
             if (result) {
                 console.error("error executing", response.cmd, result);
             }
