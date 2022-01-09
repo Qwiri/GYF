@@ -20,6 +20,7 @@
     };
 
     const fetchFirstGifs = async () => {
+        searchResults = []; // #42
         searchResults = await provider.search(searchQuery);
     };
 
