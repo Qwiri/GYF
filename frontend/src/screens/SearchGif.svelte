@@ -3,6 +3,7 @@
     import { gifSubmitted, ws } from "../store";
     import { Giphy, Providers } from "./search";
     import type { Provider, SearchResult } from "./search";
+import Image from "../assets/Image.svelte";
 
     let provider: Provider = Giphy; // Make Giphy the default provider
 
@@ -76,10 +77,11 @@
         <div id="resultWrapper">
             {#if searchResults.length > 0}
                 {#each searchResults as result}
-                    <div class="imgContainer">
-                        <img
+                    <div class="imgContainer" on:click={(e) => submitGif(e, result)} >
+                        <Image
+                            width="100%"
+                            height="100%"
                             src={result.preview_url}
-                            on:click={(e) => submitGif(e, result)}
                             alt="gif"
                         />
                     </div>
@@ -91,7 +93,7 @@
 {:else}
     <div id="submissionWrapper">
         <h1>Your Submission</h1>
-        <img id="submission" src={submission} alt="Your submission" />
+        <Image width="auto" height="auto" src={submission} alt="Your submission" />
         <button on:click={chooseNew}>Choose another</button>
     </div>
 {/if}
@@ -130,10 +132,6 @@
         }
     }
 
-    img:hover {
-        cursor: pointer;
-        opacity: 0.5;
-    }
 
     .imgContainer {
         width: 8rem;
@@ -141,9 +139,15 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
+        align-items: center;
         border-radius: 1rem;
         background-color: #181818;
         overflow: hidden;
+
+        :global(.imageComponent):hover {
+            cursor: pointer;
+            opacity: 0.5;
+        }
     }
 
     #shownProvider {
@@ -202,9 +206,6 @@
         }
     }
 
-    #submission {
-        height: 10rem;
-    }
 
     #submissionWrapper {
         height: 100%;
@@ -212,5 +213,9 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+
+        :global(.imageComponent) {
+            height: 10rem;
+        }
     }
 </style>

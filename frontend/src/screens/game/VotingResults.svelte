@@ -1,5 +1,6 @@
 <script lang="ts">
     import Avatar from "../../assets/Avatar.svelte";
+import Image from "../../assets/Image.svelte";
     import TopicDisplay from "../../assets/TopicDisplay.svelte";
     import { leader, votingResults, ws } from "../../store";
 
@@ -13,7 +14,7 @@
 <div class="resultWrapper">
     {#each $votingResults as result}
         <div class="votingResult">
-            <img src={result.url} alt="Image of {result.creator}" />
+            <Image width="auto" height="auto" src={result.url} alt="Image of {result.creator}" />
             <div class="overlayWrapper {result.voters.length === maxVotes ? 'first' : result.voters.length > 0 ? 'second' : ''}">
                 {#if result.voters.length === maxVotes}
                     <svg
@@ -154,7 +155,7 @@
         justify-content: center;
         border-radius: .5rem;
 
-        img {
+        :global(.imageComponent) {
             width: 100%;
         }
     }

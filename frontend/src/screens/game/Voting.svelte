@@ -1,4 +1,6 @@
 <script lang="ts">
+import Image from "../../assets/Image.svelte";
+
     import TopicDisplay from "../../assets/TopicDisplay.svelte";
     import { ws, submissions, gifSubmitted } from "../../store";
 
@@ -24,7 +26,7 @@
                 </svg>
             {/if}
 
-            <img class="img" src={submission} alt="" />
+            <Image width="auto" height="auto" src={submission} alt="" />
             <div class="background" />
             <div id="{i === gifVoted ? 'votedGif' : ''}" data-url={submission} on:click={e => submitVote(e, i)} class="overlay" />
         </div>
@@ -54,7 +56,7 @@
             }
         }
 
-        .img {
+        :global(.imageComponent) {
             width: clamp(200px, 20vw, 400px);
             z-index: 1;
         }
