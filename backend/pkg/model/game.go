@@ -156,6 +156,8 @@ func (g *Game) SetLeader(client *Client) {
 
 // LeaveClient removes a client from the game and sends a PLAYER_LEAVE message to all other players
 func (g *Game) LeaveClient(client *Client, reason string) {
+	log.Infof("[%s] %s left (leader: %v)", g.ID, client.Name, client.Leader)
+
 	// remove client from game
 	g.Clients.Delete(client)
 
@@ -171,8 +173,10 @@ func (g *Game) LeaveClient(client *Client, reason string) {
 
 	// check if client was a leader
 	if client.Leader {
+		log.Debugf("[%s] %s was a leader. Choosing a new one.", g.ID, client.Name)
 		if leader := g.CreateLeader(); leader != nil {
 			log.Debugf("[%s] New leader for game: %s", g.ID, leader.Name)
+			g.SetLeader(leader)
 		} else {
 			log.Warnf("[%s] Cannot find new leader", g.ID)
 		}
