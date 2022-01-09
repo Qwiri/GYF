@@ -58,8 +58,8 @@ import Image from "../assets/Image.svelte";
                 </span>
             </div>
             <input
-                id="searchBar"
                 type="text"
+                class="gyf-bar"
                 placeholder="Search via {provider.name} 🔍"
                 on:keypress={handleEnter}
                 bind:value={searchQuery}
@@ -99,14 +99,6 @@ import Image from "../assets/Image.svelte";
 {/if}
 
 <style lang="scss">
-
-    #searchBar {
-        background-color: #000000;
-        color: #ffffff;
-        border: none;
-        border-radius: 4px;
-        font-size: 1.1rem;
-    }
 
     #searchWrapper {
         background-color: #131313;

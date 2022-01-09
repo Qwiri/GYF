@@ -108,7 +108,7 @@ var TopicClearHandler = &handler.Handler{
 		// send updated list to all leaders
 		defer game.BroadcastTopicListToLeaders()
 
-		game.Topics = model.TopicArray{}
+		game.Topics.Clear()
 		return nil
 	}),
 }

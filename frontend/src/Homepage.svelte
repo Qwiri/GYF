@@ -1,7 +1,7 @@
 <script lang="ts">
     import { navigate, useFocus } from "svelte-navigator";
     import Header from "./assets/Header.svelte";
-    import { pushWarn } from "./types";
+    import { base64DecodeUnicode, pushWarn } from "./types";
 
     const query: URLSearchParams = new URLSearchParams(window.location.search);
     if (query.has("warn")) {
@@ -23,9 +23,24 @@
 
     const createGame = async () => {
         const url: string = "http://127.0.0.1:8080/game/create";
+        let res: Response;
 
         // create a new game room
-        const res: Response = await fetch(url, { method: "GET" });
+        // check if topics were given over URL
+        const params = new URLSearchParams(window.location.search);
+        if (params.has("t")) {
+            res = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: base64DecodeUnicode(params.get("t")),
+            });
+        } else {
+            res = await fetch(url, {
+                method: "GET",
+            });
+        }
 
         // check if backend responded as expected
         if (!res.ok) {

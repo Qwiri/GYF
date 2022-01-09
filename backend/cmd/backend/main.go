@@ -32,6 +32,8 @@ var (
 
 func init() {
 	log.SetHandler(text.Default)
+	log.SetLevel(log.DebugLevel)
+
 	if !strings.HasPrefix(os.Getenv("BUILD"), "prod") {
 		DevMode = true
 	}
@@ -67,9 +69,6 @@ func main() {
 
 		// "proper" random seed
 		rand.Seed(time.Now().Unix())
-	} else {
-		// create dummy game for debugging
-		_ = svr.RouteCreateGame(nil)
 	}
 	app.Use(cors.New(corsConfig))
 

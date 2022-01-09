@@ -17,7 +17,7 @@ func (gs *GYFServer) CreateRoutes(app *fiber.App) {
 		app.Get("/game/list", gs.RouteListGames)
 	}
 
-	app.Get("/game/create", gs.RouteCreateGame)
+	app.All("/game/create", gs.RouteCreateGame)
 
 	// SOCKET
 	app.Use("/game/socket", func(c *fiber.Ctx) error {
@@ -63,8 +63,32 @@ func (gs *GYFServer) CreateRoutes(app *fiber.App) {
 	}))
 }
 
-func (gs *GYFServer) RouteCreateGame(ctx *fiber.Ctx) error {
+func (gs *GYFServer) RouteCreateGame(ctx *fiber.Ctx) (err error) {
 	game := gs.NewGame(8)
+
+	switch ctx.Method() {
+	case fiber.MethodGet:
+		break
+	case fiber.MethodPost:
+		var topics []string
+		if err = ctx.BodyParser(&topics); err != nil {
+			return
+		}
+		// clear previous topics
+		game.Topics.Clear()
+
+		log.Debugf("Creating game with %d topics: %+v", len(topics), topics)
+		for _, topic := range topics {
+			game.Topics.Add(topic)
+		}
+	default:
+		return fiber.NewError(400, "invalid method")
+	}
+
+	// load topics
+	if ctx.Method() == fiber.MethodPost {
+
+	}
 
 	// add game to GYFServer
 	gs.gamesMu.Lock()

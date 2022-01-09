@@ -4,6 +4,7 @@
     import Avatar from "../../assets/Avatar.svelte";
     import TopicEditor from "../../assets/setup/TopicEditor.svelte";
     import { leader, players, preferences, username, ws } from "../../store";
+    import { copyToClipboard } from "../../types";
 
     /**
      * Please refactor this. Thanks! :)
@@ -26,13 +27,7 @@
     }
 
     function copyShareURL(_: MouseEvent) {
-        const copyText = document.createElement("textarea");
-        copyText.value = getShare()[0];
-        document.body.appendChild(copyText);
-        copyText.select();
-        document.execCommand("copy");
-        document.body.removeChild(copyText);
-
+        copyToClipboard(getShare()[0]);
         toast.push("Copied invite URL to clipboard!");
     }
 
@@ -130,8 +125,8 @@
         gap: 1rem;
 
         .playerCard {
-            padding: .8rem;
-            border-radius: .8rem;
+            padding: 0.8rem;
+            border-radius: 0.8rem;
             background-color: #101010;
             color: white;
             font-size: 1.2em;
@@ -143,7 +138,7 @@
             margin-top: 5px;
 
             .self {
-                color: #24FF00;
+                color: #24ff00;
                 font-weight: bold;
             }
         }
@@ -164,7 +159,7 @@
             background-color: #131313;
             padding: 0.5rem;
             span {
-                color: #24FF00;
+                color: #24ff00;
             }
         }
 
@@ -174,7 +169,7 @@
             border-radius: 7px;
             color: #131313;
             font-size: 1.2em;
-            background-color: #24FF00;
+            background-color: #24ff00;
             font-weight: bold;
 
             &:hover {

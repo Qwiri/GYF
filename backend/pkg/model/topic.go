@@ -44,6 +44,10 @@ func (T *TopicArray) Delete(topic string) {
 	}
 }
 
+func (T *TopicArray) Clear() {
+	*T = make(TopicArray, 0)
+}
+
 func (T TopicArray) RandomTopic() (*Topic, error) {
 	arr := T
 	rand.Shuffle(len(arr), func(i, j int) {
