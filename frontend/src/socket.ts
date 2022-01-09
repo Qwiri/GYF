@@ -108,7 +108,7 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
         votingResults.set([]);
 
         // load submissions from backend
-        const payloadSubmissions = res.args[0] as Array<string>;
+        const payloadSubmissions = res.args as Array<string>;
         submissions.set(payloadSubmissions);
     },
 
@@ -120,7 +120,7 @@ const commands: { [name: string]: (ws: WebSocket, res: Response) => void | any }
             return;
         }
 
-        const payloadResults = res.args[0] as Array<VotingResult>;
+        const payloadResults = res.args as Array<VotingResult>;
 
         // sort voting results
         payloadResults.sort((a: VotingResult, b: VotingResult) => {

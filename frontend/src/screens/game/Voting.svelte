@@ -37,10 +37,10 @@
             <Image width="auto" height="auto" src={submission} alt="" />
             <div class="background" />
             <div
-                id={i === gifVoted ? "votedGif" : ""}
                 data-url={submission}
                 on:click={(e) => submitVote(e, i)}
                 class="overlay"
+                class:gif-voted={i === gifVoted}
             />
         </div>
     {/each}
@@ -107,7 +107,7 @@
                 alternate forwards;
         }
 
-        #votedGif {
+        .gif-voted {
             background-color: #2196537d;
             animation: plop-heart-bg 0.5s cubic-bezier(0.075, 0.82, 0.165, 1) 0s
                 1 alternate forwards;
