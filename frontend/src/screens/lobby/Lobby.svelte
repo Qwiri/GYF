@@ -4,7 +4,7 @@
     import Avatar from "../../assets/Avatar.svelte";
     import TopicEditor from "../../assets/setup/TopicEditor.svelte";
     import { leader, players, preferences, username, ws } from "../../store";
-    import { copyToClipboard } from "../../types";
+    import { copyToClipboard } from "../../utils";
 
     /**
      * Please refactor this. Thanks! :)

@@ -68,7 +68,6 @@ func (gs *GYFServer) RouteCreateGame(ctx *fiber.Ctx) (err error) {
 
 	switch ctx.Method() {
 	case fiber.MethodGet:
-		break
 	case fiber.MethodPost:
 		var topics []string
 		if err = ctx.BodyParser(&topics); err != nil {
@@ -83,11 +82,6 @@ func (gs *GYFServer) RouteCreateGame(ctx *fiber.Ctx) (err error) {
 		}
 	default:
 		return fiber.NewError(400, "invalid method")
-	}
-
-	// load topics
-	if ctx.Method() == fiber.MethodPost {
-
 	}
 
 	// add game to GYFServer

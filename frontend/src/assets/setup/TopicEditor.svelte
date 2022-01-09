@@ -2,7 +2,7 @@
     import { toast } from "@zerodevx/svelte-toast";
 
     import { ws, topics, players } from "../../store";
-    import { copyToClipboard } from "../../types";
+    import { copyToClipboard } from "../../utils";
 
     // other components
     import Swal from "sweetalert2";

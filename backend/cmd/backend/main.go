@@ -84,10 +84,7 @@ func main() {
 	go func(s *server.GYFServer) {
 		for {
 			time.Sleep(JanitorTime)
-
-			log.Debug("[Janitor] Checking ...")
 			svr.JanitorCheck(JanitorCleanTime)
-			log.Debug("[Janitor] Done!")
 		}
 	}(svr)
 
