@@ -5,7 +5,7 @@ import { GameState, type Preferences } from "./types";
 import type { ChatMessage, Player, Response, VotingResult } from "./types";
 import { isLeader, pushInfo, pushSuccess, pushWarn, resetGameValues } from "./utils";
 
-let localUsername: string = "";
+let localUsername = "";
 username.subscribe(n => localUsername = n);
 
 let localState: GameState = GameState.ChooseUsername;
