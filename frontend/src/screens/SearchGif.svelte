@@ -43,6 +43,15 @@
         // clear search results
         searchResults = [];
     };
+
+    let timer;
+
+    const debounce = () => {
+        clearTimeout(timer);
+        timer = setTimeout(async () => {
+            await fetchFirstGifs();
+        }, 300);
+    };
 </script>
 
 <TopicDisplay />
@@ -62,6 +71,7 @@
                 class="gyf-bar"
                 placeholder="Search via {provider.name} 🔍"
                 on:keypress={handleEnter}
+                on:keyup="{(_) => debounce()}"
                 bind:value={searchQuery}
             />
 
