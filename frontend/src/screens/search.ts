@@ -1,4 +1,4 @@
-const defaultLimit = 30;
+const defaultLimit = 50;
 
 export interface Provider {
     name: string;
@@ -25,7 +25,7 @@ export const Giphy: Provider = {
         }
         this.lastQuery = query;
 
-        const res: Response = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${this.apiKey}&q=${query}&limit=${defaultLimit}&offset=${this.offset}`);
+        const res: Response = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${this.apiKey}&q=${encodeURI(query)}&limit=${defaultLimit}&offset=${this.offset}`);
         const body: any = await res.json();
 
         this.offset += 20;
