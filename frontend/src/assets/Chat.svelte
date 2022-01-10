@@ -1,6 +1,6 @@
 <script lang="ts">
     import { toast } from "@zerodevx/svelte-toast";
-    import { afterUpdate } from "svelte";
+    import { afterUpdate, beforeUpdate } from "svelte";
 
     import { chatMessages, ws } from "../store";
     import Avatar from "./Avatar.svelte";
@@ -21,21 +21,28 @@
     };
 
     let chatElement: HTMLElement;
+    let shouldAutoScroll = true;
 
-    $: if ($chatMessages.length > 0) {
-        afterUpdate(() => {
-            chatElement && chatElement.scrollIntoView({
+    afterUpdate(() => {
+        if (shouldAutoScroll) {
+            chatElement.scrollIntoView({
                 behavior: "smooth",
                 block: "end",
             });
-        });
+        }
+    });
+
+    function onScroll() {
+        const elem = document.getElementById("chat-messages");
+        shouldAutoScroll = (elem.scrollHeight - elem.scrollTop) - 30
+            <= elem.clientHeight; // 20px grace
     }
 </script>
 
 <div>
     <div id="chatContainer">
         <div id="messageContainer">
-            <ul>
+            <ul on:scroll={onScroll} id="chat-messages">
                 {#each $chatMessages as message}
                     <li>
                         <Avatar user={message.author} width="24px" />
