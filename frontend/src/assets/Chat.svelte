@@ -25,16 +25,13 @@
 
     afterUpdate(() => {
         if (shouldAutoScroll) {
-            chatElement.scrollIntoView({
-                behavior: "smooth",
-                block: "end",
-            });
+            chatElement.scrollIntoView(false);
         }
     });
 
     function onScroll() {
         const elem = document.getElementById("chat-messages");
-        shouldAutoScroll = (elem.scrollHeight - elem.scrollTop) - 30
+        shouldAutoScroll = (elem.scrollHeight - elem.scrollTop) - 60
             <= elem.clientHeight; // 20px grace
     }
 </script>
