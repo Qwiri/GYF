@@ -1,8 +1,8 @@
 <script lang="ts">
     import { toast } from "@zerodevx/svelte-toast";
+    import { afterUpdate } from "svelte";
 
     import { chatMessages, ws } from "../store";
-    import type { ChatMessage } from "../types";
     import Avatar from "./Avatar.svelte";
 
     let buffer: string = "";
@@ -22,18 +22,20 @@
 
     let chatElement: HTMLElement;
 
-    $: {
-        const _: ChatMessage[] = $chatMessages; // small hack to scroll on new messages. this works so I don't mind.
-        if (chatElement) {
-            chatElement.scrollTop = chatElement.scrollHeight;
-        }
+    $: if ($chatMessages.length > 0) {
+        afterUpdate(() => {
+            chatElement && chatElement.scrollIntoView({
+                behavior: "smooth",
+                block: "end",
+            });
+        });
     }
 </script>
 
 <div>
     <div id="chatContainer">
         <div id="messageContainer">
-            <ul bind:this={chatElement}>
+            <ul>
                 {#each $chatMessages as message}
                     <li>
                         <Avatar user={message.author} width="24px" />
@@ -41,8 +43,8 @@
                         <span class="message">{message.message}</span>
                     </li>
                 {/each}
+                <div id="scrollMe" bind:this={chatElement} />
             </ul>
-            <div id="chatGradient" />
         </div>
         <input
             placeholder="Write a chat message"
@@ -73,15 +75,6 @@
         position: relative;
     }
 
-    #chatGradient {
-        background: linear-gradient(0, transparent 65%, #181818);
-        pointer-events: none;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-    }
     ul {
         padding: 0;
         display: flex;
