@@ -16,7 +16,7 @@ export const Giphy: Provider = {
     name: 'Giphy',
     apiKey: 'oTXCaDQKRKtGPpOwRTYVvJjs40mHIygr',
     offset: 0,
-    search: async function(query: string, resetOffset: boolean = false): Promise<Array<SearchResult>> {
+    search: async function(query: string, resetOffset = false): Promise<Array<SearchResult>> {
 
         if (resetOffset) {
             this.offset = 0;
@@ -43,7 +43,7 @@ export const Tenor: Provider = {
     name: 'Tenor',
     apiKey: 'LIDSRZULELA',
     offset: 0,
-    search: async function(query: string, resetOffset: boolean = false): Promise<Array<SearchResult>> {
+    search: async function(query: string, resetOffset = false): Promise<Array<SearchResult>> {
 
         if (resetOffset) {
             this.offset = 0;
