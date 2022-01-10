@@ -2,6 +2,7 @@
     import { toast } from "@zerodevx/svelte-toast";
 
     import { chatMessages, ws } from "../store";
+    import type { ChatMessage } from "../types";
     import Avatar from "./Avatar.svelte";
 
     let buffer: string = "";
@@ -18,12 +19,21 @@
         $ws.send(`CHAT ${buffer}`);
         buffer = "";
     };
+
+    let chatElement: HTMLElement;
+
+    $: {
+        const _: ChatMessage[] = $chatMessages; // small hack to scroll on new messages. this works so I don't mind.
+        if (chatElement) {
+            chatElement.scrollTop = chatElement.scrollHeight;
+        }
+    }
 </script>
 
 <div>
     <div id="chatContainer">
         <div id="messageContainer">
-            <ul>
+            <ul bind:this={chatElement}>
                 {#each $chatMessages as message}
                     <li>
                         <Avatar user={message.author} width="24px" />
@@ -64,7 +74,7 @@
     }
 
     #chatGradient {
-        background: linear-gradient(0, transparent 65%, #181818) ;
+        background: linear-gradient(0, transparent 65%, #181818);
         pointer-events: none;
         position: absolute;
         top: 0;
