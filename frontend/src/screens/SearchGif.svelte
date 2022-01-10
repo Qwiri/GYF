@@ -12,6 +12,11 @@
 
     let submission: string = "";
 
+    let gifPreviewWindow: HTMLImageElement;
+    let gifPreviewURL: string;
+
+    let blur = false;
+
     const fetchFirstGifs = async () => {
         searchResults = []; // #42
         searchResults = await provider.search(searchQuery, true);
@@ -42,7 +47,6 @@
     let timer;
 
     const debounce = (e: KeyboardEvent) => {
-
         if (e.key === "Enter") {
             return;
         }
@@ -51,6 +55,15 @@
         timer = setTimeout(async () => {
             await fetchFirstGifs();
         }, 300);
+    };
+
+    const previewGif = (e: MouseEvent, gif?: SearchResult) => {
+        gifPreviewURL = gif?.original_url ?? "";
+
+        if (gifPreviewWindow) {
+            gifPreviewWindow.style.left = e.pageX + "px";
+            gifPreviewWindow.style.top = e.pageY + "px";
+        }
     };
 </script>
 
@@ -70,7 +83,7 @@
                 type="text"
                 class="gyf-bar"
                 placeholder="Search via {provider.name} 🔍"
-                on:keyup="{debounce}"
+                on:keyup={debounce}
                 bind:value={searchQuery}
             />
 
@@ -83,11 +96,24 @@
                 />
             {/if}
         </div>
-        <div id="resultWrapper">
+        {#if gifPreviewURL}
+            <img
+                id="gifPreviewWindow"
+                bind:this={gifPreviewWindow}
+                src={gifPreviewURL}
+                alt="GYF preview"
+                class:blurImage={blur}
+                on:load={(_) => (blur = false)}
+            />
+        {/if}
+
+        <div id="resultWrapper" on:mouseleave={(e) => previewGif(e, undefined)}>
             {#if searchResults.length > 0}
                 {#each searchResults as result}
                     <div
                         class="imgContainer"
+                        on:mousemove={(e) => previewGif(e, result)}
+                        on:mouseleave={(_) => (blur = true)}
                         on:click={(e) => submitGif(e, result)}
                     >
                         <Image
@@ -130,6 +156,17 @@
         overflow-y: scroll;
     }
 
+    #gifPreviewWindow {
+        position: absolute;
+        z-index: 1;
+        pointer-events: none;
+        width: 30rem;
+        height: 30rem;
+        object-fit: contain;
+        background-color: #181818;
+        border-radius: 0.5rem;
+    }
+
     button {
         background-color: #24ff00;
         border: none;
@@ -151,10 +188,13 @@
         background-color: #181818;
         overflow: hidden;
 
-        :global(.imageComponent):hover {
+        &:hover {
             cursor: pointer;
-            opacity: 0.5;
         }
+    }
+
+    .blurImage {
+        filter: blur(10px);
     }
 
     #shownProvider {
