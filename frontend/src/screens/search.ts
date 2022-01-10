@@ -14,7 +14,7 @@ export interface SearchResult {
 
 export const Giphy: Provider = {
     name: 'Giphy',
-    apiKey: 'epo51yrPMWiwryp1w5xbOEK9gJUpGbIX',
+    apiKey: 'oTXCaDQKRKtGPpOwRTYVvJjs40mHIygr',
     offset: 0,
     search: async function(query: string, resetOffset: boolean = false): Promise<Array<SearchResult>> {
 
