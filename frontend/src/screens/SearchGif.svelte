@@ -12,16 +12,9 @@
 
     let submission: string = "";
 
-    const handleEnter = async (e: KeyboardEvent) => {
-        if (e.key !== "Enter") {
-            return;
-        }
-        fetchFirstGifs();
-    };
-
     const fetchFirstGifs = async () => {
         searchResults = []; // #42
-        searchResults = await provider.search(searchQuery);
+        searchResults = await provider.search(searchQuery, true);
     };
 
     const fetchGifs = async () => {
@@ -43,11 +36,17 @@
             Providers[(Providers.indexOf(provider) + 1) % Providers.length];
         // clear search results
         searchResults = [];
+        fetchFirstGifs();
     };
 
     let timer;
 
-    const debounce = () => {
+    const debounce = (e: KeyboardEvent) => {
+
+        if (e.key === "Enter") {
+            return;
+        }
+
         clearTimeout(timer);
         timer = setTimeout(async () => {
             await fetchFirstGifs();
@@ -71,8 +70,7 @@
                 type="text"
                 class="gyf-bar"
                 placeholder="Search via {provider.name} 🔍"
-                on:keypress={handleEnter}
-                on:keyup="{(_) => debounce()}"
+                on:keyup="{debounce}"
                 bind:value={searchQuery}
             />
 

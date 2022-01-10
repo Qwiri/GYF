@@ -4,8 +4,7 @@ export interface Provider {
     name: string;
     apiKey: string;
     offset: number;
-    search: (query: string) => Promise<any>;
-    lastQuery: string;
+    search: (query: string, resetOffset?: boolean) => Promise<any>;
 }
 
 export interface SearchResult {
@@ -17,13 +16,11 @@ export const Giphy: Provider = {
     name: 'Giphy',
     apiKey: 'epo51yrPMWiwryp1w5xbOEK9gJUpGbIX',
     offset: 0,
-    lastQuery: '',
-    search: async function(query: string): Promise<Array<SearchResult>> {
+    search: async function(query: string, resetOffset: boolean = false): Promise<Array<SearchResult>> {
 
-        if (!query === this.lastQuery) {
+        if (resetOffset) {
             this.offset = 0;
         }
-        this.lastQuery = query;
 
         const res: Response = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${this.apiKey}&q=${encodeURI(query)}&limit=${defaultLimit}&offset=${this.offset}`);
         const body: any = await res.json();
@@ -46,10 +43,9 @@ export const Tenor: Provider = {
     name: 'Tenor',
     apiKey: 'LIDSRZULELA',
     offset: 0,
-    lastQuery: '',
-    search: async function(query: string): Promise<Array<SearchResult>> {
+    search: async function(query: string, resetOffset: boolean = false): Promise<Array<SearchResult>> {
 
-        if (!query === this.lastQuery) {
+        if (resetOffset) {
             this.offset = 0;
         }
         this.lastQuery = query;
