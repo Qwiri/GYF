@@ -15,6 +15,8 @@
     let gifPreviewWindow: HTMLImageElement;
     let gifPreviewURL: string;
 
+    let blur = false;
+
     const fetchFirstGifs = async () => {
         searchResults = []; // #42
         searchResults = await provider.search(searchQuery, true);
@@ -54,7 +56,6 @@
             await fetchFirstGifs();
         }, 300);
     };
-
 
     const previewGif = (e: MouseEvent, gif?: SearchResult) => {
         gifPreviewURL = gif?.original_url ?? "";
@@ -101,6 +102,8 @@
                 bind:this={gifPreviewWindow}
                 src={gifPreviewURL}
                 alt="GYF preview"
+                class:blurImage={blur}
+                on:load={(_) => (blur = false)}
             />
         {/if}
 
@@ -110,6 +113,7 @@
                     <div
                         class="imgContainer"
                         on:mousemove={(e) => previewGif(e, result)}
+                        on:mouseleave={(_) => (blur = true)}
                         on:click={(e) => submitGif(e, result)}
                     >
                         <Image
@@ -187,6 +191,10 @@
         &:hover {
             cursor: pointer;
         }
+    }
+
+    .blurImage {
+        filter: blur(10px);
     }
 
     #shownProvider {
