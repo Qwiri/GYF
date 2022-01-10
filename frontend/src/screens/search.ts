@@ -50,7 +50,7 @@ export const Tenor: Provider = {
         }
         this.lastQuery = query;
 
-        const res: Response = await fetch(`https://g.tenor.com/v1/search?q=${query}&key=${this.apiKey}&limit=${defaultLimit}&pos=${this.offset}`);
+        const res: Response = await fetch(`https://g.tenor.com/v1/search?q=${encodeURI(query)}&key=${this.apiKey}&limit=${defaultLimit}&pos=${this.offset}`);
         const body: any = await res.json();
 
         this.offset = parseInt(body.next);
