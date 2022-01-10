@@ -6,7 +6,7 @@
     "build": "rollup -c --environment BUILD:production",
     "buildstaging": "rollup -c --environment BUILD:staging",
     "dev": "rollup -c -w --environment BUILD:development",
-    "start": "sirv public --no-clear --single",
+    "start": "sirv public --no-clear --single --port 5000",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
   "devDependencies": {

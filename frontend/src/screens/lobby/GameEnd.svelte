@@ -2,8 +2,9 @@
     import Avatar from "../../assets/Avatar.svelte";
     import { resetGameValues } from "../../utils";
 
-    import { state, username, stats, players } from "../../store";
+    import { state, username, stats } from "../../store";
     import { GameState } from "../../types";
+    import GameEndUser from "../../assets/GameEndUser.svelte";
 
     let firstPlace = [];
     let secondPlace = [];
@@ -60,10 +61,7 @@
                 </div>
                 <div id="firstPlaceAvatars">
                     {#each firstPlace as name}
-                        <div class="avatar">
-                            <Avatar user={name} width="auto" height="78%" />
-                            {name}
-                        </div>
+                        <GameEndUser {name} height="78%" />
                     {/each}
                 </div>
                 <div class="pointsField">
@@ -89,10 +87,7 @@
                 </div>
                 <div id="secondPlaceAvatars">
                     {#each secondPlace as name}
-                        <div class="avatar">
-                            <Avatar user={name} width="auto" />
-                            {name}
-                        </div>
+                        <GameEndUser {name} />
                     {/each}
                 </div>
                 {#if points[1] !== undefined}
@@ -106,10 +101,7 @@
                 <div id="honorableMentionsBadge" class="badge" />
                 <div id="honorableMentionsAvatars">
                     {#each honorableMentions as name}
-                        <div class="avatar">
-                            <Avatar user={name} width="auto" />
-                            {name}
-                        </div>
+                        <GameEndUser {name} />
                     {/each}
                 </div>
             </div>
@@ -241,18 +233,6 @@
             row-gap: 1rem;
             padding: 0.5rem 0;
             max-width: 20rem;
-        }
-
-        .avatar {
-            height: 5rem;
-            width: 5rem;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-
-            div {
-                height: 78%;
-            }
         }
 
         .pointsField {
