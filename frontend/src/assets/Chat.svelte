@@ -22,17 +22,21 @@
 
 <div>
     <div id="chatContainer">
-        <ul>
-            {#each $chatMessages as message}
-                <li>
-                    <Avatar user={message.author} width="24px" />
-                    <span class="author">{message.author}</span>:
-                    <span class="message">{message.message}</span>
-                </li>
-            {/each}
-        </ul>
+        <div id="messageContainer">
+            <ul>
+                {#each $chatMessages as message}
+                    <li>
+                        <Avatar user={message.author} width="24px" />
+                        <span class="author">{message.author}</span>:
+                        <span class="message">{message.message}</span>
+                    </li>
+                {/each}
+            </ul>
+            <div id="chatGradient" />
+        </div>
         <input
             placeholder="Write a chat message"
+            class="gyf-bar"
             type="text"
             on:keypress={onKeyDown}
             bind:value={buffer}
@@ -54,10 +58,27 @@
             flex-direction: column-reverse;
         }
     }
+
+    #messageContainer {
+        position: relative;
+    }
+
+    #chatGradient {
+        background: linear-gradient(0, transparent 65%, #181818) ;
+        pointer-events: none;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
     ul {
         padding: 0;
         display: flex;
         flex-direction: column;
+        max-height: 35vh;
+        overflow-y: scroll;
+        scroll-snap-align: end;
         @media (max-width: 40rem) {
             flex-direction: column-reverse;
         }
