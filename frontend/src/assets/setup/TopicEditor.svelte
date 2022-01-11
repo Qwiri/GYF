@@ -316,6 +316,10 @@
         justify-content: center;
         align-items: center;
         overflow: hidden;
+
+        input:hover {
+            cursor: pointer;
+        }
     }
     #clearTopicsButton {
         --background-color: #e2778b;
