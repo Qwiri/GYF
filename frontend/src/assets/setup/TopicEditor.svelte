@@ -1,13 +1,21 @@
 <script lang="ts">
     import { toast } from "@zerodevx/svelte-toast";
 
-    import { ws, topics, players } from "../../store";
+    import { ws, topics, players, preferences } from "../../store";
     import { copyToClipboard } from "../../utils";
 
     // other components
     import Swal from "sweetalert2";
 
     let topicBuffer: string;
+
+    let showManualTopic = false;
+
+    let checkedAutoSkip: boolean;
+    let checkedShuffleTopics: boolean;
+
+    $: checkedAutoSkip = $preferences.AutoSkip;
+    $: checkedShuffleTopics = $preferences.ShuffleTopics;
 
     const sendTopic = (event: KeyboardEvent) => {
         if (event.key === "Enter") {
@@ -20,7 +28,7 @@
     };
 
     const removeTopic = (event: MouseEvent) => {
-        const topic = event.srcElement.innerText.slice(0, -1);
+        const topic = event.srcElement.dataset.topic;
         $ws.send(`TOPIC_REMOVE ${topic}`);
         $ws.send(`TOPIC_LIST`);
     };
@@ -93,85 +101,291 @@
             }
         });
     };
+    function clickChangeAutoSkip(event: MouseEvent) {
+        $ws.send(
+            "CHANGE_PREF " +
+                JSON.stringify({
+                    key: "AutoSkip",
+                    value: !checkedAutoSkip,
+                })
+        );
+    }
+    function clickChangeShuffleTopics(event: MouseEvent) {
+        $ws.send(
+            "CHANGE_PREF " +
+                JSON.stringify({
+                    key: "ShuffleTopics",
+                    value: !checkedShuffleTopics,
+                })
+        );
+    }
 </script>
 
+<hr />
+<div class="row">
+    <h2 class="grayHashtags">#</h2>
+    <h2 class="greenText">Topics</h2>
+    <h2>({$topics.length})</h2>
+    <input
+        id="cbChangeShuffleTopics"
+        type="checkbox"
+        on:click={clickChangeShuffleTopics}
+        bind:checked={checkedShuffleTopics}
+    />
+    <label
+        for="cbChangeShuffleTopics"
+        style="color: {checkedShuffleTopics ? '#24FF00' : 'salmon'};"
+    >
+        Shuffle Topics
+    </label>
+</div>
 <!-- display topics -->
 <ul>
     {#each $topics as topic}
         <li>
-            <button on:click={removeTopic}>{topic}❌</button>
+            <button>{topic}</button>
+            <button class="removeTopicButton" data-topic={topic} on:click={removeTopic}>❌</button>
         </li>
     {/each}
 </ul>
 
-<div class="topicWrapper">
+<div id="actionButtonsWrapper">
     <!-- Manual Topic Textbox -->
-    <input
-        placeholder="Add topic (Enter)"
-        class="gyf-bar"
-        type="text"
-        on:keypress={sendTopic}
-        bind:value={topicBuffer}
-    />
+    {#if !showManualTopic}
+        <div
+            id="manualTopicButton"
+            class="actionButton"
+            on:click={(e) => (showManualTopic = true)}
+        >
+            <img src="/assets/addTopic.svg" alt="" />
+        </div>
+    {:else}
+        <input
+            placeholder="Add topic (Enter)"
+            class="gyf-bar"
+            type="text"
+            on:blur={(e) => {
+                showManualTopic = false;
+            }}
+            on:keypress={sendTopic}
+            bind:value={topicBuffer}
+        />
+    {/if}
 
-    <!-- Load Topics from File Button -->
-    <input type="file" on:change={loadFromFile} />
+    <label id="loadFromFileLabel" class="actionButton loadFileButton">
+        <input type="file" on:change={loadFromFile} />
+        <img src="/assets/import_checkmark.svg" alt="" />
+        <span>Import</span>
+    </label>
 
-    <!-- Topic Actions -->
-    <ul>
-        <li>
-            <!-- Clear Topics Button -->
-            <input
-                id="clearTopicsButton"
-                type="button"
-                value="💣 Nuke Topics"
-                on:click={clearTopics}
-            />
-        </li>
-        <li>
-            <!-- Download Topics Button -->
-            <input
-                type="button"
-                value="Download Topics"
-                on:click={downloadTopics}
-            />
-        </li>
-        <li>
-            <!-- Save Topics Button -->
-            <input type="button" value="Save Topics" on:click={saveTopics} />
-        </li>
-    </ul>
+    <!-- Download Topics Button -->
+    <div
+        id="downloadTopicsButton"
+        class="actionButton"
+        on:click={downloadTopics}
+    >
+        <img src="/assets/downloadTopics.svg" alt="" />
+        <span>Download</span>
+    </div>
+
+    <!-- Save Topics Button -->
+    <div id="saveTopicsButton" class="actionButton" on:click={saveTopics}>
+        <img src="/assets/saveTopics.svg" alt="" />
+        <span>Save</span>
+    </div>
+
+    <!-- Clear Topics Button -->
+    <div id="clearTopicsButton" class="actionButton" on:click={clearTopics}>
+        <img src="/assets/nukeTopics.svg" alt="" />
+        <span>Nuke Topics</span>
+    </div>
+</div>
+<hr />
+
+<div id="startGameDiv">
+    <div id="startGameRow">
+        <input
+            id="cbChangeAutoSkip"
+            type="checkbox"
+            on:click={clickChangeAutoSkip}
+            bind:checked={checkedAutoSkip}
+        />
+        <label
+            for="cbChangeAutoSkip"
+            style="color: {checkedAutoSkip ? '#24FF00' : 'salmon'};"
+        >
+            Auto Skip
+        </label>
+
+        <!-- start game button -->
+        {#if Object.keys($players).length >= 3}
+            <button id="startGameButton" class="clickable" on:click={startGame}>Start game!</button>
+        {:else}
+            <button id="startGameButton">Need {3 - Object.keys($players).length} more players!</button>
+        {/if}
+
+    </div>
+
 </div>
 
-<!-- start game button -->
-{#if Object.keys($players).length >= 3}
-    <button class="clickable" on:click={startGame}>Start game!</button>
-{:else}
-    <button>Need {3 - Object.keys($players).length} more players!</button>
-{/if}
+<style lang="scss">
+    hr {
+        width: 100%;
+    }
+    h2 {
+        margin: 0.5rem 0.5ch;
+    }
+    .grayHashtags {
+        color: #373737;
+    }
+    .greenText {
+        color: #24ff00;
+    }
+    .row {
+        display: flex;
+        align-items: center;
 
-<style>
+        label {
+            height: 1rem;
+            display: inline-flex;
+            align-items: center;
+        }
+        input {
+            margin: 0;
+        }
+    }
     li {
         list-style: none;
+        background-color: #1f1f1f;
+        width: max-content;
+        margin-bottom: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: .5rem;
     }
 
-    .topicWrapper {
-        background-color: #131313;
-        border-radius: 10px;
+    ul {
+        
+        @media (max-width: 40em) {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        button {
+            background-color: transparent;
+            color: white;
+            font-weight: normal;
+            margin: 0;
+            padding: 0;
+
+            &:hover {
+                cursor: default;
+            }
+        }
+        .removeTopicButton {
+            margin-left: 1rem;
+
+            &:hover {
+                cursor: pointer;
+            }
+        }
     }
 
-    input[type="button"]:hover {
-        cursor: pointer;
+
+    #actionButtonsWrapper {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+
+        @media (max-width: 40em) {
+            justify-content: center;
+        }
     }
+
     input[type="file"] {
-        width: 100%;
-        max-width: 20rem;
+        position: absolute;
+        opacity: 0;
     }
     .clickable:hover {
         cursor: pointer;
     }
 
+    #loadFromFileLabel {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
     #clearTopicsButton {
-        background-color: salmon;
+        --background-color: #e2778b;
+    }
+    #saveTopicsButton,
+    #downloadTopicsButton {
+        --background-color: #48aae2;
+    }
+    .loadFileButton {
+        --background-color: #ffcb7e;
+    }
+    #manualTopicButton {
+        --background-color: #27ae60;
+    }
+    .actionButton {
+        flex-shrink: 0;
+
+        background-color: transparent;
+        border-color: var(--background-color);
+        border-style: solid;
+        border-width: 2px;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+
+        text-decoration: underline;
+        text-decoration-color: var(--background-color);
+
+        font-size: 0.8rem;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.5rem;
+
+        &:hover {
+            cursor: pointer;
+        }
+
+        span {
+            height: 1rem;
+            display: inline-flex;
+            align-items: center;
+        }
+    }
+    #startGameDiv {
+        display: flex;
+        justify-content: end;
+        align-items: end;
+        min-height: 10rem;
+    }
+    #startGameRow {
+        display: flex;
+        justify-content: end;
+        align-items: center;
+
+        label {
+            height: 1rem;
+            display: inline-flex;
+            align-items: center;
+        }
+        input {
+            margin: 0;
+        }
+    }
+    #startGameButton {
+        @media (min-width: 40em) {
+            font-size: 1.5rem;
+        }
+
+        margin-left: 1rem;
     }
 </style>
