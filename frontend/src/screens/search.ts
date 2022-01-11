@@ -31,7 +31,7 @@ export const Giphy: Provider = {
         for (const item of body.data) {
             results.push({
                 original_url: item.images.original.url,
-                preview_url: item.images.preview_gif.url,
+                preview_url: item.images.downsized.url,
             });
         }
 
