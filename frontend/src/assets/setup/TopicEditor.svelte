@@ -259,7 +259,7 @@
         background-color: #1f1f1f;
         width: max-content;
         margin-bottom: 0.5rem;
-        padding: 0.5rem 1rem;
+        padding: 0.5rem;
         border-radius: .5rem;
     }
 
@@ -283,7 +283,6 @@
             }
         }
         .removeTopicButton {
-            margin-left: 1rem;
 
             &:hover {
                 cursor: pointer;
