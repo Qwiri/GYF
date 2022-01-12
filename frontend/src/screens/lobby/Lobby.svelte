@@ -3,7 +3,7 @@
 
     import Avatar from "../../assets/Avatar.svelte";
     import TopicEditor from "../../assets/setup/TopicEditor.svelte";
-    import { leader, players, preferences, username, ws } from "../../store";
+    import { leader, players, username, ws } from "../../store";
     import { copyToClipboard } from "../../utils";
 
     /**
@@ -30,112 +30,69 @@
         copyToClipboard(getShare()[0]);
         toast.push("Copied invite URL to clipboard!");
     }
-
-    let checkedAutoSkip: boolean;
-    let checkedShuffleTopics: boolean;
-
-    $: checkedAutoSkip = $preferences.AutoSkip;
-    $: checkedShuffleTopics = $preferences.ShuffleTopics;
-
-    function clickChangeAutoSkip(event: MouseEvent) {
-        $ws.send(
-            "CHANGE_PREF " +
-                JSON.stringify({
-                    key: "AutoSkip",
-                    value: !checkedAutoSkip,
-                })
-        );
-    }
-
-    function clickChangeShuffleTopics(event: MouseEvent) {
-        $ws.send(
-            "CHANGE_PREF " +
-                JSON.stringify({
-                    key: "ShuffleTopics",
-                    value: !checkedShuffleTopics,
-                })
-        );
-    }
 </script>
 
-<!-- Show connected players -->
-<div id="playerBar">
-    {#each Object.values($players) as player}
-        <div class="playerCard">
-            <Avatar user={player.name} width="100px" />
-            <p class="playerName">
-                {#if player.leader}
-                    👑
-                {/if}
-                <span class:self={player.name === $username}>
-                    {player.name}
-                </span>
-            </p>
+<div id="lobbyWrapper">
+    <div id="avatarDiv">
+        <Avatar user={$username} width="auto" />
+
+        <!-- share game -->
+        <div id="share">
+            <div id="shareTxt">
+                {getShare()[1]}<span>{getShare()[2]}</span>
+            </div>
+            <button on:click={copyShareURL}>COPY</button>
         </div>
-    {/each}
-</div>
 
-<!-- Leader specific actions -->
-{#if $leader}
-    <TopicEditor />
-
-    <div class="leaderActions">
-        <input
-            id="cbChangeAutoSkip"
-            type="checkbox"
-            on:click={clickChangeAutoSkip}
-            bind:checked={checkedAutoSkip}
-        />
-        <label
-            for="cbChangeAutoSkip"
-            style="color: {checkedAutoSkip ? '#24FF00' : 'salmon'};"
-        >
-            Auto Skip
-        </label>
-
-        <input
-            id="cbChangeShuffleTopics"
-            type="checkbox"
-            on:click={clickChangeShuffleTopics}
-            bind:checked={checkedShuffleTopics}
-        />
-        <label
-            for="cbChangeShuffleTopics"
-            style="color: {checkedShuffleTopics ? '#24FF00' : 'salmon'};"
-        >
-            Shuffle Topics
-        </label>
     </div>
-{/if}
+    <div id="lobbyRight">
+        <!-- Show connected players -->
+        <div class="row">
+            <h1>Hi,</h1><h1 class="greenFontColor">{$username}</h1><h1>!</h1>
+        </div>
+        <div id="playerBar">
+            {#each Object.values($players) as player}
+                <div class="playerCard">
+                    <Avatar user={player.name} width="100px" />
+                    <p class="playerName">
+                        {#if player.leader}
+                            👑
+                        {/if}
+                        <span class:self={player.name === $username}>
+                            {player.name}
+                        </span>
+                    </p>
+                </div>
+            {/each}
+        </div>
 
-<!-- share game -->
-<div id="share">
-    <div id="shareTxt">
-        {getShare()[1]}<span>{getShare()[2]}</span>
+        <!-- Leader specific actions -->
+        {#if $leader}
+            <TopicEditor />
+        {/if}
     </div>
-    <button on:click={copyShareURL}>COPY</button>
 </div>
 
 <style lang="scss">
     #playerBar {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-evenly;
+        display: grid;
+        place-content: center;
+        grid-template-columns: repeat(auto-fill, 10rem);
         margin-bottom: 1rem;
         gap: 1rem;
 
         .playerCard {
-            padding: 0.8rem;
+            padding: 1rem;
             border-radius: 0.8rem;
             background-color: #101010;
             color: white;
             font-size: 1.2em;
-            width: 10rem;
-            height: 10rem;
+            width: 8rem;
+            height: 8rem;
         }
 
         .playerName {
-            margin-top: 5px;
+            margin-top: 0rem;
 
             .self {
                 color: #24ff00;
@@ -145,36 +102,86 @@
     }
 
     #share {
+        position: absolute;
+        bottom: 2rem;
+        left: 2rem;
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
+
+        filter: drop-shadow(0px 2px 4px black);
+        border-radius: .5rem;
+        background-color: #131313;
+        padding: .5rem;
 
         #shareTxt {
             width: min-content;
             border: none;
-            border-radius: 7px;
             color: white;
             font-size: 1.2em;
-            background-color: #131313;
             padding: 0.5rem;
             span {
-                color: #24ff00;
+                color: #ffcb7e;
             }
         }
 
         // make button nice
         button {
+            margin: 0;
             border: none;
             border-radius: 7px;
             color: #131313;
             font-size: 1.2em;
-            background-color: #24ff00;
+            background-color: #ffcb7e;
             font-weight: bold;
 
             &:hover {
                 cursor: pointer;
             }
         }
+    }
+    #avatarDiv {
+        align-self: flex-end;
+        position: relative;
+        width: 40vw;
+        display: flex;
+        justify-content: center;
+
+        :global(img) {
+            height: 100vh;
+
+        @media (max-width: 100rem) {
+            height: 50vh;
+        }
+            pointer-events: none;
+        }
+
+        @media (max-width: 40rem) {
+            display: none;
+        }
+    }
+    #lobbyRight {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        @media (min-width: 40em) {
+            width: 35vw;
+        }
+    }
+    #lobbyWrapper {
+        min-height: 100vh;
+        display: flex;
+        justify-content: space-evenly;
+    }
+    .row {
+        display: flex;
+    }
+    h1 {
+        font-size: 3.5rem;
+    }
+    .greenFontColor{
+        color: #24ff00;
+        margin-left: .5ch;
     }
 </style>

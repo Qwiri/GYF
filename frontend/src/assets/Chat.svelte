@@ -21,11 +21,13 @@
     };
 
     let chatElement: HTMLElement;
-    let shouldAutoScroll = true;
+    let chatContainer: HTMLElement;
 
+    let shouldAutoScroll = true;
     afterUpdate(() => {
-        if (shouldAutoScroll) {
-            chatElement.scrollIntoView(false);
+        const mobile = (window?.getComputedStyle(chatContainer)?.flexDirection) === "column-reverse";
+        if (shouldAutoScroll || mobile) {
+            chatElement.scrollIntoView(mobile);
         }
     });
 
@@ -37,7 +39,7 @@
 </script>
 
 <div>
-    <div id="chatContainer">
+    <div id="chatContainer" bind:this={chatContainer}>
         <div id="messageContainer">
             <ul on:scroll={onScroll} id="chat-messages">
                 {#each $chatMessages as message}
@@ -68,6 +70,8 @@
         border-radius: 0.5rem;
         display: flex;
         flex-direction: column;
+
+        margin-bottom: 1rem;
 
         /* turn the chat arround, if on mobile */
         @media (max-width: 40rem) {

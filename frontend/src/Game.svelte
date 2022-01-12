@@ -57,7 +57,7 @@
     }
 
     #lobby {
-        width: 50vw;
+        width: 75vw;
     }
     #chat {
 

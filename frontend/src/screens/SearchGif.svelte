@@ -15,16 +15,21 @@
     let gifPreviewWindow: HTMLImageElement;
     let gifPreviewURL: string;
 
+    let searched = false;
+    $: if (searchQuery) searched = false;
+
     let blur = false;
 
     const fetchFirstGifs = async () => {
         searchResults = []; // #42
         searchResults = await provider.search(searchQuery, true);
+        searched = true;
     };
 
     const fetchGifs = async () => {
         let newResults = await provider.search(searchQuery);
         searchResults = [...searchResults, ...newResults];
+        searched = true;
     };
 
     const submitGif = (e: MouseEvent, r: SearchResult) => {
@@ -125,6 +130,10 @@
                     </div>
                 {/each}
                 <button on:click={fetchGifs}>Load more</button>
+            {:else if searchQuery && searched}
+                <div class="noResults">
+                    No results found. Try another search.
+                </div>
             {/if}
         </div>
     </div>
@@ -142,6 +151,13 @@
 {/if}
 
 <style lang="scss">
+    .noResults {
+        background-color: #ff3838;
+        border-radius: 0.8rem;
+        padding: 0.4rem;
+        color: #131313;
+    }
+
     #searchWrapper {
         background-color: #131313;
     }

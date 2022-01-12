@@ -87,7 +87,7 @@
                 </div>
                 <div id="secondPlaceAvatars">
                     {#each secondPlace as name}
-                        <GameEndUser {name} />
+                        <GameEndUser {name} height="78%" />
                     {/each}
                 </div>
                 {#if points[1] !== undefined}
@@ -101,7 +101,7 @@
                 <div id="honorableMentionsBadge" class="badge" />
                 <div id="honorableMentionsAvatars">
                     {#each honorableMentions as name}
-                        <GameEndUser {name} />
+                        <GameEndUser {name} height="78%" />
                     {/each}
                 </div>
             </div>
