@@ -72,7 +72,7 @@
         });
     };
 
-    const downloadTopics = (_: MouseEvent) => {
+    const downloadTopics = () => {
         if ($topics.length === 0) {
             toast.push("No topics to download");
             return;
@@ -88,7 +88,7 @@
         a.click();
     };
 
-    const saveTopics = (_: MouseEvent) => {
+    const saveTopics = () => {
         if ($topics.length === 0) {
             toast.push("No topics to share");
             return;
@@ -133,27 +133,22 @@
                 })
         );
     }
-    const saveMenu = (e: MouseEvent) => {
-
+    const saveMenu = (_: MouseEvent) => {
+        // sweetalert with two options: "download" and "save template"
         Swal.fire({
-            title: "Save topics",
-            html: `
-
-                <!-- Save Topics Button -->
-                <div class="actionButton saveTopicsButton" on:click={saveMenu}>
-                    <img src="/assets/saveTopics.svg" alt="" />
-                    <span>Save</span>
-                </div>
-            `,
+            title: "Save menu",
+            text: "What do you want to do?",
+            icon: "question",
             showCancelButton: true,
-            confirmButtonText: "Copy to clipboard",
-            cancelButtonText: "Close",
-            cancelButtonColor: "#d33",
-            confirmButtonColor: "#28a745",
-            reverseButtons: true,
+            confirmButtonColor: "#48aae2",
+            cancelButtonColor: "#48aae2",
+            confirmButtonText: "Download",
+            cancelButtonText: "Save Template URL",
         }).then((result) => {
             if (result.value) {
-                toast.push("Copied topic create URL to clipboard");
+                downloadTopics();
+            } else if (result.dismiss.toString() === "cancel") { // is there a better way?
+                saveTopics();
             }
         });
     }
