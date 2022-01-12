@@ -21,11 +21,17 @@
     };
 
     let chatElement: HTMLElement;
-    let shouldAutoScroll = true;
+    let chatContainer: HTMLElement;
 
+    let mobile: boolean = false;
+    $: if (chatContainer) {
+        mobile = (window?.getComputedStyle(chatContainer)?.flexDirection) === "column-reverse";
+    }
+
+    let shouldAutoScroll = true;
     afterUpdate(() => {
-        if (shouldAutoScroll) {
-            chatElement.scrollIntoView(false);
+        if (shouldAutoScroll || mobile) {
+            chatElement.scrollIntoView(mobile);
         }
     });
 
@@ -37,7 +43,7 @@
 </script>
 
 <div>
-    <div id="chatContainer">
+    <div id="chatContainer" bind:this={chatContainer}>
         <div id="messageContainer">
             <ul on:scroll={onScroll} id="chat-messages">
                 {#each $chatMessages as message}
