@@ -119,6 +119,30 @@
                 })
         );
     }
+    const saveMenu = (e: MouseEvent) => {
+
+        Swal.fire({
+            title: "Save topics",
+            html: `
+
+                <!-- Save Topics Button -->
+                <div class="actionButton saveTopicsButton" on:click={saveMenu}>
+                    <img src="/assets/saveTopics.svg" alt="" />
+                    <span>Save</span>
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: "Copy to clipboard",
+            cancelButtonText: "Close",
+            cancelButtonColor: "#d33",
+            confirmButtonColor: "#28a745",
+            reverseButtons: true,
+        }).then((result) => {
+            if (result.value) {
+                toast.push("Copied topic create URL to clipboard");
+            }
+        });
+    }
 </script>
 
 <hr />
@@ -178,18 +202,8 @@
         <span>Import</span>
     </label>
 
-    <!-- Download Topics Button -->
-    <div
-        id="downloadTopicsButton"
-        class="actionButton"
-        on:click={downloadTopics}
-    >
-        <img src="/assets/downloadTopics.svg" alt="" />
-        <span>Download</span>
-    </div>
-
     <!-- Save Topics Button -->
-    <div id="saveTopicsButton" class="actionButton" on:click={saveTopics}>
+    <div class="actionButton saveTopicsButton" on:click={saveMenu}>
         <img src="/assets/saveTopics.svg" alt="" />
         <span>Save</span>
     </div>
@@ -249,6 +263,7 @@
             height: 1rem;
             display: inline-flex;
             align-items: center;
+            margin-left: .3rem;
         }
         input {
             margin: 0;
@@ -323,7 +338,7 @@
     #clearTopicsButton {
         --background-color: #e2778b;
     }
-    #saveTopicsButton,
+    .saveTopicsButton,
     #downloadTopicsButton {
         --background-color: #48aae2;
     }
@@ -379,6 +394,7 @@
             height: 1rem;
             display: inline-flex;
             align-items: center;
+            margin-left: .3rem;
         }
         input {
             margin: 0;
