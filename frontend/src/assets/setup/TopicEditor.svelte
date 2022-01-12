@@ -147,11 +147,12 @@
         }).then((result) => {
             if (result.value) {
                 downloadTopics();
-            } else if (result.dismiss.toString() === "cancel") { // is there a better way?
+            } else if (result.dismiss.toString() === "cancel") {
+                // is there a better way?
                 saveTopics();
             }
         });
-    }
+    };
 </script>
 
 <hr />
@@ -177,7 +178,11 @@
     {#each $topics as topic}
         <li>
             <button>{topic}</button>
-            <button class="removeTopicButton" data-topic={topic} on:click={removeTopic}>❌</button>
+            <button
+                class="removeTopicButton"
+                data-topic={topic}
+                on:click={removeTopic}>❌</button
+            >
         </li>
     {/each}
 </ul>
@@ -242,13 +247,17 @@
 
         <!-- start game button -->
         {#if Object.keys($players).length >= 3}
-            <button id="startGameButton" class="clickable" on:click={startGame}>Start game!</button>
+            <button id="startGameButton" class="clickable" on:click={startGame}
+                >Start game!</button
+            >
         {:else}
-            <button id="startGameButton">Need {3 - Object.keys($players).length} more players!</button>
+            <button
+                id="startGameButton"
+                class="button-secondary button-disabled"
+                >Need {3 - Object.keys($players).length} more players!</button
+            >
         {/if}
-
     </div>
-
 </div>
 
 <style lang="scss">
@@ -272,7 +281,7 @@
             height: 1rem;
             display: inline-flex;
             align-items: center;
-            margin-left: .3rem;
+            margin-left: 0.3rem;
         }
         input {
             margin: 0;
@@ -284,11 +293,10 @@
         width: max-content;
         margin-bottom: 0.5rem;
         padding: 0.5rem;
-        border-radius: .5rem;
+        border-radius: 0.5rem;
     }
 
     ul {
-        
         @media (max-width: 40em) {
             display: flex;
             flex-direction: column;
@@ -307,13 +315,11 @@
             }
         }
         .removeTopicButton {
-
             &:hover {
                 cursor: pointer;
             }
         }
     }
-
 
     #actionButtonsWrapper {
         display: flex;
@@ -404,7 +410,7 @@
             height: 1rem;
             display: inline-flex;
             align-items: center;
-            margin-left: .3rem;
+            margin-left: 0.3rem;
         }
         input {
             margin: 0;
@@ -416,5 +422,14 @@
         }
 
         margin-left: 1rem;
+    }
+
+    .button-secondary {
+        background-color: #ffffff;
+        font-weight: normal;
+    }
+
+    .button-disabled {
+        cursor: crosshair;
     }
 </style>
