@@ -55,7 +55,21 @@
     }
 
     const clearTopics = () => {
-        $ws.send("TOPIC_CLEAR");
+        // Swal confirmation dialog to clear all topics
+        // on confirmation, execute backend command
+        Swal.fire({
+            title: "Are you sure?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, clear all topics!",
+        }).then((result) => {
+            if (result.value) {
+                $ws.send("TOPIC_CLEAR");
+            }
+        });
     };
 
     const downloadTopics = (_: MouseEvent) => {
