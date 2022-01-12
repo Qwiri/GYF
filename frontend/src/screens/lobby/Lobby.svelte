@@ -107,13 +107,13 @@
         justify-content: center;
 
         filter: drop-shadow(0px 2px 4px black);
+        border-radius: .5rem;
         background-color: #131313;
         padding: .5rem;
 
         #shareTxt {
             width: min-content;
             border: none;
-            border-radius: 7px;
             color: white;
             font-size: 1.2em;
             padding: 0.5rem;
