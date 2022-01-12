@@ -174,17 +174,22 @@
     </label>
 </div>
 <!-- display topics -->
+
 <ul>
-    {#each $topics as topic}
-        <li>
-            <button>{topic}</button>
-            <button
-                class="removeTopicButton"
-                data-topic={topic}
-                on:click={removeTopic}>❌</button
-            >
-        </li>
-    {/each}
+    {#if $topics && $topics.length > 0}
+        {#each $topics as topic}
+            <li>
+                <button>{topic}</button>
+                <button
+                    class="removeTopicButton"
+                    data-topic={topic}
+                    on:click={removeTopic}>❌</button
+                >
+            </li>
+        {/each}
+    {:else}
+        <li style="color: salmon;">No topics yet ☹️</li>
+    {/if}
 </ul>
 
 <div id="actionButtonsWrapper">
@@ -246,14 +251,16 @@
         </label>
 
         <!-- start game button -->
-        {#if Object.keys($players).length >= 3}
+        {#if !$topics || $topics.length <= 0}
+            <button id="startGameButton" class="button-secondary"
+                >Need more topics!</button
+            >
+        {:else if Object.keys($players).length >= 3}
             <button id="startGameButton" class="clickable" on:click={startGame}
                 >Start game!</button
             >
         {:else}
-            <button
-                id="startGameButton"
-                class="button-secondary button-disabled"
+            <button id="startGameButton" class="button-secondary"
                 >Need {3 - Object.keys($players).length} more players!</button
             >
         {/if}
@@ -427,9 +434,5 @@
     .button-secondary {
         background-color: #ffffff;
         font-weight: normal;
-    }
-
-    .button-disabled {
-        cursor: crosshair;
     }
 </style>
