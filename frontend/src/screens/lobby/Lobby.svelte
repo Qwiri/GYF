@@ -47,6 +47,9 @@
     </div>
     <div id="lobbyRight">
         <!-- Show connected players -->
+        <div class="row">
+            <h1>Hi,</h1><h1 class="greenFontColor">{$username}</h1><h1>!</h1>
+        </div>
         <div id="playerBar">
             {#each Object.values($players) as player}
                 <div class="playerCard">
@@ -170,5 +173,15 @@
         min-height: 100vh;
         display: flex;
         justify-content: space-evenly;
+    }
+    .row {
+        display: flex;
+    }
+    h1 {
+        font-size: 3.5rem;
+    }
+    .greenFontColor{
+        color: #24ff00;
+        margin-left: .5ch;
     }
 </style>
