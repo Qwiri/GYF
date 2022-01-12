@@ -23,13 +23,9 @@
     let chatElement: HTMLElement;
     let chatContainer: HTMLElement;
 
-    let mobile: boolean = false;
-    $: if (chatContainer) {
-        mobile = (window?.getComputedStyle(chatContainer)?.flexDirection) === "column-reverse";
-    }
-
     let shouldAutoScroll = true;
     afterUpdate(() => {
+        const mobile = (window?.getComputedStyle(chatContainer)?.flexDirection) === "column-reverse";
         if (shouldAutoScroll || mobile) {
             chatElement.scrollIntoView(mobile);
         }
