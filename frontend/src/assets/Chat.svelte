@@ -69,6 +69,8 @@
         display: flex;
         flex-direction: column;
 
+        margin-bottom: 1rem;
+
         /* turn the chat arround, if on mobile */
         @media (max-width: 40rem) {
             flex-direction: column-reverse;
