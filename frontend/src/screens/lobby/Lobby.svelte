@@ -140,13 +140,16 @@
     #avatarDiv {
         align-self: flex-end;
         position: relative;
-        height: 100%;
         width: 40vw;
         display: flex;
         justify-content: center;
 
         :global(img) {
             height: 100vh;
+
+        @media (max-width: 100rem) {
+            height: 50vh;
+        }
             pointer-events: none;
         }
 
@@ -164,6 +167,7 @@
         }
     }
     #lobbyWrapper {
+        min-height: 100vh;
         display: flex;
         justify-content: space-evenly;
     }
