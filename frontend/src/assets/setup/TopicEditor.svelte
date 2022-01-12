@@ -360,16 +360,20 @@
     }
     #clearTopicsButton {
         --background-color: #e2778b;
+        --background-color-transparent: #e2778be0;
     }
     .saveTopicsButton,
     #downloadTopicsButton {
         --background-color: #48aae2;
+        --background-color-transparent: #48aae2e0;
     }
     .loadFileButton {
         --background-color: #ffcb7e;
+        --background-color-transparent: #ffcb7ee0;
     }
     #manualTopicButton {
         --background-color: #27ae60;
+        --background-color-transparent: #27ae5fe0;
     }
     .actionButton {
         flex-shrink: 0;
@@ -394,12 +398,30 @@
 
         &:hover {
             cursor: pointer;
+
+            animation-name: animateBackground;
+            animation-timing-function: linear;
+            animation-fill-mode: forwards;
+            animation-direction: normal;
+            animation-duration: .1s;
+
+
         }
 
         span {
             height: 1rem;
             display: inline-flex;
             align-items: center;
+        }
+    }
+    @keyframes animateBackground {
+        from {
+            background-color: transparent;
+            color: white;
+        }
+        to {
+            background-color: var(--background-color-transparent);
+            color: black;
         }
     }
     #startGameDiv {
