@@ -434,5 +434,6 @@
     .button-secondary {
         background-color: #ffffff;
         font-weight: normal;
+        cursor: default;
     }
 </style>
