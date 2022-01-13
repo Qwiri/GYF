@@ -103,7 +103,7 @@ func (g *Game) BroadcastExcept(conn *websocket.Conn, response *Response) {
 func (g *Game) BroadcastTopicListToLeaders() {
 	p := PTopicList(g)
 	for _, c := range g.Clients {
-		if c.Leader {
+		if c.Leader || g.Preferences.Permissions&PermissionListTopics == PermissionListTopics {
 			_ = p.RespondTo(c)
 		}
 	}
@@ -149,7 +149,7 @@ func (g *Game) SetLeader(client *Client) {
 	g.Broadcast(PChangeRole(client, "LEADER"))
 
 	// send topic list to leader
-	_ = PTopicList(g).RespondTo(client)
+	g.BroadcastTopicListToLeaders()
 
 	log.Infof("[%s] %s is now a leader", g.ID, client.Name)
 }

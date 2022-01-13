@@ -83,6 +83,11 @@ var JoinHandler = &handler.Handler{
 			}
 		}
 
+		// send topic list if enabled
+		if game.Preferences.Permissions&model.PermissionListTopics == model.PermissionListTopics {
+			_ = model.PTopicList(game).Respond(conn)
+		}
+
 		// send preferences to player
 		return model.PPreferences(game.Preferences).Respond(conn)
 	}),

@@ -3,8 +3,10 @@
 
     import Avatar from "../../assets/Avatar.svelte";
     import TopicEditor from "../../assets/setup/TopicEditor.svelte";
-    import { leader, players, username, ws } from "../../store";
+    import { leader, players, preferences, username, ws } from "../../store";
     import { copyToClipboard } from "../../utils";
+
+    $: checkedPermTopicList = ($preferences.Permissions & 0b1) === 0b1;
 
     /**
      * Please refactor this. Thanks! :)
@@ -43,12 +45,13 @@
             </div>
             <button on:click={copyShareURL}>COPY</button>
         </div>
-
     </div>
     <div id="lobbyRight">
         <!-- Show connected players -->
         <div class="row">
-            <h1>Hi,</h1><h1 class="greenFontColor">{$username}</h1><h1>!</h1>
+            <h1>Hi,</h1>
+            <h1 class="greenFontColor">{$username}</h1>
+            <h1>!</h1>
         </div>
         <div id="playerBar">
             {#each Object.values($players) as player}
@@ -67,7 +70,7 @@
         </div>
 
         <!-- Leader specific actions -->
-        {#if $leader}
+        {#if $leader || checkedPermTopicList }
             <TopicEditor />
         {/if}
     </div>
@@ -110,9 +113,9 @@
         justify-content: center;
 
         filter: drop-shadow(0px 2px 4px black);
-        border-radius: .5rem;
+        border-radius: 0.5rem;
         background-color: #131313;
-        padding: .5rem;
+        padding: 0.5rem;
 
         #shareTxt {
             width: min-content;
@@ -150,9 +153,9 @@
         :global(img) {
             height: 100vh;
 
-        @media (max-width: 100rem) {
-            height: 50vh;
-        }
+            @media (max-width: 100rem) {
+                height: 50vh;
+            }
             pointer-events: none;
         }
 
@@ -180,8 +183,8 @@
     h1 {
         font-size: 3.5rem;
     }
-    .greenFontColor{
+    .greenFontColor {
         color: #24ff00;
-        margin-left: .5ch;
+        margin-left: 0.5ch;
     }
 </style>

@@ -1,5 +1,5 @@
 import { toast } from "@zerodevx/svelte-toast";
-import { players, round, stats, submissions, votingResults, waitingFor } from "./store";
+import { players, preferences, round, stats, submissions, votingResults, waitingFor } from "./store";
 import type { Player } from "./types";
 
 let localPlayers: { [name: string]: Player } = {};

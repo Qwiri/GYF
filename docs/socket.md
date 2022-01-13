@@ -3,7 +3,7 @@
 ## Backend Commands
 
 [//]: # (handlers_start)
-*Generated on 08.01.2022 22:51:29*
+*Generated on 13.01.2022 20:07:21*
 
 ### CHANGE_PREF
 
@@ -115,6 +115,25 @@
 	- [ ] Lobby
 	- [ ] Submit GIF
 	- [ ] Cast Votes
+	- [x] Show Vote Results
+
+---
+
+### PERM
+
+> Changes the enhanced permission for the game
+
+`PERM (permission!)`  
+👉 args: [x == 1]
+!!! danger "Access"
+	- [ ] Guest
+	- [ ] Joined
+	- [x] Leader
+
+!!! hint "States"
+	- [x] Lobby
+	- [x] Submit GIF
+	- [x] Cast Votes
 	- [x] Show Vote Results
 
 ---
@@ -260,7 +279,7 @@
 👉 args: [x == 0]
 !!! danger "Access"
 	- [ ] Guest
-	- [ ] Joined
+	- [x] Joined
 	- [x] Leader
 
 !!! hint "States"

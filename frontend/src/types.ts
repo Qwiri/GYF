@@ -50,4 +50,5 @@ export interface Preferences {
     MinTopics: number;
     MaxTopics: number;
     ShuffleTopics: boolean;
+    Permissions: number;
 }
