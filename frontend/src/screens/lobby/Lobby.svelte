@@ -96,6 +96,8 @@
 
         .playerName {
             margin-top: 0rem;
+            overflow: hidden;
+            display: flex;
 
             .self {
                 color: #24ff00;
