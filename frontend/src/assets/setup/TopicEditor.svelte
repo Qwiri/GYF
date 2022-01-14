@@ -104,7 +104,13 @@
         }
 
         const data = JSON.stringify($topics);
-        const url = `http://localhost:5000/?t=${btoa(data)}`;
+
+        const urlPieces = [
+            location.protocol,
+            "//",
+            location.host,
+        ].join("");
+        const url =  `${urlPieces}/?t=${btoa(data)}`;
 
         Swal.fire({
             title: "Bookmark this URL",
@@ -152,7 +158,7 @@
             confirmButtonColor: "#48aae2",
             cancelButtonColor: "#48aae2",
             confirmButtonText: "Download",
-            cancelButtonText: "Save Template URL",
+            cancelButtonText: "Save Topic URL",
         }).then((result) => {
             if (result.value) {
                 downloadTopics();
