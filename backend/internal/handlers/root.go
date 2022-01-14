@@ -34,6 +34,7 @@ var Handlers = map[string]*handler.Handler{
 	"STATS":         StatsHandler,
 	"CHANGE_PREF":   ChangePreferenceHandler,
 	"EXPLAIN":       ExplainHandler,
+	"PERM":          ChangePermissionHandler,
 }
 
 func OnClientMessage(conn *websocket.Conn, game *model.Game, msg string, devMode bool) error {
@@ -68,7 +69,10 @@ func OnClientMessage(conn *websocket.Conn, game *model.Game, msg string, devMode
 
 	// check access for h
 	if !h.AccessLevel.Allowed(client) {
-		return gerrors.ErrNoAccess
+		// check enhanced
+		if h.EnhancedPerm == 0 || game.Preferences.Permissions&h.EnhancedPerm != h.EnhancedPerm {
+			return gerrors.ErrNoAccess
+		}
 	}
 
 	// check arg length

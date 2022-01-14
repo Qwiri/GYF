@@ -12,22 +12,24 @@ import (
 )
 
 var TopicListHandler = &handler.Handler{
-	Description: "Returns a list with all topics from the current game",
-	Syntax:      "",
-	AccessLevel: handler.AccessLeader,
-	Bounds:      util.Bounds(util.BoundExact(0)),
-	StateLevel:  util.StateAny,
+	Description:  "Returns a list with all topics from the current game",
+	Syntax:       "",
+	AccessLevel:  handler.AccessLeader,
+	EnhancedPerm: model.PermissionListTopics,
+	Bounds:       util.Bounds(util.BoundExact(0)),
+	StateLevel:   util.StateAny,
 	Handler: handler.BasicHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client) error {
 		return model.PTopicList(game).Respond(conn)
 	}),
 }
 
 var TopicAddHandler = &handler.Handler{
-	Description: "Adds a new topic to the game",
-	Syntax:      "(topic!)",
-	AccessLevel: handler.AccessLeader,
-	Bounds:      util.Bounds(util.BoundMin(1)),
-	StateLevel:  util.StateLobby,
+	Description:  "Adds a new topic to the game",
+	Syntax:       "(topic!)",
+	AccessLevel:  handler.AccessLeader,
+	EnhancedPerm: model.PermissionCreateTopics,
+	Bounds:       util.Bounds(util.BoundMin(1)),
+	StateLevel:   util.StateLobby,
 	Handler: handler.MessagedHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client, message []string) error {
 		if len(game.Topics) >= game.Preferences.MaxTopics {
 			return gerrors.ErrTooManyTopics
@@ -45,11 +47,12 @@ var TopicAddHandler = &handler.Handler{
 }
 
 var TopicAddAllHandler = &handler.Handler{
-	Description: "Adds all topics from a JSON array",
-	Syntax:      "(...topics: Array<string>!)",
-	AccessLevel: handler.AccessLeader,
-	Bounds:      util.Bounds(util.BoundMin(1)),
-	StateLevel:  util.StateLobby,
+	Description:  "Adds all topics from a JSON array",
+	Syntax:       "(...topics: Array<string>!)",
+	AccessLevel:  handler.AccessLeader,
+	EnhancedPerm: model.PermissionCreateTopics,
+	Bounds:       util.Bounds(util.BoundMin(1)),
+	StateLevel:   util.StateLobby,
 	Handler: handler.MessagedHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client, message []string) (err error) {
 		data := strings.Join(message, " ")
 		var topics []string
@@ -80,11 +83,12 @@ var TopicAddAllHandler = &handler.Handler{
 }
 
 var TopicRemoveHandler = &handler.Handler{
-	Description: "Removes a topic from the game",
-	Syntax:      "(topic!)",
-	AccessLevel: handler.AccessLeader,
-	Bounds:      util.Bounds(util.BoundMin(1)),
-	StateLevel:  util.StateLobby,
+	Description:  "Removes a topic from the game",
+	Syntax:       "(topic!)",
+	AccessLevel:  handler.AccessLeader,
+	EnhancedPerm: model.PermissionDeleteTopics,
+	Bounds:       util.Bounds(util.BoundMin(1)),
+	StateLevel:   util.StateLobby,
 	Handler: handler.MessagedHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client, message []string) error {
 		topic := strings.TrimSpace(strings.Join(message, " "))
 		if !game.Topics.Exists(topic) {
@@ -99,11 +103,12 @@ var TopicRemoveHandler = &handler.Handler{
 }
 
 var TopicClearHandler = &handler.Handler{
-	Description: "Removes all topics from the current game",
-	Syntax:      "",
-	AccessLevel: handler.AccessLeader,
-	Bounds:      util.Bounds(util.BoundExact(0)),
-	StateLevel:  util.StateLobby,
+	Description:  "Removes all topics from the current game",
+	Syntax:       "",
+	AccessLevel:  handler.AccessLeader,
+	EnhancedPerm: model.PermissionDeleteTopics,
+	Bounds:       util.Bounds(util.BoundExact(0)),
+	StateLevel:   util.StateLobby,
 	Handler: handler.BasicHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client) error {
 		// send updated list to all leaders
 		defer game.BroadcastTopicListToLeaders()
