@@ -203,8 +203,8 @@ func main() {
 
 	log.Info("Clients connected. Press CTRL-C to disconnect all clients")
 
-	sc := make(chan os.Signal)
-	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, syscall.SIGKILL)
+	sc := make(chan os.Signal, 1)
+	signal.Notify(sc, syscall.SIGINT)
 	<-sc
 
 	log.Info("Disconnecting ...")
