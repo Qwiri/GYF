@@ -18,9 +18,8 @@ type chatSpam struct {
 var chats = make(map[*model.Client]*chatSpam)
 
 func JanitorChatChats() {
-	n := time.Now()
 	for k, v := range chats {
-		if n.Sub(v.Time) > 5*time.Minute {
+		if time.Since(v.Time) > 5*time.Minute {
 			delete(chats, k)
 		}
 	}
@@ -44,7 +43,7 @@ var ChatHandler = &handler.Handler{
 		}
 		// time check
 		if chat, ok := chats[client]; ok {
-			if time.Now().Sub(chat.Time) < 1*time.Second {
+			if time.Since(chat.Time) < 1*time.Second {
 				return gerrors.ErrChatMessageTooFast
 			}
 			if strings.EqualFold(chat.Previous, msg) {
