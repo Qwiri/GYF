@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/Qwiri/GYF/backend/internal/handlers"
 	"github.com/Qwiri/GYF/backend/internal/server"
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/text"
@@ -84,7 +85,9 @@ func main() {
 	go func(s *server.GYFServer) {
 		for {
 			time.Sleep(JanitorTime)
+
 			svr.JanitorCheck(JanitorCleanTime)
+			handlers.JanitorChatChats()
 		}
 	}(svr)
 
