@@ -18,6 +18,11 @@ var JoinHandler = &handler.Handler{
 	Bounds:      util.Bounds(util.BoundExact(1)),
 	StateLevel:  util.StateAny,
 	Handler: handler.MessagedHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client, message []string) error {
+		// check if there are too many players
+		if len(game.Clients) >= game.Preferences.MaxPlayers {
+			return gerrors.ErrTooManyPlayers
+		}
+
 		username := strings.TrimSpace(message[0])
 		// check if username is allowed
 		if !util.IsNameValid(username) {

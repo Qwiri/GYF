@@ -48,7 +48,7 @@ var (
 	// ErrTooFewPlayers is returned when a client tries to start the game and too few players are in the lobby
 	ErrTooFewPlayers = errors.New("too few players")
 	// ErrTooManyPlayers is returned when a client tries to start the game and too many players are in the lobby
-	ErrTooManyPlayers = errors.New("too few players")
+	ErrTooManyPlayers = errors.New("too many players")
 	// ErrTooFewTopics is returned when a client tries to start the game and too few topics were added
 	ErrTooFewTopics = errors.New("too few topics")
 	// ErrTooManyTopics is returned when a client tries to start the game and too many topics were added
