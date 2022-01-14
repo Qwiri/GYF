@@ -44,6 +44,6 @@ var ChangePreferenceHandler = &handler.Handler{
 		}
 
 		game.Broadcast(model.PPreferences(game.Preferences))
-		return model.NewResponse("CHANGE_PREF").Respond(conn)
+		return nil
 	}),
 }

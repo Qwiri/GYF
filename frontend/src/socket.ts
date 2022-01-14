@@ -12,6 +12,12 @@ let localState: GameState = GameState.ChooseUsername;
 state.subscribe(n => localState = n);
 
 function handleErrors(resp: Response): boolean {
+    if (resp.cmd === "ERROR") {
+        console.log("errored result:", resp.args);
+        console.log("(this may be ignored)");
+        return;
+    }
+
     if (!resp._s) {
         if (resp.warn != "") {
             console.log("AN ERROR OCCURRED");
@@ -72,6 +78,10 @@ const commands: { [name: string]: (res: Response) => void | string } = {
     },
 
     CHAT: (res: Response) => {
+        if (!res._s) {
+            pushWarn(res.warn);
+            return;
+        }
         const message: ChatMessage = {
             leader: isLeader(res.args[0] as string),
             author: res.args[0] as string,

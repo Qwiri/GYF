@@ -1,21 +1,30 @@
 <script lang="ts">
     import { toast } from "@zerodevx/svelte-toast";
 
-    import { ws, topics, players, preferences } from "../../store";
+    import { ws, topics, players, preferences, leader } from "../../store";
     import { copyToClipboard } from "../../utils";
 
     // other components
     import Swal from "sweetalert2";
 
-    let topicBuffer: string;
-
+    let topicBuffer = "";
     let showManualTopic = false;
-
-    let checkedAutoSkip: boolean;
-    let checkedShuffleTopics: boolean;
 
     $: checkedAutoSkip = $preferences.AutoSkip;
     $: checkedShuffleTopics = $preferences.ShuffleTopics;
+
+    // permissions
+    $: checkedPermTopicList = ($preferences.Permissions & 0b1) === 0b1;
+    $: checkedPermTopicCreate = ($preferences.Permissions & 0b10) === 0b10;
+    $: checkedPermTopicDelete = ($preferences.Permissions & 0b100) === 0b100;
+
+    const togglePermission = (perm: number) => {
+        if (($preferences.Permissions & perm) === perm) {
+            $ws.send(`PERM ${$preferences.Permissions & ~perm}`);
+        } else {
+            $ws.send(`PERM ${$preferences.Permissions | perm}`);
+        }
+    };
 
     const sendTopic = (event: KeyboardEvent) => {
         if (event.key === "Enter") {
@@ -95,7 +104,9 @@
         }
 
         const data = JSON.stringify($topics);
-        const url = `http://localhost:5000/?t=${btoa(data)}`;
+
+        const urlPieces = [location.protocol, "//", location.host].join("");
+        const url = `${urlPieces}/?t=${btoa(data)}`;
 
         Swal.fire({
             title: "Bookmark this URL",
@@ -115,7 +126,7 @@
             }
         });
     };
-    function clickChangeAutoSkip(event: MouseEvent) {
+    function clickChangeAutoSkip(_: MouseEvent) {
         $ws.send(
             "CHANGE_PREF " +
                 JSON.stringify({
@@ -124,7 +135,7 @@
                 })
         );
     }
-    function clickChangeShuffleTopics(event: MouseEvent) {
+    function clickChangeShuffleTopics(_: MouseEvent) {
         $ws.send(
             "CHANGE_PREF " +
                 JSON.stringify({
@@ -143,7 +154,7 @@
             confirmButtonColor: "#48aae2",
             cancelButtonColor: "#48aae2",
             confirmButtonText: "Download",
-            cancelButtonText: "Save Template URL",
+            cancelButtonText: "Save Topic URL",
         }).then((result) => {
             if (result.value) {
                 downloadTopics();
@@ -153,6 +164,10 @@
             }
         });
     };
+
+    function ok(b: boolean): boolean {
+        return $leader || b;
+    }
 </script>
 
 <hr />
@@ -160,112 +175,176 @@
     <h2 class="grayHashtags">#</h2>
     <h2 class="greenText">Topics</h2>
     <h2>({$topics.length})</h2>
-    <input
-        id="cbChangeShuffleTopics"
-        type="checkbox"
-        on:click={clickChangeShuffleTopics}
-        bind:checked={checkedShuffleTopics}
-    />
-    <label
-        for="cbChangeShuffleTopics"
-        style="color: {checkedShuffleTopics ? '#24FF00' : 'salmon'};"
-    >
-        Shuffle Topics
-    </label>
-</div>
-<!-- display topics -->
 
-<ul>
-    {#if $topics && $topics.length > 0}
-        {#each $topics as topic}
-            <li>
-                <button>{topic}</button>
-                <button
-                    class="removeTopicButton"
-                    data-topic={topic}
-                    on:click={removeTopic}>❌</button
-                >
-            </li>
-        {/each}
-    {:else}
-        <li style="color: salmon;">No topics yet ☹️</li>
+    {#if $leader}
+        <input
+            id="cbChangeShuffleTopics"
+            type="checkbox"
+            on:click={clickChangeShuffleTopics}
+            bind:checked={checkedShuffleTopics}
+        />
+        <label
+            for="cbChangeShuffleTopics"
+            style="color: {checkedShuffleTopics ? '#24FF00' : 'salmon'};"
+        >
+            Shuffle Topics
+        </label>
+
+        <!-- Extra Permission Checkboxes -->
+        <input
+            id="cbChangePermTopicList"
+            type="checkbox"
+            on:click={(_) => togglePermission(0b1)}
+            bind:checked={checkedPermTopicList}
+        />
+        <label
+            for="cbChangePermTopicList"
+            style="color: {checkedPermTopicList ? '#24FF00' : 'salmon'};"
+        >
+            Perm: List Topics
+        </label>
+
+        <input
+            id="cbChangePermTopicAdd"
+            type="checkbox"
+            on:click={(_) => togglePermission(0b10)}
+            bind:checked={checkedPermTopicCreate}
+        />
+        <label
+            for="cbChangePermTopicAdd"
+            style="color: {checkedPermTopicCreate ? '#24FF00' : 'salmon'};"
+        >
+            Perm: Add Topics
+        </label>
+
+        <input
+            id="cbChangePermTopicRemove"
+            type="checkbox"
+            on:click={(_) => togglePermission(0b100)}
+            disabled={!checkedPermTopicList}
+            bind:checked={checkedPermTopicDelete}
+        />
+        <label
+            for="cbChangePermTopicRemove"
+            style="color: {checkedPermTopicDelete ? '#24FF00' : 'salmon'};"
+        >
+            Perm: Remove Topics
+        </label>
     {/if}
-</ul>
+</div>
+
+<!-- Display Topics List -->
+{#if ok(checkedPermTopicList)}
+    <ul>
+        {#if $topics && $topics.length > 0}
+            {#each $topics as topic}
+                <li>
+                    <button>{topic}</button>
+
+                    <!-- Display Delete Button for Leader or if Enhanced Permissions -->
+                    {#if $leader || checkedPermTopicDelete}
+                        <button
+                            class="removeTopicButton"
+                            data-topic={topic}
+                            on:click={removeTopic}>❌</button
+                        >
+                    {/if}
+                </li>
+            {/each}
+        {:else}
+            <li style="color: salmon;">No topics yet ☹️</li>
+        {/if}
+    </ul>
+{/if}
 
 <div id="actionButtonsWrapper">
-    <!-- Manual Topic Textbox -->
-    {#if !showManualTopic}
-        <div
-            id="manualTopicButton"
-            class="actionButton"
-            on:click={(e) => (showManualTopic = true)}
-        >
-            <img src="/assets/addTopic.svg" alt="" />
-        </div>
-    {:else}
-        <input
-            placeholder="Add topic (Enter)"
-            class="gyf-bar"
-            type="text"
-            on:blur={(e) => {
-                showManualTopic = false;
-            }}
-            on:keypress={sendTopic}
-            bind:value={topicBuffer}
-        />
+    
+    <!-- Topic Create -->
+    {#if ok(checkedPermTopicCreate)}
+        {#if !showManualTopic}
+            <div
+                id="manualTopicButton"
+                class="actionButton"
+                on:click={(_) => (showManualTopic = true)}
+            >
+                <img src="/assets/addTopic.svg" alt="" />
+            </div>
+        {:else}
+            <input
+                placeholder="Add topic (Enter)"
+                class="gyf-bar"
+                type="text"
+                on:blur={(e) => {
+                    showManualTopic = false;
+                }}
+                on:keypress={sendTopic}
+                bind:value={topicBuffer}
+            />
+        {/if}
+
+        <label id="loadFromFileLabel" class="actionButton loadFileButton">
+            <input type="file" on:change={loadFromFile} />
+            <img src="/assets/import_checkmark.svg" alt="" />
+            <span>Import</span>
+        </label>
     {/if}
 
-    <label id="loadFromFileLabel" class="actionButton loadFileButton">
-        <input type="file" on:change={loadFromFile} />
-        <img src="/assets/import_checkmark.svg" alt="" />
-        <span>Import</span>
-    </label>
-
-    <!-- Save Topics Button -->
-    <div class="actionButton saveTopicsButton" on:click={saveMenu}>
-        <img src="/assets/saveTopics.svg" alt="" />
-        <span>Save</span>
-    </div>
+    <!-- Topic List -->
+    {#if ok(checkedPermTopicList)}
+        <!-- Save Topics Button -->
+        <div class="actionButton saveTopicsButton" on:click={saveMenu}>
+            <img src="/assets/saveTopics.svg" alt="" />
+            <span>Save</span>
+        </div>
+    {/if}
 
     <!-- Clear Topics Button -->
-    <div id="clearTopicsButton" class="actionButton" on:click={clearTopics}>
-        <img src="/assets/nukeTopics.svg" alt="" />
-        <span>Nuke Topics</span>
-    </div>
+    {#if ok(checkedPermTopicDelete)}
+        <div id="clearTopicsButton" class="actionButton" on:click={clearTopics}>
+            <img src="/assets/nukeTopics.svg" alt="" />
+            <span>Nuke Topics</span>
+        </div>
+    {/if}
+
 </div>
 <hr />
 
-<div id="startGameDiv">
-    <div id="startGameRow">
-        <input
-            id="cbChangeAutoSkip"
-            type="checkbox"
-            on:click={clickChangeAutoSkip}
-            bind:checked={checkedAutoSkip}
-        />
-        <label
-            for="cbChangeAutoSkip"
-            style="color: {checkedAutoSkip ? '#24FF00' : 'salmon'};"
-        >
-            Auto Skip
-        </label>
+<!-- TODO: Move this to Lobby.svelte @Tom -->
+{#if $leader}
+    <div id="startGameDiv">
+        <div id="startGameRow">
+            <input
+                id="cbChangeAutoSkip"
+                type="checkbox"
+                on:click={clickChangeAutoSkip}
+                bind:checked={checkedAutoSkip}
+            />
+            <label
+                for="cbChangeAutoSkip"
+                style="color: {checkedAutoSkip ? '#24FF00' : 'salmon'};"
+            >
+                Auto Skip
+            </label>
 
-        <!-- start game button -->
-        {#if !$topics || $topics.length <= 0}
-            <button id="startGameButton" class="button-secondary"
-                >Need more topics!</button
-            >
-        {:else if Object.keys($players).length >= 3}
-            <button id="startGameButton" class="clickable" on:click={startGame}
-                >Start game!</button
-            >
-        {:else}
-            <button id="startGameButton" class="button-secondary"
-                >Need {3 - Object.keys($players).length} more players!</button
-            >
-        {/if}
+            <!-- start game button -->
+            {#if !$topics || $topics.length <= 0}
+                <button id="startGameButton" class="button-secondary"
+                    >Need more topics!</button
+                >
+            {:else if Object.keys($players).length >= 3}
+                <button
+                    id="startGameButton"
+                    class="clickable"
+                    on:click={startGame}>Start game!</button
+                >
+            {:else}
+                <button id="startGameButton" class="button-secondary"
+                    >Need {3 - Object.keys($players).length} more players!</button
+                >
+            {/if}
+        </div>
     </div>
-</div>
+{/if}
 
 <style lang="scss">
     hr {
@@ -362,8 +441,7 @@
         --background-color: #e2778b;
         --background-color-transparent: #e2778be0;
     }
-    .saveTopicsButton,
-    #downloadTopicsButton {
+    .saveTopicsButton {
         --background-color: #48aae2;
         --background-color-transparent: #48aae2e0;
     }
@@ -403,9 +481,7 @@
             animation-timing-function: linear;
             animation-fill-mode: forwards;
             animation-direction: normal;
-            animation-duration: .1s;
-
-
+            animation-duration: 0.1s;
         }
 
         span {

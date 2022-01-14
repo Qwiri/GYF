@@ -26,8 +26,6 @@ var (
 	// ErrArgLength is returned when a handler's bounds requirements were not met
 	ErrArgLength = errors.New("unexpected arg length")
 
-	// ErrMessageEmpty is used by the chat handler and is returned when an empty chat message was sent
-	ErrMessageEmpty      = errors.New("message empty")
 	ErrTypeInvalid       = errors.New("type invalid")
 	ErrUnknownPreference = errors.New("unknown preference")
 
@@ -48,7 +46,7 @@ var (
 	// ErrTooFewPlayers is returned when a client tries to start the game and too few players are in the lobby
 	ErrTooFewPlayers = errors.New("too few players")
 	// ErrTooManyPlayers is returned when a client tries to start the game and too many players are in the lobby
-	ErrTooManyPlayers = errors.New("too few players")
+	ErrTooManyPlayers = errors.New("too many players")
 	// ErrTooFewTopics is returned when a client tries to start the game and too few topics were added
 	ErrTooFewTopics = errors.New("too few topics")
 	// ErrTooManyTopics is returned when a client tries to start the game and too many topics were added
@@ -67,4 +65,9 @@ var (
 	ErrAlreadyVoted = errors.New("already voted")
 	// ErrVoteSelf is used by the vote handler and is returned when clients try to vote on their own GIFs
 	ErrVoteSelf = errors.New("cannot vote self")
+
+	ErrChatMessageTooShort = errors.New("chat message too short")
+	ErrChatMessageTooLong  = errors.New("chat message too long")
+	ErrChatMessageTooFast  = errors.New("typing too fast")
+	ErrChatMessageRepeat   = errors.New("chat message repeated")
 )
