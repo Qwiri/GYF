@@ -153,7 +153,6 @@
         width: 40vw;
         display: flex;
         justify-content: center;
-        z-index: -1;
 
         :global(img) {
             height: 50vw;
