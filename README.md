@@ -5,7 +5,7 @@ A Simple GIF Tournament Game
 
 ### Frontend
 
-[![Netlify staging](https://img.shields.io/netlify/5bad37f0-baa9-4ebe-b467-bedd5596e6f7?style=for-the-badge&label=Prod)](https://staging.gyf.d2a.io/)
+[![Netlify Prod](https://img.shields.io/netlify/5bad37f0-baa9-4ebe-b467-bedd5596e6f7?style=for-the-badge&label=Prod)](https://prod.gyf.d2a.io/)
 [![Netlify staging](https://img.shields.io/netlify/57f44c16-7925-4c5d-a08a-2f1d250a615d?style=for-the-badge&label=Develop)](https://staging.gyf.d2a.io/)
 
 
