@@ -40,7 +40,7 @@
         <div id="share">
             <div id="shareTxt">
                 {getShare()[1]}<span>{getShare()[2]}</span>
-            </div>
+            </div>/#avatar/
             <button on:click={copyShareURL}>COPY</button>
         </div>
 
@@ -146,13 +146,10 @@
         width: 40vw;
         display: flex;
         justify-content: center;
+        z-index: -1;
 
         :global(img) {
-            height: 100vh;
-
-        @media (max-width: 100rem) {
-            height: 50vh;
-        }
+            height: 50vw;
             pointer-events: none;
         }
 
