@@ -72,6 +72,10 @@ const commands: { [name: string]: (res: Response) => void | string } = {
     },
 
     CHAT: (res: Response) => {
+        if (!res._s) {
+            pushWarn(res.warn);
+            return;
+        }
         const message: ChatMessage = {
             leader: isLeader(res.args[0] as string),
             author: res.args[0] as string,
