@@ -42,7 +42,7 @@
         <div id="share">
             <div id="shareTxt">
                 {getShare()[1]}<span>{getShare()[2]}</span>
-            </div>/#avatar/
+            </div>
             <button on:click={copyShareURL}>COPY</button>
         </div>
     </div>
@@ -98,6 +98,8 @@
             margin-top: 0rem;
             overflow: hidden;
             display: flex;
+            justify-content: center;
+            align-content: center;
 
             .self {
                 color: #24ff00;
