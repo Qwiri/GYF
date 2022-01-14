@@ -105,12 +105,8 @@
 
         const data = JSON.stringify($topics);
 
-        const urlPieces = [
-            location.protocol,
-            "//",
-            location.host,
-        ].join("");
-        const url =  `${urlPieces}/?t=${btoa(data)}`;
+        const urlPieces = [location.protocol, "//", location.host].join("");
+        const url = `${urlPieces}/?t=${btoa(data)}`;
 
         Swal.fire({
             title: "Bookmark this URL",
@@ -130,7 +126,7 @@
             }
         });
     };
-    function clickChangeAutoSkip(event: MouseEvent) {
+    function clickChangeAutoSkip(_: MouseEvent) {
         $ws.send(
             "CHANGE_PREF " +
                 JSON.stringify({
@@ -139,7 +135,7 @@
                 })
         );
     }
-    function clickChangeShuffleTopics(event: MouseEvent) {
+    function clickChangeShuffleTopics(_: MouseEvent) {
         $ws.send(
             "CHANGE_PREF " +
                 JSON.stringify({
@@ -168,6 +164,10 @@
             }
         });
     };
+
+    function ok(b: boolean): boolean {
+        return $leader || b;
+    }
 </script>
 
 <hr />
@@ -221,6 +221,7 @@
             id="cbChangePermTopicRemove"
             type="checkbox"
             on:click={(_) => togglePermission(0b100)}
+            disabled={!checkedPermTopicList}
             bind:checked={checkedPermTopicDelete}
         />
         <label
@@ -231,32 +232,35 @@
         </label>
     {/if}
 </div>
-<!-- display topics -->
 
-<ul>
-    {#if $topics && $topics.length > 0}
-        {#each $topics as topic}
-            <li>
-                <button>{topic}</button>
+<!-- Display Topics List -->
+{#if ok(checkedPermTopicList)}
+    <ul>
+        {#if $topics && $topics.length > 0}
+            {#each $topics as topic}
+                <li>
+                    <button>{topic}</button>
 
-                <!-- Display Delete Button for Leader or if Enhanced Permissions -->
-                {#if $leader || checkedPermTopicDelete}
-                    <button
-                        class="removeTopicButton"
-                        data-topic={topic}
-                        on:click={removeTopic}>❌</button
-                    >
-                {/if}
-            </li>
-        {/each}
-    {:else}
-        <li style="color: salmon;">No topics yet ☹️</li>
-    {/if}
-</ul>
+                    <!-- Display Delete Button for Leader or if Enhanced Permissions -->
+                    {#if $leader || checkedPermTopicDelete}
+                        <button
+                            class="removeTopicButton"
+                            data-topic={topic}
+                            on:click={removeTopic}>❌</button
+                        >
+                    {/if}
+                </li>
+            {/each}
+        {:else}
+            <li style="color: salmon;">No topics yet ☹️</li>
+        {/if}
+    </ul>
+{/if}
 
 <div id="actionButtonsWrapper">
-    <!-- Manual Topic Textbox -->
-    {#if $leader || checkedPermTopicCreate}
+    
+    <!-- Topic Create -->
+    {#if ok(checkedPermTopicCreate)}
         {#if !showManualTopic}
             <div
                 id="manualTopicButton"
@@ -285,22 +289,27 @@
         </label>
     {/if}
 
-    <!-- Save Topics Button -->
-    <div class="actionButton saveTopicsButton" on:click={saveMenu}>
-        <img src="/assets/saveTopics.svg" alt="" />
-        <span>Save</span>
-    </div>
+    <!-- Topic List -->
+    {#if ok(checkedPermTopicList)}
+        <!-- Save Topics Button -->
+        <div class="actionButton saveTopicsButton" on:click={saveMenu}>
+            <img src="/assets/saveTopics.svg" alt="" />
+            <span>Save</span>
+        </div>
+    {/if}
 
     <!-- Clear Topics Button -->
-    {#if $leader || checkedPermTopicDelete}
+    {#if ok(checkedPermTopicDelete)}
         <div id="clearTopicsButton" class="actionButton" on:click={clearTopics}>
             <img src="/assets/nukeTopics.svg" alt="" />
             <span>Nuke Topics</span>
         </div>
     {/if}
+
 </div>
 <hr />
 
+<!-- TODO: Move this to Lobby.svelte @Tom -->
 {#if $leader}
     <div id="startGameDiv">
         <div id="startGameRow">
@@ -432,8 +441,7 @@
         --background-color: #e2778b;
         --background-color-transparent: #e2778be0;
     }
-    .saveTopicsButton,
-    #downloadTopicsButton {
+    .saveTopicsButton {
         --background-color: #48aae2;
         --background-color-transparent: #48aae2e0;
     }

@@ -139,7 +139,7 @@ func (g *Game) BroadcastWaitingFor() {
 func (g *Game) SetLeader(client *Client) {
 	// remove old leader(s)
 	for _, c := range g.Clients {
-		if c.Leader {
+		if c != client && c.Leader {
 			c.Leader = false
 			g.Broadcast(PChangeRole(c, "PLAYER"))
 			log.Infof("[%s] %s is no longer a leader", g.ID, client.Name)
@@ -174,7 +174,7 @@ func (g *Game) LeaveClient(client *Client, reason string) {
 	// check if client was a leader
 	if client.Leader {
 		log.Debugf("[%s] %s was a leader. Choosing a new one.", g.ID, client.Name)
-		if leader := g.CreateLeader(); leader != nil {
+		if leader := g.FindNonLeaderClient(); leader != nil {
 			log.Debugf("[%s] New leader for game: %s", g.ID, leader.Name)
 			g.SetLeader(leader)
 		} else {
@@ -387,12 +387,11 @@ func (g *Game) StatsForUser(user string) (res int) {
 
 ///
 
-func (g *Game) CreateLeader() *Client {
+func (g *Game) FindNonLeaderClient() *Client {
 	for _, c := range g.Clients {
 		if !c.Leader {
-			c.Leader = true
+			return c
 		}
-		return c
 	}
 	return nil
 }

@@ -70,7 +70,7 @@
         </div>
 
         <!-- Leader specific actions -->
-        {#if $leader || checkedPermTopicList }
+        {#if $leader || $preferences.Permissions !== 0 }
             <TopicEditor />
         {/if}
     </div>
