@@ -1,11 +1,14 @@
 package model
 
 import (
+	"fmt"
+	"github.com/Qwiri/GYF/backend/pkg/config"
 	"github.com/Qwiri/GYF/backend/pkg/gerrors"
 	"github.com/Qwiri/GYF/backend/pkg/util"
 	"github.com/apex/log"
 	"github.com/gofiber/websocket/v2"
 	"math/rand"
+	"strings"
 	"time"
 )
 
@@ -247,6 +250,14 @@ func (g *Game) CheckCycle(checkAutoSkip, force bool) (err error) {
 
 // ForceEndGame ends the game
 func (g *Game) ForceEndGame(reason string) (err error) {
+	stats := make(map[string]int)
+	for _, c := range g.Clients {
+		stats[c.Name] = g.StatsForUser(c.Name)
+	}
+	config.Obj.Pushover.Send(
+		fmt.Sprintf("STATS { %+v }", stats),
+		fmt.Sprintf("Game (End) [%s]", g.ID))
+
 	g.Broadcast(PStats(g))        // send stats for winning screen
 	g.Broadcast(PGameEnd(reason)) // send game end
 	g.Reset(false)
@@ -255,6 +266,16 @@ func (g *Game) ForceEndGame(reason string) (err error) {
 
 // ForceNextRound starts the next round if a topic is available
 func (g *Game) ForceNextRound() (err error) {
+
+	// game freshly started?
+	if g.Topics.PlayedTopicsCount() == 0 {
+		config.Obj.Pushover.Send(
+			fmt.Sprintf("CLIENTS { %+v }\nTOPICS [ %+v ]",
+				strings.Join(g.Clients.Array().Names(), ", "),
+				strings.Join(g.Topics.Strings(), ", ")),
+			fmt.Sprintf("Game (Start) [%s]", g.ID))
+	}
+
 	// get next topic
 	var topic *Topic
 	if g.Preferences.ShuffleTopics {
@@ -318,6 +339,15 @@ func (g *Game) ForceShowVoteResults() (err error) {
 		return gerrors.ErrTopicNotFound
 	}
 	topic := g.CurrentTopic
+
+	var b util.Bob
+	b.Writefl("'%s' [%d/%d]", topic.Description, g.Topics.PlayedTopicsCount(), len(g.Topics))
+	for _, sub := range topic.Submissions {
+		b.Alll(sub.Creator.Name, ": ", sub.URL, " (", len(sub.Voters), " votes)")
+	}
+	config.Obj.Pushover.Send(
+		b.String(),
+		fmt.Sprintf("Game (VRes) [%s]", g.ID))
 
 	// do not allow more votes
 	g.SetState(util.StateShowVotes)

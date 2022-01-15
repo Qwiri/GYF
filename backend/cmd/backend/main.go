@@ -1,8 +1,10 @@
 package main
 
 import (
+	"github.com/BurntSushi/toml"
 	"github.com/Qwiri/GYF/backend/internal/handlers"
 	"github.com/Qwiri/GYF/backend/internal/server"
+	"github.com/Qwiri/GYF/backend/pkg/config"
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/text"
 	"github.com/gofiber/fiber/v2"
@@ -13,6 +15,7 @@ import (
 	"math/rand"
 	"os"
 	"os/signal"
+	"reflect"
 	"strings"
 	"syscall"
 	"time"
@@ -21,6 +24,7 @@ import (
 const (
 	JanitorTime      = 30 * time.Second
 	JanitorCleanTime = 24 * time.Hour
+	ConfigFile       = "config.toml"
 )
 
 var (
@@ -40,8 +44,46 @@ func init() {
 	}
 }
 
+func readConfig() {
+	// check if config already exists
+	_, err := os.Stat(ConfigFile)
+	if err == nil {
+		// parse config
+		if _, err = toml.DecodeFile(ConfigFile, config.Obj); err != nil {
+			log.WithError(err).Warn("cannot read/decode config")
+			return
+		}
+	}
+	// (re-) write config
+	var file *os.File
+	if file, err = os.Create(ConfigFile); err != nil {
+		log.WithError(err).Warnf("cannot create config")
+		return
+	}
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+			log.WithError(err).Warn("cannot close config")
+		}
+	}(file)
+	if err = toml.NewEncoder(file).Encode(config.Obj); err != nil {
+		log.WithError(err).Warn("cannot encode config")
+	}
+}
+
+func initConfig() {
+	val := reflect.ValueOf(config.Obj).Elem()
+	for i := 0; i < val.NumField(); i++ {
+		field := val.Field(i)
+		if field.Type().Implements(reflect.TypeOf((*config.Initer)(nil)).Elem()) {
+			_ = field.MethodByName("Init").Call(nil)
+		}
+	}
+}
+
 func main() {
-	svr := server.NewServer(DevMode)
+	readConfig()
+	initConfig()
 
 	app := fiber.New(fiber.Config{
 		IdleTimeout: 5 * time.Second,
@@ -78,7 +120,8 @@ func main() {
 
 	app.Use(recov.New())
 
-	// create API routes
+	// create gyf server and create routes
+	svr := server.NewServer(DevMode)
 	svr.CreateRoutes(app)
 
 	// start janitor

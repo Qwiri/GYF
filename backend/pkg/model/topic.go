@@ -73,3 +73,11 @@ func (T TopicArray) PlayedTopicsCount() (count int) {
 	}
 	return
 }
+
+func (T TopicArray) Strings() (res []string) {
+	res = make([]string, len(T))
+	for i, val := range T {
+		res[i] = val.Description
+	}
+	return
+}
