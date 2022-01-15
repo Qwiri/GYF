@@ -70,4 +70,6 @@ var (
 	ErrChatMessageTooLong  = errors.New("chat message too long")
 	ErrChatMessageTooFast  = errors.New("typing too fast")
 	ErrChatMessageRepeat   = errors.New("chat message repeated")
+
+	ErrInvalidPassword = errors.New("password mismatch")
 )

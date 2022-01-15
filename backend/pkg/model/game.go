@@ -20,6 +20,7 @@ type Game struct {
 	state           util.GameState
 	LastInteraction time.Time
 	Preferences     *GamePreferences
+	Password        string
 }
 
 /// Constructors
