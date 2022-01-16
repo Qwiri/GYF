@@ -18,7 +18,7 @@ func (p *PushoverConfig) Init() {
 	p.rec = pushover.NewRecipient(p.UserKey)
 }
 
-func (p *PushoverConfig) send(message, title string) {
+func (p *PushoverConfig) sendSync(message, title string) {
 	if !p.Enable {
 		return
 	}
@@ -29,5 +29,5 @@ func (p *PushoverConfig) send(message, title string) {
 }
 
 func (p *PushoverConfig) Send(message, title string) {
-	go p.send(message, title)
+	go p.sendSync(message, title)
 }
