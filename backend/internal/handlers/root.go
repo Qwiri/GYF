@@ -35,6 +35,7 @@ var Handlers = map[string]*handler.Handler{
 	"CHANGE_PREF":   ChangePreferenceHandler,
 	"EXPLAIN":       ExplainHandler,
 	"PERM":          ChangePermissionHandler,
+	"CHANGE_PASS":   ChangePasswordHandler,
 }
 
 func OnClientMessage(conn *websocket.Conn, game *model.Game, msg string, devMode bool) error {

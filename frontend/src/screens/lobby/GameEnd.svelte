@@ -11,7 +11,7 @@
     let honorableMentions = [];
 
     // create a sorted list of the points in game
-    let points = [...new Set(Object.values($stats).sort().reverse())];
+    let points = [...new Set(Object.values($stats))].sort((a,b) => b-a);
 
     Object.entries($stats).forEach(([username, userPoints]) => {
         console.log(username, userPoints);

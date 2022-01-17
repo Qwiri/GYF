@@ -1,6 +1,6 @@
 import { toast } from "@zerodevx/svelte-toast";
 import { navigate } from "svelte-navigator";
-import { chatMessages, leader, players, round, state, stats, submissions, topics, username, waitingFor, votingResults, preferences, gifSubmitted } from "./store";
+import { chatMessages, leader, players, round, state, stats, submissions, topics, username, waitingFor, votingResults, preferences, gifSubmitted, backendVersion } from "./store";
 import { GameState, type Preferences } from "./types";
 import type { ChatMessage, Player, Response, VotingResult } from "./types";
 import { isLeader, pushInfo, pushSuccess, pushWarn, resetGameValues } from "./utils";
@@ -224,6 +224,10 @@ const commands: { [name: string]: (res: Response) => void | string } = {
         // reset
         resetGameValues();
     },
+    VERSION: (res: Response) => {
+        const version = res.args[0] as string;
+        backendVersion.set(version);
+    }
 };
 
 export function hijack(ws: WebSocket) {

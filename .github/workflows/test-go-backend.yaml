@@ -1,4 +1,4 @@
-name: Go Test Backend
+name: "🦾🦑 Test Go Backend"
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    name: Go Test
+    name: "🦾🦑 Test Go Backend"
     runs-on: ubuntu-latest
     steps:
     - name: Checkout main

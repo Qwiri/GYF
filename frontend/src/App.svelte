@@ -4,6 +4,7 @@
 	import { Router, Route } from "svelte-navigator";
 	import { SvelteToast } from "@zerodevx/svelte-toast";
 	import { state } from "./store";
+	import Footer from "./assets/Footer.svelte"
 
 	let title: string = "GYF";
 	$: title = `GYF - ${$state}`;
@@ -20,14 +21,17 @@
 	<SvelteToast />
 
 	<!-- <Homepage /> -->
-	<Router {url}>
-		<Route path="/">
-			<Homepage />
-		</Route>
-		<Route path="game/:id" let:params>
-			<Game id={params.id} />
-		</Route>
-	</Router>
+	<div id="wholeWrapper">
+		<Router {url}>
+			<Route path="/">
+				<Homepage />
+			</Route>
+			<Route path="game/:id" let:params>
+				<Game id={params.id} />
+			</Route>
+		</Router>
+	</div>
+	<Footer />
 </main>
 
 <style lang="scss">
@@ -42,5 +46,8 @@
 		main {
 			max-width: none;
 		}
+	}
+	#wholeWrapper {
+		min-height: 100vh;
 	}
 </style>

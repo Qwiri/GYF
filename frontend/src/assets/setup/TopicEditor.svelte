@@ -168,6 +168,30 @@
     function ok(b: boolean): boolean {
         return $leader || b;
     }
+
+    const promptNewPassword = (_: MouseEvent) => {
+        Swal.fire({
+            title: "Change password",
+            text: "Enter a new password or leave empty to remove it",
+            input: "password",
+            inputAttributes: {
+                autocapitalize: "off",
+                autocorrect: "off",
+                autocomplete: "off",
+            },
+            showCancelButton: true,
+            confirmButtonColor: "#48aae2",
+            cancelButtonColor: "#48aae2",
+            confirmButtonText: "Change",
+            cancelButtonText: "Remove",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $ws.send(`CHANGE_PASS ${result.value ?? ''}`);
+            } else if (result.dismiss.toString() === "cancel") {
+                $ws.send("CHANGE_PASS");
+            }
+        });
+    };
 </script>
 
 <hr />
@@ -258,7 +282,6 @@
 {/if}
 
 <div id="actionButtonsWrapper">
-    
     <!-- Topic Create -->
     {#if ok(checkedPermTopicCreate)}
         {#if !showManualTopic}
@@ -306,6 +329,16 @@
         </div>
     {/if}
 
+    {#if $leader}
+        <div
+            id="lockLobbyButton"
+            class="actionButton"
+            on:click={promptNewPassword}
+        >
+            <img src="/assets/lock.svg" alt="" />
+            <span>Lock Lobby</span>
+        </div>
+    {/if}
 </div>
 <hr />
 
@@ -453,6 +486,11 @@
         --background-color: #27ae60;
         --background-color-transparent: #27ae5fe0;
     }
+    #lockLobbyButton {
+        --background-color: #ffcb7e;
+        --background-color-transparent: #ffcb7ee0;
+    }
+
     .actionButton {
         flex-shrink: 0;
 

@@ -15,12 +15,19 @@ var JoinHandler = &handler.Handler{
 	Description: "Joins a game with a username",
 	Syntax:      "(username!)",
 	AccessLevel: handler.AccessGuest,
-	Bounds:      util.Bounds(util.BoundExact(1)),
+	Bounds:      util.Bounds(util.BoundMin(1), util.BoundMax(2)),
 	StateLevel:  util.StateAny,
 	Handler: handler.MessagedHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client, message []string) error {
 		// check if there are too many players
 		if len(game.Clients) >= game.Preferences.MaxPlayers {
 			return gerrors.ErrTooManyPlayers
+		}
+
+		// check if game is password protected
+		if game.Password != "" {
+			if len(message) != 2 || message[1] != game.Password {
+				return gerrors.ErrInvalidPassword
+			}
 		}
 
 		username := strings.TrimSpace(message[0])

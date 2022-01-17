@@ -31,6 +31,11 @@ func (gs *GYFServer) CreateRoutes(app *fiber.App) {
 		gameID := c.Params("id")
 		log.Infof("[ws] got connection to id %s", gameID)
 
+		// send backend version
+		if err := model.PVersion().Respond(c); err != nil {
+			log.WithError(err).Warn("cannot send backend version")
+		}
+
 		// make sure the game exists
 		game, ok := gs.games[gameID]
 		if !ok || c.Locals("allowed") != true {

@@ -6,7 +6,8 @@ import { terser } from 'rollup-plugin-terser';
 import sveltePreprocess from 'svelte-preprocess';
 import typescript from '@rollup/plugin-typescript';
 import css from 'rollup-plugin-css-only';
-import replace from "@rollup/plugin-replace"
+import replace from "@rollup/plugin-replace";
+import json from '@rollup/plugin-json';
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -50,7 +51,17 @@ export default {
 		file: 'public/build/bundle.js'
 	},
 	plugins: [
+		json(),
 		replace({
+			"replacemeGitVersion": (process.env.BRANCH ||
+				require('child_process')
+					.execSync('git rev-parse --abbrev-ref HEAD')
+					.toString().trim()
+			) + ":" + (
+					require('child_process')
+						.execSync('git rev-parse --short HEAD')
+						.toString().trim()
+				),
 			"http://127.0.0.1:8080": devStagingProd("http://127.0.0.1:8080", "https://backend.staging.gyf.d2a.io", "https://backend.prod.gyf.d2a.io"),
 			"127.0.0.1:8080": devStagingProd("127.0.0.1:8080", "backend.staging.gyf.d2a.io", "backend.prod.gyf.d2a.io"),
 			"http://localhost:8080": devStagingProd("http://localhost:8080", "https://backend.staging.gyf.d2a.io", "https://backend.prod.gyf.d2a.io"),

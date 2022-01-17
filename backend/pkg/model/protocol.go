@@ -1,6 +1,9 @@
 package model
 
-import "github.com/Qwiri/GYF/backend/pkg/util"
+import (
+	"github.com/Qwiri/GYF/backend/pkg/config"
+	"github.com/Qwiri/GYF/backend/pkg/util"
+)
 
 func PGameEnd(reason string) *Response {
 	return NewResponse("GAME_END", reason)
@@ -96,4 +99,8 @@ func PSubmitGIF(client *Client) *Response {
 
 func PStart() *Response {
 	return NewResponse("START")
+}
+
+func PVersion() *Response {
+	return NewResponse("VERSION", config.FormattedVersion())
 }
