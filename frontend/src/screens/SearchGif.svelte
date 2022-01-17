@@ -62,14 +62,25 @@
         }, 300);
     };
 
-    const previewGif = (e: MouseEvent, gif?: SearchResult) => {
-        gifPreviewURL = gif?.original_url ?? "";
+    const previewGif = (e: MouseEvent) => {
+        
 
         if (gifPreviewWindow) {
             gifPreviewWindow.style.left = e.pageX + "px";
             gifPreviewWindow.style.top = e.pageY + "px";
         }
     };
+
+    const checkIfImageLoaded = (e: MouseEvent, gif?: SearchResult) => {
+        gifPreviewURL = gif?.original_url ?? "";
+
+        if (gifPreviewWindow && gifPreviewURL === gifPreviewWindow.src) {
+            if (gifPreviewWindow.complete) {
+                blur = false
+            }
+        }
+
+    }
 </script>
 
 <TopicDisplay />
@@ -112,14 +123,15 @@
             />
         {/if}
 
-        <div id="resultWrapper" on:mouseleave={(e) => previewGif(e, undefined)}>
+        <div id="resultWrapper" on:mouseleave={(e) => checkIfImageLoaded(e, undefined)}>
             {#if searchResults.length > 0}
                 {#each searchResults as result}
                     <div
                         class="imgContainer"
-                        on:mousemove={(e) => previewGif(e, result)}
+                        on:mousemove={previewGif}
                         on:mouseleave={(_) => (blur = true)}
                         on:click={(e) => submitGif(e, result)}
+                        on:mouseenter={(e) => checkIfImageLoaded(e, result)}
                     >
                         <Image
                             width="100%"
