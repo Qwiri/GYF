@@ -1,5 +1,11 @@
 package config
 
+var (
+	Version   = "1.3"
+	GitBranch = "unknown"
+	GitCommit = "ffffff"
+)
+
 type Initer interface {
 	Init()
 }
