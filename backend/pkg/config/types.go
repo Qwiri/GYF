@@ -3,7 +3,7 @@ package config
 import "fmt"
 
 var (
-	Version   = "1.2.0"
+	Version   = "1.3.0"
 	GitBranch = "unknown"
 	GitCommit = "ffffff"
 )
