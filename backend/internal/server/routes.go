@@ -1,6 +1,8 @@
 package server
 
 import (
+	"fmt"
+	"github.com/Qwiri/GYF/backend/pkg/config"
 	"github.com/Qwiri/GYF/backend/pkg/gerrors"
 	"github.com/Qwiri/GYF/backend/pkg/model"
 	"strings"
@@ -30,6 +32,13 @@ func (gs *GYFServer) CreateRoutes(app *fiber.App) {
 	app.Get("/game/socket/:id", websocket.New(func(c *websocket.Conn) {
 		gameID := c.Params("id")
 		log.Infof("[ws] got connection to id %s", gameID)
+
+		// send backend version
+		if err := model.NewResponse("VERSION", fmt.Sprintf(
+			"%s.%s:%s", config.Version, config.GitBranch, config.GitCommit),
+		).Respond(c); err != nil {
+			log.WithError(err).Warn("cannot send backend version")
+		}
 
 		// make sure the game exists
 		game, ok := gs.games[gameID]

@@ -1,6 +1,14 @@
 package main
 
 import (
+	"math/rand"
+	"os"
+	"os/signal"
+	"reflect"
+	"strings"
+	"syscall"
+	"time"
+
 	"github.com/BurntSushi/toml"
 	"github.com/Qwiri/GYF/backend/internal/handlers"
 	"github.com/Qwiri/GYF/backend/internal/server"
@@ -12,13 +20,6 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	recov "github.com/gofiber/fiber/v2/middleware/recover"
-	"math/rand"
-	"os"
-	"os/signal"
-	"reflect"
-	"strings"
-	"syscall"
-	"time"
 )
 
 const (
@@ -82,6 +83,8 @@ func initConfig() {
 }
 
 func main() {
+	log.Infof("Backend-Version: %s.%s:%s", config.Version, config.GitBranch, config.GitCommit)
+
 	readConfig()
 	initConfig()
 
