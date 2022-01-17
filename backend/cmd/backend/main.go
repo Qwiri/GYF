@@ -83,7 +83,7 @@ func initConfig() {
 }
 
 func main() {
-	log.Infof("Backend-Version: %s.%s:%s", config.Version, config.GitBranch, config.GitCommit)
+	log.Infof("Backend-Version: %s", config.FormattedVersion())
 
 	readConfig()
 	initConfig()

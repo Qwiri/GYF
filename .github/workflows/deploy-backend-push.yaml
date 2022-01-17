@@ -27,15 +27,16 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Extract branch name
+      - name: Extract Vars
+        id: vars
         shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
-        id: extract_branch
+        run: |
+          echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+          echo "::set-output name=commit::$(git rev-parse --short HEAD)"
 
-      - name: Extract commit
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo $(git rev-parse --short HEAD))"
-        id: extract_commit
+      - run: |
+          echo "Branch: ${{ steps.vars.outputs.branch }}" 
+          echo "Commit: ${{ steps.vars.outputs.commit }}" 
 
       - name: Push to staging GitHub Packages
         uses: docker/build-push-action@v2
@@ -44,11 +45,11 @@ jobs:
           file: ./backend/Dockerfile
           push: true
           tags: ghcr.io/qwiri/gyf-backend:staging
-          build-args:
-            git-branch: ${{ steps.extract_branch.output.branch }}
-            git-commit: ${{ steps.extract_commit.output.commit }}
+          build-args: |
+            "gitbranch=${{ steps.vars.outputs.branch }}"
+            "gitcommit=${{ steps.vars.outputs.commit }}"
 
-      - if: steps.extract_branch.outputs.branch == 'main'
+      - if: steps.vars.outputs.branch == 'main'
         name: Push to prod GitHub Packages
         uses: docker/build-push-action@v2
         with:
@@ -56,14 +57,14 @@ jobs:
           file: ./backend/Dockerfile
           push: true
           tags: ghcr.io/qwiri/gyf-backend:prod
-          build-args:
-            git-branch: ${{ steps.extract_branch.output.branch }}
-            git-commit: ${{ steps.extract_commit.output.commit }}
+          build-args: |
+            "gitbranch=${{ steps.vars.outputs.branch }}"
+            "gitcommit=${{ steps.vars.outputs.commit }}"
 
       - name: Restart staged Backend
         run: curl http://backend.staging.gyf.d2a.io:9830/BACKEND_STAGED/${{ secrets.STAGED_DEPLOY_SECRET }}
 
-      - if: steps.extract_branch.outputs.branch == 'main'
+      - if: steps.vars.outputs.branch == 'main'
         name: Restart deployed Backend
         run: curl http://backend.prod.gyf.d2a.io:9830/BACKEND_PROD/${{ secrets.PROD_DEPLOY_SECRET }}
       

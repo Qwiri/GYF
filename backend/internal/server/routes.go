@@ -1,8 +1,6 @@
 package server
 
 import (
-	"fmt"
-	"github.com/Qwiri/GYF/backend/pkg/config"
 	"github.com/Qwiri/GYF/backend/pkg/gerrors"
 	"github.com/Qwiri/GYF/backend/pkg/model"
 	"strings"
@@ -34,9 +32,7 @@ func (gs *GYFServer) CreateRoutes(app *fiber.App) {
 		log.Infof("[ws] got connection to id %s", gameID)
 
 		// send backend version
-		if err := model.NewResponse("VERSION", fmt.Sprintf(
-			"%s.%s:%s", config.Version, config.GitBranch, config.GitCommit),
-		).Respond(c); err != nil {
+		if err := model.PVersion().Respond(c); err != nil {
 			log.WithError(err).Warn("cannot send backend version")
 		}
 
