@@ -1,16 +1,24 @@
 <script lang="ts">
     import { version } from "../../package.json";
+    import { backendVersion } from "../store";
 
     let hover = false;
 </script>
 
 <div id="footerWrapper">
     <div id="footerGrid">
-        <p>
-            <b>Frontend:</b>
-            {version}
-            <b>| Backend:</b>
-        </p>
+        <table id="tabver">
+            <tr>
+                <td>Frontend</td>
+                <td>{version}</td>
+            </tr>
+            {#if $backendVersion}
+                <tr>
+                    <td>Backend</td>
+                    <td>{$backendVersion}</td>
+                </tr>
+            {/if}
+        </table>
         <p>
             Made with ❤️ by <a
                 target="_blank"
@@ -21,14 +29,38 @@
             >.
         </p>
         <p>
-            Fork this project on <a href="https://github.com/Qwiri/GYF"
-                >GitHub</a
-            >
+            <a href="https://github.com/Qwiri/GYF" id="github-link">
+                Fork this project on
+                <img
+                    src="/assets/GitHub-Mark-Light-32px.png"
+                    alt="GitHub"
+                    id="github-mark"
+                />
+            </a>
         </p>
     </div>
 </div>
 
 <style lang="scss">
+    #tabver {
+        text-align: left;
+    }
+    #tabver td:first-child {
+        font-weight: bold;
+        text-align: right;
+    }
+
+    #github-mark {
+        height: 1.2rem;
+        width: 1.2rem;
+        margin-left: 0.5rem;
+    }
+
+    #github-link {
+        display: flex;
+        align-items: center;
+    }
+
     #footerWrapper {
         height: 15vh;
         background-color: black;
@@ -39,16 +71,16 @@
     }
     #footerGrid {
         width: 80%;
-        height: min-content;
-        display: grid;
-        place-content: center;
-        grid-template-columns: repeat(3, 1fr);
-        grid-auto-flow: column;
+        min-height: min-content;
+        display: flex;
         justify-content: space-between;
         align-content: center;
         row-gap: 0.5rem;
-        justify-items: center;
+        flex-wrap: wrap;
 
+        * {
+            flex-shrink: 0;
+        }
         p {
             margin: 0;
         }
@@ -56,5 +88,8 @@
             text-decoration: none;
             color: rgba(255, 255, 255, 0.808);
         }
+    }
+    #versionParagraphs {
+        text-align: left;
     }
 </style>

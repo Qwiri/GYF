@@ -10,6 +10,7 @@ export const gifSubmitted: Writable<boolean> = writable(false);
 export const submissions: Writable<Array<string>> = writable([]);
 export const votingResults: Writable<Array<VotingResult>> = writable([]);
 export const stats: Writable<{ [name: string]: number }> = writable({});
+export const backendVersion: Writable<String> = writable("");
 
 export const chatMessages: Writable<Array<ChatMessage>> = writable([]);
 
