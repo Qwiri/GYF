@@ -3,6 +3,7 @@
     import { backendVersion } from "../store";
 
     let hover = false;
+
 </script>
 
 <div id="footerWrapper">
@@ -10,12 +11,12 @@
         <table id="tabver">
             <tr>
                 <td>Frontend</td>
-                <td>{version}</td>
+                <td>{version.split(":")[0]}:<a href="https://github.com/Qwiri/GYF/commit/{version.split(":")[1]}" target="_blank" class="aaaaa">{version.split(":")[1]}</a></td>
             </tr>
             {#if $backendVersion}
                 <tr>
                     <td>Backend</td>
-                    <td>{$backendVersion}</td>
+                    <td>{$backendVersion.split(":")[0]}:<a href="https://github.com/Qwiri/GYF/commit/{$backendVersion.split(":")[1]}" target="_blank" class="aaaaa">{$backendVersion.split(":")[1]}</a></td>
                 </tr>
             {/if}
         </table>
@@ -54,6 +55,10 @@
         height: 1.2rem;
         width: 1.2rem;
         margin-left: 0.5rem;
+    }
+
+    .aaaaa {
+        color: #22ff00 !important;
     }
 
     #github-link {
