@@ -53,12 +53,15 @@ export default {
 	plugins: [
 		json(),
 		replace({
-			"replacemeGitVersion": require('child_process')
-			.execSync('git rev-parse --abbrev-ref HEAD')
-			.toString().trim()+":"+
-			require('child_process')
-			.execSync('git rev-parse --short HEAD')
-			.toString().trim(),
+			"replacemeGitVersion": (process.env.BRANCH ||
+				require('child_process')
+					.execSync('git rev-parse --abbrev-ref HEAD')
+					.toString().trim()
+			) + ":" + (
+					require('child_process')
+						.execSync('git rev-parse --short HEAD')
+						.toString().trim()
+				),
 			"http://127.0.0.1:8080": devStagingProd("http://127.0.0.1:8080", "https://backend.staging.gyf.d2a.io", "https://backend.prod.gyf.d2a.io"),
 			"127.0.0.1:8080": devStagingProd("127.0.0.1:8080", "backend.staging.gyf.d2a.io", "backend.prod.gyf.d2a.io"),
 			"http://localhost:8080": devStagingProd("http://localhost:8080", "https://backend.staging.gyf.d2a.io", "https://backend.prod.gyf.d2a.io"),
