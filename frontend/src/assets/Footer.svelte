@@ -11,12 +11,12 @@
         <table id="tabver">
             <tr>
                 <td>Frontend</td>
-                <td>{version.split(":")[0]}:<a href="https://github.com/Qwiri/GYF/commit/{version.split(":")[1]}" target="_blank" class="aaaaa">{version.split(":")[1]}</a></td>
+                <td>{version.split(":")[0]}:<a href="https://github.com/Qwiri/GYF/commit/{version.split(":")[1]}" target="_blank" class="gitHashLink">{version.split(":")[1]}</a></td>
             </tr>
             {#if $backendVersion}
                 <tr>
                     <td>Backend</td>
-                    <td>{$backendVersion.split(":")[0]}:<a href="https://github.com/Qwiri/GYF/commit/{$backendVersion.split(":")[1]}" target="_blank" class="aaaaa">{$backendVersion.split(":")[1]}</a></td>
+                    <td>{$backendVersion.split(":")[0]}:<a href="https://github.com/Qwiri/GYF/commit/{$backendVersion.split(":")[1]}" target="_blank" class="gitHashLink">{$backendVersion.split(":")[1]}</a></td>
                 </tr>
             {/if}
         </table>
@@ -30,7 +30,7 @@
             >.
         </p>
         <p>
-            <a href="https://github.com/Qwiri/GYF" id="github-link">
+            <a href="https://github.com/Qwiri/GYF" target="_blank" id="github-link">
                 Fork this project on
                 <img
                     src="/assets/GitHub-Mark-Light-32px.png"
@@ -57,7 +57,7 @@
         margin-left: 0.5rem;
     }
 
-    .aaaaa {
+    .gitHashLink {
         color: #22ff00 !important;
     }
 
@@ -93,8 +93,5 @@
             text-decoration: none;
             color: rgba(255, 255, 255, 0.808);
         }
-    }
-    #versionParagraphs {
-        text-align: left;
     }
 </style>
