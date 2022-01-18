@@ -72,4 +72,6 @@ var (
 	ErrChatMessageRepeat   = errors.New("chat message repeated")
 
 	ErrInvalidPassword = errors.New("password mismatch")
+	ErrClientNotFound  = errors.New("client not found")
+	ErrSelf            = errors.New("self")
 )
