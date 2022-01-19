@@ -11,24 +11,27 @@
         <table id="tabver">
             <tr>
                 <td>Frontend</td>
-                <td>{version.split(":")[0]}:<a href="https://github.com/Qwiri/GYF/commit/{version.split(":")[1]}" target="_blank" class="gitHashLink">{version.split(":")[1]}</a></td>
+                <td>{version.split(":")[0]}:<a href="https://github.com/Qwiri/GYF/commit/{version.split(":")[1]}" target="_blank" class="linkColor">{version.split(":")[1]}</a></td>
             </tr>
             {#if $backendVersion}
                 <tr>
                     <td>Backend</td>
-                    <td>{$backendVersion.split(":")[0]}:<a href="https://github.com/Qwiri/GYF/commit/{$backendVersion.split(":")[1]}" target="_blank" class="gitHashLink">{$backendVersion.split(":")[1]}</a></td>
+                    <td>{$backendVersion.split(":")[0]}:<a href="https://github.com/Qwiri/GYF/commit/{$backendVersion.split(":")[1]}" target="_blank" class="linkColor">{$backendVersion.split(":")[1]}</a></td>
                 </tr>
             {/if}
         </table>
-        <p>
-            Made with ❤️ by <a
-                target="_blank"
-                href="https://github.com/Qwiri"
-                on:mouseenter={(e) => (hover = true)}
-                on:mouseleave={(e) => (hover = false)}
-                >{hover ? "🥝" : "Qwiri"}</a
-            >.
-        </p>
+        <div id="madeInLoveDiv">
+            <p>
+                Made with ❤️ by <a
+                    target="_blank"
+                    href="https://github.com/Qwiri"
+                    on:mouseenter={(e) => (hover = true)}
+                    on:mouseleave={(e) => (hover = false)}
+                    >{hover ? "🥝" : "Qwiri"}</a
+                >.
+            </p>
+            <p>This site is powered by <a target="_blank" href="https://www.netlify.com/" ><img id="netlifyLink" class="linkColor" src="https://www.netlify.com/v3/img/components/full-logo-dark.svg" alt="Netlify" /></a></p>
+        </div>
         <p>
             <a href="https://github.com/Qwiri/GYF" target="_blank" id="github-link">
                 Fork this project on
@@ -57,7 +60,7 @@
         margin-left: 0.5rem;
     }
 
-    .gitHashLink {
+    .linkColor {
         color: #22ff00 !important;
     }
 
@@ -88,10 +91,25 @@
         }
         p {
             margin: 0;
+            display: inline-flex;
+            align-items: center;
         }
         a {
             text-decoration: none;
             color: rgba(255, 255, 255, 0.808);
+        }
+
+        #madeInLoveDiv {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            row-gap: .5rem;
+            align-items: center;
+
+            #netlifyLink {
+                margin-left: 1ch;
+                height: 1.2rem;
+            }
         }
     }
 </style>
