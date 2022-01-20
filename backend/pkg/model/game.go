@@ -161,6 +161,7 @@ func (g *Game) SetLeader(client *Client) {
 // LeaveClient removes a client from the game and sends a PLAYER_LEAVE message to all other players
 func (g *Game) LeaveClient(client *Client, reason string) {
 	log.Infof("[%s] %s left (leader: %v)", g.ID, client.Name, client.Leader)
+	g.Broadcast(PPlayerLeave(client, reason))
 
 	// remove client from game
 	g.Clients.Delete(client)
@@ -172,7 +173,6 @@ func (g *Game) LeaveClient(client *Client, reason string) {
 	}
 
 	// broadcast player list and leave
-	g.Broadcast(PPlayerLeave(client, reason))
 	g.Broadcast(PList(g.Clients))
 
 	// check if client was a leader
@@ -195,6 +195,13 @@ func (g *Game) LeaveClient(client *Client, reason string) {
 
 	// check game cycle
 	_ = g.CheckCycle(true, false)
+}
+
+func (g *Game) KickClient(client *Client) {
+	// leave client
+	g.LeaveClient(client, "KICKED")
+	// remove client from game
+	delete(g.Clients, client.Name)
 }
 
 // CheckCycle checks if we're waiting for clients and if not, continue the game

@@ -1,6 +1,6 @@
 import { toast } from "@zerodevx/svelte-toast";
 import { navigate } from "svelte-navigator";
-import { chatMessages, leader, players, round, state, stats, submissions, topics, username, waitingFor, votingResults, preferences, gifSubmitted, backendVersion } from "./store";
+import { chatMessages, leader, players, round, state, stats, submissions, topics, username, waitingFor, votingResults, preferences, gifSubmitted, backendVersion, ws } from "./store";
 import { GameState, type Preferences } from "./types";
 import type { ChatMessage, Player, Response, VotingResult } from "./types";
 import { isLeader, pushInfo, pushSuccess, pushWarn, resetGameValues } from "./utils";
@@ -63,7 +63,28 @@ const commands: { [name: string]: (res: Response) => void | string } = {
 
     PLAYER_LEAVE: (res: Response) => {
         const payloadUser = res.args[0] as string;
-        pushInfo("🚪", payloadUser, "left");
+        const payloadReason = res.args[1] as string;
+
+        // send kick message
+        if (payloadReason === "KICKED") {
+            pushInfo("🥊", payloadUser, "was kicked from the game");
+        } else {
+            pushInfo("🚪", payloadUser, "left");
+        }
+
+        // hide ui if we left
+        if (payloadUser === localUsername) {
+            navigate("/", { replace: true });
+            state.set(GameState.ChooseUsername);
+            username.set("");
+            players.set({});
+            waitingFor.set([]);
+            submissions.set([]);
+            votingResults.set([]);
+            stats.set({});
+            chatMessages.set([]);
+            topics.set([]);
+        }
     },
 
     LIST: (res: Response) => {
