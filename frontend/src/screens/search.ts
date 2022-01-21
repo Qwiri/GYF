@@ -68,7 +68,12 @@ export const Tenor: Provider = {
         }
         this.lastQuery = query;
 
-        const res: Response = await fetch(`https://g.tenor.com/v1/search?q=${encodeURI(query)}&key=${this.apiKey}&limit=${defaultLimit}&pos=${this.offset}`);
+        let res: Response;
+        try {
+            res = await fetch(`https://g.tenor.com/v1/search?q=${encodeURI(query)}&key=${this.apiKey}&limit=${defaultLimit}&pos=${this.offset}`);
+        } catch (e) {
+            throw "Network request failed (this should only occur if permissions are missing / endpoint does not get hit)"
+        }
         if (!res.ok) {
             let json = await res.json()
             let g: GifFetchError = {
