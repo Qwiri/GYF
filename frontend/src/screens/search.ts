@@ -31,7 +31,6 @@ export const Giphy: Provider = {
             throw "Network request failed (this should only occur if permissions are missing / endpoint does not get hit)"
         }
         if (!res.ok) {
-            console.log("testtttttttttttt")
             let json = await res.json()
             let g: GifFetchError = {
                 'statusCode': res.status,
