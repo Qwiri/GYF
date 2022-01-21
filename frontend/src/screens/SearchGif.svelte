@@ -79,9 +79,9 @@
                     Would you like to report this bug and help us improve GYF?`,
             showCancelButton: true,
             cancelButtonText: "No",
-            cancelButtonColor: "red",
+            cancelButtonColor: "#95a5a6",
             confirmButtonText: "Yes",
-            confirmButtonColor: "green",
+            confirmButtonColor: "#3498db",
         }).then((r) => {
             if (r.isConfirmed) {
                 window.open(
