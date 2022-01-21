@@ -4,6 +4,9 @@
     import { Giphy, Providers } from "./search";
     import type { Provider, SearchResult } from "./search";
     import Image from "../assets/Image.svelte";
+    import Swal from 'sweetalert2';
+import { onMount } from "svelte";
+import type { gifFetchError } from "../types";
 
     let provider: Provider = Giphy; // Make Giphy the default provider
 
@@ -21,8 +24,13 @@
     let blur = false;
 
     const fetchFirstGifs = async () => {
+        
         searchResults = []; // #42
-        searchResults = await provider.search(searchQuery, true);
+        try {
+            searchResults = await provider.search(searchQuery, true);
+        } catch (e) {
+            throwGiphyError(e);
+        }
         searched = true;
     };
 
@@ -41,7 +49,7 @@
         $gifSubmitted = false;
     };
 
-    const changeProvider = (_: MouseEvent) => {
+    const changeProvider = (_?: MouseEvent) => {
         provider =
             Providers[(Providers.indexOf(provider) + 1) % Providers.length];
         // clear search results
@@ -61,6 +69,54 @@
             await fetchFirstGifs();
         }, 300);
     };
+
+    const throwGiphyError = async (e: gifFetchError) => {
+
+        Swal.fire({
+            icon: 'error',
+            titleText: 'Whoops :(',
+            background: '#181818',
+            color: 'white',
+            text: `It seems like Giphy doesn't work for you right now.
+                    Would you like to report this bug and help us improve GYF?`,
+            showCancelButton: true,
+            cancelButtonText: 'No',
+            cancelButtonColor: 'red',
+            confirmButtonText: 'Yes',
+            confirmButtonColor: 'green'
+        }).then(r => {
+            if (r.isConfirmed) {
+
+                window.open(`mailto:gyf@fire.fundersclub.com?subject=Giphy%20gif%20errror&body=${encodeURIComponent(JSON.stringify(e))}`)
+
+                changeProvider();
+
+                Swal.fire({
+                    icon: 'success',
+                    background: '#181818',
+                    color: 'white',
+                    titleText: 'Tanks!',
+                    text: ` Thank you for reporting this bug, we have changed your gif provider to Tenor
+                            so things should work again :) `,
+                    confirmButtonText: 'Continue'
+                })
+
+            } else {
+                changeProvider();
+
+                Swal.fire({
+                    icon: 'success',
+                    background: '#181818',
+                    color: 'white',
+                    titleText: 'Alright!',
+                    text: `That's okay! We have changed your gif provider to Tenor so things should work again :) `,
+                    confirmButtonText: 'Continue'
+                })
+
+            }
+        })
+
+    }
 
     const previewGif = (e: MouseEvent) => {
         

@@ -1,3 +1,5 @@
+import type { gifFetchError } from "../types";
+
 const defaultLimit = 50;
 
 export interface Provider {
@@ -22,7 +24,24 @@ export const Giphy: Provider = {
             this.offset = 0;
         }
 
-        const res: Response = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${this.apiKey}&q=${encodeURI(query)}&limit=${defaultLimit}&offset=${this.offset}`);
+        let res: Response;
+        try {
+            res = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${this.apiKey}&q=${encodeURI(query)}&limit=${defaultLimit}&offset=${this.offset}`);
+        } catch (e) {
+            throw "Network request failed (this should only occur if permissions are missing / endpoint does not get hit)"
+        }
+        if (!res.ok) {
+            console.log("testtttttttttttt")
+            let json = await res.json()
+            let g: gifFetchError = {
+                'statusCode': res.status,
+                'statusText': res.statusText,
+                'redirected': res.redirected,
+                'json': json
+            } 
+            throw g;
+        }
+
         const body: any = await res.json();
 
         this.offset += 20;
@@ -51,6 +70,16 @@ export const Tenor: Provider = {
         this.lastQuery = query;
 
         const res: Response = await fetch(`https://g.tenor.com/v1/search?q=${encodeURI(query)}&key=${this.apiKey}&limit=${defaultLimit}&pos=${this.offset}`);
+        if (!res.ok) {
+            let json = await res.json()
+            let g: gifFetchError = {
+                'statusCode': res.status,
+                'statusText': res.statusText,
+                'redirected': res.redirected,
+                'json': json
+            } 
+            throw g;
+        }
         const body: any = await res.json();
 
         this.offset = parseInt(body.next);
