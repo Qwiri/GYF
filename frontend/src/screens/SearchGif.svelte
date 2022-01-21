@@ -97,7 +97,7 @@
                     background: "#181818",
                     color: "white",
                     titleText: "Tanks!",
-                    text: ` Thank you for reporting this bug, we have changed your gif provider to Tenor
+                    text: ` Thank you for reporting a bug, we have changed the GIF provider
                             so things should work again :) `,
                     confirmButtonText: "Continue",
                 });
