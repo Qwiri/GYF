@@ -28,6 +28,7 @@
         try {
             searchResults = await provider.search(searchQuery, true);
         } catch (e) {
+            console.log(e)
             throwGiphyError(e);
         }
         searched = true;
@@ -69,7 +70,7 @@
         }, 300);
     };
 
-    const throwGiphyError = async (e: GifFetchError) => {
+    const throwGiphyError = (e) => {
         Swal.fire({
             icon: "error",
             titleText: "Whoops :(",
@@ -90,8 +91,6 @@
                     )}`
                 );
 
-                changeProvider();
-
                 Swal.fire({
                     icon: "success",
                     background: "#181818",
@@ -102,7 +101,6 @@
                     confirmButtonText: "Continue",
                 });
             } else {
-                changeProvider();
 
                 Swal.fire({
                     icon: "success",
@@ -113,6 +111,7 @@
                     confirmButtonText: "Continue",
                 });
             }
+            changeProvider();
         });
     };
 

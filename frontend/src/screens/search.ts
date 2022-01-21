@@ -30,18 +30,8 @@ export const Giphy: Provider = {
         } catch (e) {
             throw "Network request failed (this should only occur if permissions are missing / endpoint does not get hit)"
         }
-        if (!res.ok) {
-            let json = await res.json()
-            let g: GifFetchError = {
-                'statusCode': res.status,
-                'statusText': res.statusText,
-                'redirected': res.redirected,
-                'json': json
-            }
-            throw g;
-        }
 
-        const body: any = await res.json();
+        const body: any = await fetchOrThrow(res)
 
         this.offset += 20;
 
@@ -74,17 +64,7 @@ export const Tenor: Provider = {
         } catch (e) {
             throw "Network request failed (this should only occur if permissions are missing / endpoint does not get hit)"
         }
-        if (!res.ok) {
-            let json = await res.json()
-            let g: GifFetchError = {
-                'statusCode': res.status,
-                'statusText': res.statusText,
-                'redirected': res.redirected,
-                'json': json
-            }
-            throw g;
-        }
-        const body: any = await res.json();
+        const body: any = await fetchOrThrow(res);
 
         this.offset = parseInt(body.next);
 
@@ -104,3 +84,17 @@ export const Providers: Array<Provider> = [
     Giphy,
     Tenor,
 ];
+
+async function fetchOrThrow(res: Response): Promise<any> {
+	const json = await res.json();
+	if (!res.ok) {
+		const err: GifFetchError = {
+			'statusCode': res.status,
+			'statusText': res.statusText,
+			'redirected': res.redirected,
+			'json': json
+		};
+		throw err;
+	}
+	return json;
+}
