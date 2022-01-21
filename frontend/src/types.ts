@@ -53,7 +53,7 @@ export interface Preferences {
     Permissions: number;
 }
 
-export interface gifFetchError {
+export interface GifFetchError {
     statusCode: number,
     statusText: string,
     redirected: boolean,
