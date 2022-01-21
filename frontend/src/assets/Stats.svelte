@@ -27,8 +27,8 @@
         const playername: HTMLElement = e.target.dataset.username;
         console.log(playername);
         $ws.send(`KICK ${playername}`);
-
     }
+
 </script>
 
 <div>
@@ -66,7 +66,7 @@
                 </td>
 
                 {#if $leader}
-                    <td><span class="hover" data-username={user} on:click={kickPlayer}>🗑️</span></td>
+                    <td><span class="hover" data-username={user} on:click={kickPlayer}>🥊</span></td>
                 {/if}
             </tr>
         {/each}

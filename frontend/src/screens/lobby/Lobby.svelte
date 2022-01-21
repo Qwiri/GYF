@@ -32,6 +32,12 @@
         copyToClipboard(getShare()[0]);
         toast.push("Copied invite URL to clipboard!");
     }
+
+    const kickPlayer = (e: MouseEvent) => {
+        const playername: HTMLElement = e.target.dataset.username;
+        console.log(playername);
+        $ws.send(`KICK ${playername}`);
+    }
 </script>
 
 <div id="lobbyWrapper">
@@ -64,6 +70,9 @@
                         <span class:self={player.name === $username}>
                             {player.name}
                         </span>
+                        {#if $leader}
+                            <span class="hover" data-username={player.name} on:click={kickPlayer}>🥊</span>
+                        {/if}
                     </p>
                 </div>
             {/each}
@@ -105,6 +114,12 @@
                 color: #24ff00;
                 font-weight: bold;
             }
+        }
+    }
+    .hover {
+
+        &:hover {
+            cursor: pointer;
         }
     }
 
