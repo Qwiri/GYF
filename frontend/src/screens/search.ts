@@ -1,4 +1,4 @@
-import type { gifFetchError } from "../types";
+import type { GifFetchError } from "../types";
 
 const defaultLimit = 50;
 
@@ -18,7 +18,7 @@ export const Giphy: Provider = {
     name: 'Giphy',
     apiKey: 'oTXCaDQKRKtGPpOwRTYVvJjs40mHIygr',
     offset: 0,
-    search: async function(query: string, resetOffset = false): Promise<Array<SearchResult>> {
+    search: async function (query: string, resetOffset = false): Promise<Array<SearchResult>> {
 
         if (resetOffset) {
             this.offset = 0;
@@ -33,19 +33,19 @@ export const Giphy: Provider = {
         if (!res.ok) {
             console.log("testtttttttttttt")
             let json = await res.json()
-            let g: gifFetchError = {
+            let g: GifFetchError = {
                 'statusCode': res.status,
                 'statusText': res.statusText,
                 'redirected': res.redirected,
                 'json': json
-            } 
+            }
             throw g;
         }
 
         const body: any = await res.json();
 
         this.offset += 20;
-        
+
         const results: Array<SearchResult> = [];
         for (const item of body.data) {
             results.push({
@@ -62,7 +62,7 @@ export const Tenor: Provider = {
     name: 'Tenor',
     apiKey: 'LIDSRZULELA',
     offset: 0,
-    search: async function(query: string, resetOffset = false): Promise<Array<SearchResult>> {
+    search: async function (query: string, resetOffset = false): Promise<Array<SearchResult>> {
 
         if (resetOffset) {
             this.offset = 0;
@@ -72,18 +72,18 @@ export const Tenor: Provider = {
         const res: Response = await fetch(`https://g.tenor.com/v1/search?q=${encodeURI(query)}&key=${this.apiKey}&limit=${defaultLimit}&pos=${this.offset}`);
         if (!res.ok) {
             let json = await res.json()
-            let g: gifFetchError = {
+            let g: GifFetchError = {
                 'statusCode': res.status,
                 'statusText': res.statusText,
                 'redirected': res.redirected,
                 'json': json
-            } 
+            }
             throw g;
         }
         const body: any = await res.json();
 
         this.offset = parseInt(body.next);
-        
+
         const results: Array<SearchResult> = [];
         for (const item of body.results) {
             results.push({

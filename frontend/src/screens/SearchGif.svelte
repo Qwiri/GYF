@@ -4,9 +4,9 @@
     import { Giphy, Providers } from "./search";
     import type { Provider, SearchResult } from "./search";
     import Image from "../assets/Image.svelte";
-    import Swal from 'sweetalert2';
-import { onMount } from "svelte";
-import type { gifFetchError } from "../types";
+    import Swal from "sweetalert2";
+    import { onMount } from "svelte";
+    import type { GifFetchError } from "../types";
 
     let provider: Provider = Giphy; // Make Giphy the default provider
 
@@ -24,7 +24,6 @@ import type { gifFetchError } from "../types";
     let blur = false;
 
     const fetchFirstGifs = async () => {
-        
         searchResults = []; // #42
         try {
             searchResults = await provider.search(searchQuery, true);
@@ -70,57 +69,54 @@ import type { gifFetchError } from "../types";
         }, 300);
     };
 
-    const throwGiphyError = async (e: gifFetchError) => {
-
+    const throwGiphyError = async (e: GifFetchError) => {
         Swal.fire({
-            icon: 'error',
-            titleText: 'Whoops :(',
-            background: '#181818',
-            color: 'white',
+            icon: "error",
+            titleText: "Whoops :(",
+            background: "#181818",
+            color: "white",
             text: `It seems like Giphy doesn't work for you right now.
                     Would you like to report this bug and help us improve GYF?`,
             showCancelButton: true,
-            cancelButtonText: 'No',
-            cancelButtonColor: 'red',
-            confirmButtonText: 'Yes',
-            confirmButtonColor: 'green'
-        }).then(r => {
+            cancelButtonText: "No",
+            cancelButtonColor: "red",
+            confirmButtonText: "Yes",
+            confirmButtonColor: "green",
+        }).then((r) => {
             if (r.isConfirmed) {
-
-                window.open(`mailto:gyf@fire.fundersclub.com?subject=Giphy%20gif%20errror&body=${encodeURIComponent(JSON.stringify(e))}`)
+                window.open(
+                    `mailto:gyf@fire.fundersclub.com?subject=Giphy%20gif%20errror&body=${encodeURIComponent(
+                        JSON.stringify(e)
+                    )}`
+                );
 
                 changeProvider();
 
                 Swal.fire({
-                    icon: 'success',
-                    background: '#181818',
-                    color: 'white',
-                    titleText: 'Tanks!',
+                    icon: "success",
+                    background: "#181818",
+                    color: "white",
+                    titleText: "Tanks!",
                     text: ` Thank you for reporting this bug, we have changed your gif provider to Tenor
                             so things should work again :) `,
-                    confirmButtonText: 'Continue'
-                })
-
+                    confirmButtonText: "Continue",
+                });
             } else {
                 changeProvider();
 
                 Swal.fire({
-                    icon: 'success',
-                    background: '#181818',
-                    color: 'white',
-                    titleText: 'Alright!',
+                    icon: "success",
+                    background: "#181818",
+                    color: "white",
+                    titleText: "Alright!",
                     text: `That's okay! We have changed your gif provider to Tenor so things should work again :) `,
-                    confirmButtonText: 'Continue'
-                })
-
+                    confirmButtonText: "Continue",
+                });
             }
-        })
-
-    }
+        });
+    };
 
     const previewGif = (e: MouseEvent) => {
-        
-
         if (gifPreviewWindow) {
             gifPreviewWindow.style.left = e.pageX + "px";
             gifPreviewWindow.style.top = e.pageY + "px";
@@ -132,11 +128,10 @@ import type { gifFetchError } from "../types";
 
         if (gifPreviewWindow && gifPreviewURL === gifPreviewWindow.src) {
             if (gifPreviewWindow.complete) {
-                blur = false
+                blur = false;
             }
         }
-
-    }
+    };
 </script>
 
 <TopicDisplay />
@@ -179,7 +174,10 @@ import type { gifFetchError } from "../types";
             />
         {/if}
 
-        <div id="resultWrapper" on:mouseleave={(e) => checkIfImageLoaded(e, undefined)}>
+        <div
+            id="resultWrapper"
+            on:mouseleave={(e) => checkIfImageLoaded(e, undefined)}
+        >
             {#if searchResults.length > 0}
                 {#each searchResults as result}
                     <div
