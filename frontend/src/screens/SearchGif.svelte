@@ -109,7 +109,7 @@
                     background: "#181818",
                     color: "white",
                     titleText: "Alright!",
-                    text: `That's okay! We have changed your gif provider to Tenor so things should work again :) `,
+                    text: `That's okay! We have changed the GIF provider so things should work again :) `,
                     confirmButtonText: "Continue",
                 });
             }
