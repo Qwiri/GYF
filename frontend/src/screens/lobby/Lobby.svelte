@@ -35,7 +35,6 @@
 
     const kickPlayer = (e: MouseEvent) => {
         const playername: HTMLElement = e.target.dataset.username;
-        console.log(playername);
         $ws.send(`KICK ${playername}`);
     }
 </script>
