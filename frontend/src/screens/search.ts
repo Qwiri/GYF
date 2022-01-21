@@ -1,3 +1,5 @@
+import type { GifFetchError } from "../types";
+
 const defaultLimit = 50;
 
 export interface Provider {
@@ -16,17 +18,23 @@ export const Giphy: Provider = {
     name: 'Giphy',
     apiKey: 'oTXCaDQKRKtGPpOwRTYVvJjs40mHIygr',
     offset: 0,
-    search: async function(query: string, resetOffset = false): Promise<Array<SearchResult>> {
+    search: async function (query: string, resetOffset = false): Promise<Array<SearchResult>> {
 
         if (resetOffset) {
             this.offset = 0;
         }
 
-        const res: Response = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${this.apiKey}&q=${encodeURI(query)}&limit=${defaultLimit}&offset=${this.offset}`);
-        const body: any = await res.json();
+        let res: Response;
+        try {
+            res = await fetch(`https://api.giphy.com/v1/gifs/search?api_key=${this.apiKey}&q=${encodeURI(query)}&limit=${defaultLimit}&offset=${this.offset}`);
+        } catch (e) {
+            throw "Network request failed (this should only occur if permissions are missing / endpoint does not get hit)"
+        }
+
+        const body: any = await fetchOrThrow(res)
 
         this.offset += 20;
-        
+
         const results: Array<SearchResult> = [];
         for (const item of body.data) {
             results.push({
@@ -43,18 +51,23 @@ export const Tenor: Provider = {
     name: 'Tenor',
     apiKey: 'LIDSRZULELA',
     offset: 0,
-    search: async function(query: string, resetOffset = false): Promise<Array<SearchResult>> {
+    search: async function (query: string, resetOffset = false): Promise<Array<SearchResult>> {
 
         if (resetOffset) {
             this.offset = 0;
         }
         this.lastQuery = query;
 
-        const res: Response = await fetch(`https://g.tenor.com/v1/search?q=${encodeURI(query)}&key=${this.apiKey}&limit=${defaultLimit}&pos=${this.offset}`);
-        const body: any = await res.json();
+        let res: Response;
+        try {
+            res = await fetch(`https://g.tenor.com/v1/search?q=${encodeURI(query)}&key=${this.apiKey}&limit=${defaultLimit}&pos=${this.offset}`);
+        } catch (e) {
+            throw "Network request failed (this should only occur if permissions are missing / endpoint does not get hit)"
+        }
+        const body: any = await fetchOrThrow(res);
 
         this.offset = parseInt(body.next);
-        
+
         const results: Array<SearchResult> = [];
         for (const item of body.results) {
             results.push({
@@ -71,3 +84,17 @@ export const Providers: Array<Provider> = [
     Giphy,
     Tenor,
 ];
+
+async function fetchOrThrow(res: Response): Promise<any> {
+	const json = await res.json();
+	if (!res.ok) {
+		const err: GifFetchError = {
+			'statusCode': res.status,
+			'statusText': res.statusText,
+			'redirected': res.redirected,
+			'json': json
+		};
+		throw err;
+	}
+	return json;
+}

@@ -4,6 +4,9 @@
     import { Giphy, Providers } from "./search";
     import type { Provider, SearchResult } from "./search";
     import Image from "../assets/Image.svelte";
+    import Swal from "sweetalert2";
+    import { onMount } from "svelte";
+    import type { GifFetchError } from "../types";
 
     let provider: Provider = Giphy; // Make Giphy the default provider
 
@@ -22,7 +25,12 @@
 
     const fetchFirstGifs = async () => {
         searchResults = []; // #42
-        searchResults = await provider.search(searchQuery, true);
+        try {
+            searchResults = await provider.search(searchQuery, true);
+        } catch (e) {
+            console.log(e)
+            throwGiphyError(e);
+        }
         searched = true;
     };
 
@@ -41,7 +49,7 @@
         $gifSubmitted = false;
     };
 
-    const changeProvider = (_: MouseEvent) => {
+    const changeProvider = (_?: MouseEvent) => {
         provider =
             Providers[(Providers.indexOf(provider) + 1) % Providers.length];
         // clear search results
@@ -62,9 +70,52 @@
         }, 300);
     };
 
-    const previewGif = (e: MouseEvent) => {
-        
+    const throwGiphyError = (e) => {
+        Swal.fire({
+            icon: "error",
+            titleText: "Whoops :(",
+            background: "#181818",
+            color: "white",
+            text: `It seems like Giphy doesn't work for you right now.
+                    Would you like to report this bug and help us improve GYF?`,
+            showCancelButton: true,
+            cancelButtonText: "No",
+            cancelButtonColor: "#95a5a6",
+            confirmButtonText: "Yes",
+            confirmButtonColor: "#3498db",
+        }).then((r) => {
+            if (r.isConfirmed) {
+                window.open(
+                    `mailto:gyf@fire.fundersclub.com?subject=Giphy%20gif%20errror&body=${encodeURIComponent(
+                        JSON.stringify(e)
+                    )}`
+                );
 
+                Swal.fire({
+                    icon: "success",
+                    background: "#181818",
+                    color: "white",
+                    titleText: "Tanks!",
+                    text: ` Thank you for reporting a bug, we have changed the GIF provider
+                            so things should work again :) `,
+                    confirmButtonText: "Continue",
+                });
+            } else {
+
+                Swal.fire({
+                    icon: "success",
+                    background: "#181818",
+                    color: "white",
+                    titleText: "Alright!",
+                    text: `That's okay! We have changed the GIF provider so things should work again :) `,
+                    confirmButtonText: "Continue",
+                });
+            }
+            changeProvider();
+        });
+    };
+
+    const previewGif = (e: MouseEvent) => {
         if (gifPreviewWindow) {
             gifPreviewWindow.style.left = e.pageX + "px";
             gifPreviewWindow.style.top = e.pageY + "px";
@@ -76,11 +127,10 @@
 
         if (gifPreviewWindow && gifPreviewURL === gifPreviewWindow.src) {
             if (gifPreviewWindow.complete) {
-                blur = false
+                blur = false;
             }
         }
-
-    }
+    };
 </script>
 
 <TopicDisplay />
@@ -123,7 +173,10 @@
             />
         {/if}
 
-        <div id="resultWrapper" on:mouseleave={(e) => checkIfImageLoaded(e, undefined)}>
+        <div
+            id="resultWrapper"
+            on:mouseleave={(e) => checkIfImageLoaded(e, undefined)}
+        >
             {#if searchResults.length > 0}
                 {#each searchResults as result}
                     <div
