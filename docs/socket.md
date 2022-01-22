@@ -3,7 +3,26 @@
 ## Backend Commands
 
 [//]: # (handlers_start)
-*Generated on 13.01.2022 20:07:21*
+*Generated on 22.01.2022 14:20:35*
+
+### CHANGE_PASS
+
+> Changes the lobby password
+
+`CHANGE_PASS (password?)`  
+👉 args: [x <= 1]
+!!! danger "Access"
+	- [ ] Guest
+	- [ ] Joined
+	- [x] Leader
+
+!!! hint "States"
+	- [x] Lobby
+	- [x] Submit GIF
+	- [x] Cast Votes
+	- [x] Show Vote Results
+
+---
 
 ### CHANGE_PREF
 
@@ -43,6 +62,25 @@
 
 ---
 
+### END_GAME
+
+> Ends the Game (skips to the result screen)
+
+`END_GAME`  
+👉 args: [x == 0]
+!!! danger "Access"
+	- [ ] Guest
+	- [ ] Joined
+	- [x] Leader
+
+!!! hint "States"
+	- [ ] Lobby
+	- [x] Submit GIF
+	- [x] Cast Votes
+	- [x] Show Vote Results
+
+---
+
 ### EXPLAIN 🔰[^1]
 
 > Returns help for a handler
@@ -67,11 +105,30 @@
 > Joins a game with a username
 
 `JOIN (username!)`  
-👉 args: [x == 1]
+👉 args: [1 <= x], [x <= 2]
 !!! danger "Access"
 	- [x] Guest
 	- [ ] Joined
 	- [ ] Leader
+
+!!! hint "States"
+	- [x] Lobby
+	- [x] Submit GIF
+	- [x] Cast Votes
+	- [x] Show Vote Results
+
+---
+
+### KICK
+
+> Kicks a player from the game
+
+`KICK (player!)`  
+👉 args: [x == 1]
+!!! danger "Access"
+	- [ ] Guest
+	- [ ] Joined
+	- [x] Leader
 
 !!! hint "States"
 	- [x] Lobby
@@ -279,7 +336,7 @@
 👉 args: [x == 0]
 !!! danger "Access"
 	- [ ] Guest
-	- [x] Joined
+	- [ ] Joined
 	- [x] Leader
 
 !!! hint "States"
