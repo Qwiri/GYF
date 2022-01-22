@@ -28,7 +28,6 @@
         try {
             searchResults = await provider.search(searchQuery, true);
         } catch (e) {
-            console.log(e)
             throwGiphyError(e);
         }
         searched = true;
@@ -101,7 +100,6 @@
                     confirmButtonText: "Continue",
                 });
             } else {
-
                 Swal.fire({
                     icon: "success",
                     background: "#181818",
@@ -194,7 +192,10 @@
                         />
                     </div>
                 {/each}
-                <button on:click={fetchGifs}>Load more</button>
+                <button
+                    on:mouseenter={(e) => checkIfImageLoaded(e, undefined)}
+                    on:click={fetchGifs}>Load more</button
+                >
             {:else if searchQuery && searched}
                 <div class="noResults">
                     No results found. Try another search.
