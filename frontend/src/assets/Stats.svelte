@@ -64,7 +64,7 @@
                     {count}
                 </td>
 
-                {#if $leader}
+                {#if $leader && user !== $username}
                     <td><span class="hover" data-username={user} on:click={kickPlayer}>🥊</span></td>
                 {/if}
             </tr>

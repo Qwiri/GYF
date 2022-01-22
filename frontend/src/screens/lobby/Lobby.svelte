@@ -69,7 +69,7 @@
                         <span class:self={player.name === $username}>
                             {player.name}
                         </span>
-                        {#if $leader}
+                        {#if $leader && player.name !== $username}
                             <span class="hover" data-username={player.name} on:click={kickPlayer}>🥊</span>
                         {/if}
                     </p>
