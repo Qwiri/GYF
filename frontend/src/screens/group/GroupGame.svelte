@@ -12,6 +12,7 @@
     import SearchGif from "../SearchGif.svelte";
     import GameEnd from "../lobby/GameEnd.svelte";
     import { toast } from "@zerodevx/svelte-toast";
+    import Swal from "sweetalert2";
 
     function skip() {
         toast.push("Skipping...");
@@ -23,7 +24,21 @@
     }
 
     function endGame() {
-        $ws.send("END_GAME");
+        Swal.fire({
+            title: "Are you sure?",
+            text: "Do you really want to end the game?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "limegreen",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes!",
+            background: "#131313",
+            color: "white"
+        }).then((result) => {
+            if (result.value) {
+                $ws.send("END_GAME");
+            }
+        });
     }
 </script>
 
