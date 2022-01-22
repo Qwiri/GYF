@@ -12,7 +12,7 @@ var EndGameHandler = &handler.Handler{
 	Syntax:      "",
 	AccessLevel: handler.AccessLeader,
 	Bounds:      util.Bounds(util.BoundExact(0)),
-	StateLevel:  util.StateAny,
+	StateLevel:  util.StateInGame,
 	Handler: handler.BasicHandler(func(conn *websocket.Conn, game *model.Game, client *model.Client) error {
 		return game.ForceEndGame("Ended by Host")
 	}),
