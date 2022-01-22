@@ -21,6 +21,10 @@
             $ws.send("SKIP");
         }
     }
+
+    function endGame() {
+        $ws.send("END_GAME");
+    }
 </script>
 
 <!-- Player Leaderboard -->
@@ -68,6 +72,8 @@
                         >Continue</button
                     >
                 {/if}
+                <!-- End game button -->
+                <button class="btn-force" on:click={endGame}>End Game</button>
             {/if}
         </div>
         <div id="chatContainer" class="screenSub">
