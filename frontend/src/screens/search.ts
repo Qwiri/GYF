@@ -2,6 +2,20 @@ import type { GifFetchError } from "../types";
 
 const defaultLimit = 50;
 
+async function fetchOrThrow(res: Response): Promise<any> {
+	const json = await res.json();
+	if (!res.ok) {
+		const err: GifFetchError = {
+			'statusCode': res.status,
+			'statusText': res.statusText,
+			'redirected': res.redirected,
+			'json': json
+		};
+		throw err;
+	}
+	return json;
+}
+
 export interface Provider {
     name: string;
     apiKey: string;
@@ -84,17 +98,3 @@ export const Providers: Array<Provider> = [
     Giphy,
     Tenor,
 ];
-
-async function fetchOrThrow(res: Response): Promise<any> {
-	const json = await res.json();
-	if (!res.ok) {
-		const err: GifFetchError = {
-			'statusCode': res.status,
-			'statusText': res.statusText,
-			'redirected': res.redirected,
-			'json': json
-		};
-		throw err;
-	}
-	return json;
-}
