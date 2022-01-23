@@ -1,6 +1,6 @@
 import { toast } from "@zerodevx/svelte-toast";
 import { navigate } from "svelte-navigator";
-import { chatMessages, leader, players, round, state, stats, submissions, topics, username, waitingFor, votingResults, preferences, gifSubmitted, backendVersion, ws } from "./store";
+import { chatMessages, leader, players, round, state, stats, submissions, topics, username, waitingFor, votingResults, preferences, gifSubmitted, backendVersion } from "./store";
 import { GameState, type Preferences } from "./types";
 import type { ChatMessage, Player, Response, VotingResult } from "./types";
 import { isLeader, pushInfo, pushSuccess, pushWarn, resetGameValues } from "./utils";

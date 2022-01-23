@@ -57,5 +57,5 @@ export interface GifFetchError {
     statusCode: number,
     statusText: string,
     redirected: boolean,
-    json?: any
+    json?: unknown
 }
