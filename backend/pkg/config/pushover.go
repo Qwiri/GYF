@@ -8,6 +8,7 @@ import (
 type PushoverConfig struct {
 	app     *pushover.Pushover
 	rec     *pushover.Recipient
+	Server  string
 	Enable  bool
 	UserKey string
 	AppKey  string
@@ -23,7 +24,7 @@ func (p *PushoverConfig) sendSync(message, title string) {
 		return
 	}
 	log.Debugf("[Pushover] sending title: %s, message: %s", title, message)
-	if _, err := p.app.SendMessage(pushover.NewMessageWithTitle(message, title), p.rec); err != nil {
+	if _, err := p.app.SendMessage(pushover.NewMessageWithTitle(message, p.Server+": "+title), p.rec); err != nil {
 		log.WithError(err).Warnf("cannot send pushover message")
 	}
 }
