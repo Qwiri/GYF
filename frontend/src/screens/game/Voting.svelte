@@ -1,4 +1,6 @@
 <script lang="ts">
+import { toast } from "@zerodevx/svelte-toast";
+
     import Image from "../../assets/Image.svelte";
 
     import TopicDisplay from "../../assets/TopicDisplay.svelte";
@@ -9,9 +11,7 @@
     const submitVote = (e: MouseEvent, i: number) => {
         $ws.send(`VOTE ${e.srcElement.dataset.url}`);
 
-        if (gifVoted === undefined) {
-            gifVoted = i;
-        }
+        gifVoted = i;
     };
 </script>
 
