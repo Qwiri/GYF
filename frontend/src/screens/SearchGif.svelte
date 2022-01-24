@@ -75,7 +75,7 @@
             titleText: "Whoops :(",
             background: "#181818",
             color: "white",
-            text: `It seems like Giphy doesn't work for you right now.
+            text: `It seems like ${provider.name} doesn't work for you right now.
                     Would you like to report this bug and help us improve GYF?`,
             showCancelButton: true,
             cancelButtonText: "No",
@@ -85,7 +85,7 @@
         }).then((r) => {
             if (r.isConfirmed) {
                 window.open(
-                    `mailto:gyf@fire.fundersclub.com?subject=Giphy%20gif%20errror&body=${encodeURIComponent(
+                    `mailto:gyf@fire.fundersclub.com?subject=${provider.name}%20gif%20errror&body=${encodeURIComponent(
                         JSON.stringify(e)
                     )}`
                 );
