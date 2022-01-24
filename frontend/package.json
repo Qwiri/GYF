@@ -1,6 +1,6 @@
 {
   "name": "svelte-app",
-  "version": "1.3.0-replacemeGitVersion",
+  "version": "1.4.0-replacemeGitVersion",
   "private": true,
   "scripts": {
     "build": "rollup -c --environment BUILD:production",
