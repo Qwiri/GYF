@@ -23,6 +23,7 @@
         <div id="madeInLoveDiv">
             <p>
                 Made with ❤️ by <a
+                    class="link1ch"
                     target="_blank"
                     href="https://github.com/Qwiri"
                     on:mouseenter={(e) => (hover = true)}
@@ -30,7 +31,7 @@
                     >{hover ? "🥝" : "Qwiri"}</a
                 >.
             </p>
-            <p>This site is powered by <a target="_blank" href="https://www.netlify.com/" ><img id="netlifyLink" class="linkColor" src="https://www.netlify.com/v3/img/components/full-logo-dark.svg" alt="Netlify" /></a></p>
+            <p>This site is powered by <a class="link1ch" target="_blank" href="https://www.netlify.com/" ><img id="netlifyLink" class="linkColor" src="https://www.netlify.com/v3/img/components/full-logo-dark.svg" alt="Netlify" /></a></p>
         </div>
         <p>
             <a href="https://github.com/Qwiri/GYF" target="_blank" id="github-link">
@@ -107,8 +108,11 @@
             align-items: center;
 
             #netlifyLink {
-                margin-left: 1ch;
                 height: 1.2rem;
+            }
+
+            .link1ch {
+                margin-left: .5ch;
             }
         }
     }
