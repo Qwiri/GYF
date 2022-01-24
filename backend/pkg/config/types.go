@@ -22,6 +22,8 @@ type Config struct {
 
 var DefaultConfigs = Config{
 	&PushoverConfig{
+		Server:  "unknown",
+		Enable:  false,
 		UserKey: "",
 		AppKey:  "",
 	},

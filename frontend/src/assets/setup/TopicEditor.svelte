@@ -71,9 +71,11 @@
             text: "You won't be able to revert this!",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: "#3085d6",
+            confirmButtonColor: "limegreen",
             cancelButtonColor: "#d33",
             confirmButtonText: "Yes, clear all topics!",
+            background: "#131313",
+            color: "white"
         }).then((result) => {
             if (result.value) {
                 $ws.send("TOPIC_CLEAR");

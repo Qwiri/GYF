@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { stats, username } from "../store";
+    import { leader, stats, username, ws } from "../store";
     import Avatar from "./Avatar.svelte";
 
     // the icon is displayed before the user's rank
@@ -22,6 +22,12 @@
             ranks[name] = rank;
         }
     }
+
+    const kickPlayer = (e: MouseEvent) => {
+        const playername: HTMLElement = e.target.dataset.username;
+        $ws.send(`KICK ${playername}`);
+    }
+
 </script>
 
 <div>
@@ -57,6 +63,10 @@
                 <td class="count">
                     {count}
                 </td>
+
+                {#if $leader && user !== $username}
+                    <td><span class="hover" data-username={user} on:click={kickPlayer}>🥊</span></td>
+                {/if}
             </tr>
         {/each}
     </table>
@@ -97,6 +107,11 @@
             .count {
                 text-align: left;
                 vertical-align: bottom;
+            }
+        }
+        .hover {
+            &:hover {
+                cursor: pointer;
             }
         }
         

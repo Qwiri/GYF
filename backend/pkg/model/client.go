@@ -59,3 +59,12 @@ func (A ClientArray) Names() (res []string) {
 	}
 	return
 }
+
+func (A *ClientArray) Delete(client *Client) {
+	for i, c := range *A {
+		if c == client {
+			*A = append((*A)[:i], (*A)[i+1:]...)
+			break
+		}
+	}
+}

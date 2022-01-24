@@ -63,7 +63,28 @@ const commands: { [name: string]: (res: Response) => void | string } = {
 
     PLAYER_LEAVE: (res: Response) => {
         const payloadUser = res.args[0] as string;
-        pushInfo("🚪", payloadUser, "left");
+        const payloadReason = res.args[1] as string;
+
+        // send kick message
+        if (payloadReason === "KICKED") {
+            pushInfo("🥊", payloadUser, "was kicked from the game");
+        } else {
+            pushInfo("🚪", payloadUser, "left");
+        }
+
+        // hide ui if we left
+        if (payloadUser === localUsername) {
+            navigate("/", { replace: true });
+            state.set(GameState.ChooseUsername);
+            username.set("");
+            players.set({});
+            waitingFor.set([]);
+            submissions.set([]);
+            votingResults.set([]);
+            stats.set({});
+            chatMessages.set([]);
+            topics.set([]);
+        }
     },
 
     LIST: (res: Response) => {

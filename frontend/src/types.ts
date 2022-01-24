@@ -52,3 +52,10 @@ export interface Preferences {
     ShuffleTopics: boolean;
     Permissions: number;
 }
+
+export interface GifFetchError {
+    statusCode: number,
+    statusText: string,
+    redirected: boolean,
+    json?: unknown
+}
