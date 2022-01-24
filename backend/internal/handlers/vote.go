@@ -21,11 +21,6 @@ var VoteCastHandler = &handler.Handler{
 		topic := game.CurrentTopic
 		u := message[0]
 
-		// check if already voted
-		if topic.Submissions.HasVoted(client) {
-			return gerrors.ErrAlreadyVoted
-		}
-
 		// get submission for URL
 		var (
 			submission *model.Submission
@@ -38,6 +33,11 @@ var VoteCastHandler = &handler.Handler{
 		// check if client is submitter
 		if submission.Creator == client {
 			return gerrors.ErrVoteSelf
+		}
+
+		// check if already voted and remove if found
+		for _, sub := range topic.Submissions {
+			sub.Voters.Delete(client)
 		}
 
 		// add client as voter
