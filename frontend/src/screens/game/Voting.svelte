@@ -1,5 +1,4 @@
 <script lang="ts">
-import { toast } from "@zerodevx/svelte-toast";
 
     import Image from "../../assets/Image.svelte";
 
