@@ -17,6 +17,11 @@
             toast.push("Please enter a username");
             return;
         }
+        // check if name contains spaces
+        if ($username.indexOf(" ") !== -1) {
+            toast.push("Username cannot contain spaces");
+            return;
+        }
         if ($ws.readyState === 1) {
             $ws.send(`JOIN ${$username} ${passwordBuffer}`);
         }
