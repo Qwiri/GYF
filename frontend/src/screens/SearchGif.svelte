@@ -5,8 +5,6 @@
     import type { Provider, SearchResult } from "./search";
     import Image from "../assets/Image.svelte";
     import Swal from "sweetalert2";
-    import { onMount } from "svelte";
-    import type { GifFetchError } from "../types";
 
     let provider: Provider = Giphy; // Make Giphy the default provider
 
@@ -129,6 +127,20 @@
             }
         }
     };
+
+    let lastAutoLoadMore = false;
+    function onScroll() {
+        const elem = document.getElementById("resultWrapper");
+        const shouldAutoScroll = (elem.scrollHeight - elem.scrollTop) - 200 <= elem.clientHeight;
+        if (shouldAutoScroll === lastAutoLoadMore) {
+            return;
+        }
+        lastAutoLoadMore = shouldAutoScroll;
+        if (shouldAutoScroll) {
+            fetchGifs();
+        }
+    }
+
 </script>
 
 <TopicDisplay />
@@ -173,6 +185,7 @@
 
         <div
             id="resultWrapper"
+            on:scroll={onScroll}
             on:mouseleave={(e) => checkIfImageLoaded(e, undefined)}
         >
             {#if searchResults.length > 0}

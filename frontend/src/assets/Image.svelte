@@ -32,7 +32,7 @@
     {/if}
 
     <!-- the actual image -->
-    <img id="image" {src} {alt} on:load={e => loaded = true}/>
+    <img id="image" loading="lazy" {src} {alt} on:load={e => loaded = true}/>
 
     
 </div>
