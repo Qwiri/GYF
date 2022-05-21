@@ -10,7 +10,8 @@ A Simple GIF Tournament Game
 
 
 ### Backend
-[![Publish Backend Package](https://github.com/Qwiri/GYF/actions/workflows/deploy-backend.yaml/badge.svg)](https://github.com/Qwiri/GYF/actions/workflows/deploy-backend.yaml)
+[![📦🦑 Deploy Latest Backend to GHCR](https://github.com/Qwiri/GYF/actions/workflows/deploy-backend-push.yaml/badge.svg)](https://github.com/Qwiri/GYF/actions/workflows/deploy-backend-push.yaml)
+[![📦🦑 Deploy Released Backend to GHCR](https://github.com/Qwiri/GYF/actions/workflows/deploy-backend-tag.yaml/badge.svg)](https://github.com/Qwiri/GYF/actions/workflows/deploy-backend-tag.yaml)
 
 ---
 
