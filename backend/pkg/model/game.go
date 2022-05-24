@@ -2,14 +2,15 @@ package model
 
 import (
 	"fmt"
+	"math/rand"
+	"strings"
+	"time"
+
 	"github.com/Qwiri/GYF/backend/pkg/config"
 	"github.com/Qwiri/GYF/backend/pkg/gerrors"
 	"github.com/Qwiri/GYF/backend/pkg/util"
 	"github.com/apex/log"
 	"github.com/gofiber/websocket/v2"
-	"math/rand"
-	"strings"
-	"time"
 )
 
 type Game struct {
@@ -267,6 +268,7 @@ func (g *Game) ForceEndGame(reason string) (err error) {
 		fmt.Sprintf("Game (End) [%s]", g.ID))
 
 	g.Broadcast(PStats(g))        // send stats for winning screen
+	g.Broadcast(PSummary(g))      // send summary for summary screen
 	g.Broadcast(PGameEnd(reason)) // send game end
 	g.Reset(false)
 	return

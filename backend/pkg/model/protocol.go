@@ -42,6 +42,10 @@ func PStats(game *Game) *Response {
 	return NewResponse("STATS", stats)
 }
 
+func PSummary(game *Game) *Response {
+	return NewResponse("SUMMARY", game.Topics, game.Clients)
+}
+
 func PChat(client *Client, message string) *Response {
 	return NewResponse("CHAT", client.Name, message)
 }
