@@ -62,11 +62,19 @@ jobs:
             "gitcommit=${{ steps.vars.outputs.commit }}"
 
       - name: Restart staged Backend
-        run: curl http://backend.staging.gyf.d2a.io:9830/BACKEND_STAGED/${{ secrets.STAGED_DEPLOY_SECRET }}
+        uses: darmiel/yadwh-action@v1
+        with:
+          url: 'http://backend.staging.gyf.d2a.io:9830'
+          name: 'BACKEND_STAGED'
+          secret: ${{ secrets.STAGED_DEPLOY_SECRET }}
+          
+      - name: Restart staged Backend
+        if: steps.vars.outputs.branch == 'main'
+        uses: darmiel/yadwh-action@v1
+        with:
+          url: 'http://backend.staging.gyf.d2a.io:9830'
+          name: 'BACKEND_PROD'
+          secret: ${{ secrets.PROD_DEPLOY_SECRET }}
 
-      - if: steps.vars.outputs.branch == 'main'
-        name: Restart deployed Backend
-        run: curl http://backend.prod.gyf.d2a.io:9830/BACKEND_PROD/${{ secrets.PROD_DEPLOY_SECRET }}
-      
       - name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
