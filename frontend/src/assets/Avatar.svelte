@@ -8,5 +8,5 @@
     alt="avatar of {user}"
     {width}
     {height}
-    src="https://avatars.dicebear.com/api/miniavs/{user}.svg"
+    src="https://api.dicebear.com/9.x/miniavs/svg?seed={user}"
 />
